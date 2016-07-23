@@ -1,0 +1,17 @@
+INCLUDE:include third
+**********
+
+TARGET:libSunsetGlow.a
+DEPENDS:
+DIRS:src third
+SRCS:
+LINKS:
+
+##########
+
+TARGET:example.out
+DEPENDS:libSunsetGlow.a
+DIRS:
+SRCS:simple_main.cpp
+LINKS: ./libSunsetGlow.a
+
