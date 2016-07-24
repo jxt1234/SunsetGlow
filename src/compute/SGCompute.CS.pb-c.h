@@ -38,12 +38,13 @@ struct  _SGCompute__CS__PieceInfo
 {
   ProtobufCMessage base;
   char *describe;
+  char *type;
   size_t n_keydimesion;
   uint32_t *keydimesion;
 };
 #define SGCOMPUTE__CS__PIECE_INFO__INIT \
  { PROTOBUF_C_MESSAGE_INIT (&sgcompute__cs__piece_info__descriptor) \
-    , NULL, 0,NULL }
+    , NULL, NULL, 0,NULL }
 
 
 struct  _SGCompute__CS__ComputeInfo__FuncInfo
@@ -220,6 +221,10 @@ struct _SGCompute__CS__ComputeServer_Service
                   const SGCompute__CS__ComputeInfo *input,
                   SGCompute__CS__Result_Closure closure,
                   void *closure_data);
+  void (*create)(SGCompute__CS__ComputeServer_Service *service,
+                 const SGCompute__CS__PieceInfo *input,
+                 SGCompute__CS__Result_Closure closure,
+                 void *closure_data);
 };
 typedef void (*SGCompute__CS__ComputeServer_ServiceDestroy)(SGCompute__CS__ComputeServer_Service *);
 void sgcompute__cs__compute_server__init (SGCompute__CS__ComputeServer_Service *service,
@@ -228,11 +233,16 @@ void sgcompute__cs__compute_server__init (SGCompute__CS__ComputeServer_Service *
     { &sgcompute__cs__compute_server__descriptor, protobuf_c_service_invoke_internal, NULL }
 #define SGCOMPUTE__CS__COMPUTE_SERVER__INIT(function_prefix__) \
     { SGCOMPUTE__CS__COMPUTE_SERVER__BASE_INIT,\
-      function_prefix__ ## by_info  }
+      function_prefix__ ## by_info,\
+      function_prefix__ ## create  }
 void sgcompute__cs__compute_server__by_info(ProtobufCService *service,
                                             const SGCompute__CS__ComputeInfo *input,
                                             SGCompute__CS__Result_Closure closure,
                                             void *closure_data);
+void sgcompute__cs__compute_server__create(ProtobufCService *service,
+                                           const SGCompute__CS__PieceInfo *input,
+                                           SGCompute__CS__Result_Closure closure,
+                                           void *closure_data);
 
 /* --- descriptors --- */
 

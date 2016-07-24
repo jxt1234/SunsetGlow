@@ -160,7 +160,7 @@ void   sgcompute__cs__result__free_unpacked
   assert(message->base.descriptor == &sgcompute__cs__result__descriptor);
   protobuf_c_message_free_unpacked ((ProtobufCMessage*)message, allocator);
 }
-static const ProtobufCFieldDescriptor sgcompute__cs__piece_info__field_descriptors[2] =
+static const ProtobufCFieldDescriptor sgcompute__cs__piece_info__field_descriptors[3] =
 {
   {
     "describe",
@@ -175,8 +175,20 @@ static const ProtobufCFieldDescriptor sgcompute__cs__piece_info__field_descripto
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
   {
-    "keyDimesion",
+    "type",
     2,
+    PROTOBUF_C_LABEL_REQUIRED,
+    PROTOBUF_C_TYPE_STRING,
+    0,   /* quantifier_offset */
+    offsetof(SGCompute__CS__PieceInfo, type),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+  {
+    "keyDimesion",
+    3,
     PROTOBUF_C_LABEL_REPEATED,
     PROTOBUF_C_TYPE_UINT32,
     offsetof(SGCompute__CS__PieceInfo, n_keydimesion),
@@ -189,12 +201,13 @@ static const ProtobufCFieldDescriptor sgcompute__cs__piece_info__field_descripto
 };
 static const unsigned sgcompute__cs__piece_info__field_indices_by_name[] = {
   0,   /* field[0] = describe */
-  1,   /* field[1] = keyDimesion */
+  2,   /* field[2] = keyDimesion */
+  1,   /* field[1] = type */
 };
 static const ProtobufCIntRange sgcompute__cs__piece_info__number_ranges[1 + 1] =
 {
   { 1, 0 },
-  { 0, 2 }
+  { 0, 3 }
 };
 const ProtobufCMessageDescriptor sgcompute__cs__piece_info__descriptor =
 {
@@ -204,7 +217,7 @@ const ProtobufCMessageDescriptor sgcompute__cs__piece_info__descriptor =
   "SGCompute__CS__PieceInfo",
   "SGCompute.CS",
   sizeof(SGCompute__CS__PieceInfo),
-  2,
+  3,
   sgcompute__cs__piece_info__field_descriptors,
   sgcompute__cs__piece_info__field_indices_by_name,
   1,  sgcompute__cs__piece_info__number_ranges,
@@ -584,12 +597,14 @@ const ProtobufCMessageDescriptor sgcompute__cs__result__descriptor =
   (ProtobufCMessageInit) sgcompute__cs__result__init,
   NULL,NULL,NULL    /* reserved[123] */
 };
-static const ProtobufCMethodDescriptor sgcompute__cs__compute_server__method_descriptors[1] =
+static const ProtobufCMethodDescriptor sgcompute__cs__compute_server__method_descriptors[2] =
 {
   { "ByInfo", &sgcompute__cs__compute_info__descriptor, &sgcompute__cs__result__descriptor },
+  { "Create", &sgcompute__cs__piece_info__descriptor, &sgcompute__cs__result__descriptor },
 };
 const unsigned sgcompute__cs__compute_server__method_indices_by_name[] = {
-  0         /* ByInfo */
+  0,        /* ByInfo */
+  1         /* Create */
 };
 const ProtobufCServiceDescriptor sgcompute__cs__compute_server__descriptor =
 {
@@ -598,7 +613,7 @@ const ProtobufCServiceDescriptor sgcompute__cs__compute_server__descriptor =
   "ComputeServer",
   "SGCompute__CS__ComputeServer",
   "SGCompute.CS",
-  1,
+  2,
   sgcompute__cs__compute_server__method_descriptors,
   sgcompute__cs__compute_server__method_indices_by_name
 };
@@ -609,6 +624,14 @@ void sgcompute__cs__compute_server__by_info(ProtobufCService *service,
 {
   assert(service->descriptor == &sgcompute__cs__compute_server__descriptor);
   service->invoke(service, 0, (const ProtobufCMessage *) input, (ProtobufCClosure) closure, closure_data);
+}
+void sgcompute__cs__compute_server__create(ProtobufCService *service,
+                                           const SGCompute__CS__PieceInfo *input,
+                                           SGCompute__CS__Result_Closure closure,
+                                           void *closure_data)
+{
+  assert(service->descriptor == &sgcompute__cs__compute_server__descriptor);
+  service->invoke(service, 1, (const ProtobufCMessage *) input, (ProtobufCClosure) closure, closure_data);
 }
 void sgcompute__cs__compute_server__init (SGCompute__CS__ComputeServer_Service *service,
                                           SGCompute__CS__ComputeServer_ServiceDestroy destroy)

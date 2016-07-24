@@ -1,7 +1,8 @@
 package SGCompute.CS;
 message PieceInfo {
     required string describe = 1;
-    repeated uint32 keyDimesion = 2;
+    required string type = 2;
+    repeated uint32 keyDimesion = 3;
 }
 
 message ComputeInfo{
@@ -40,5 +41,6 @@ message Result {
 
 service ComputeServer {
     rpc ByInfo (ComputeInfo) returns (Result);
+    rpc Create (PieceInfo) returns (Result);
 }
 

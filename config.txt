@@ -1,4 +1,4 @@
-INCLUDE:include third
+INCLUDE:include ../Renascence/include/ third
 **********
 
 TARGET:libSunsetGlow.a
@@ -13,5 +13,29 @@ TARGET:example.out
 DEPENDS:libSunsetGlow.a
 DIRS:
 SRCS:simple_main.cpp
+LINKS: ./libSunsetGlow.a
+
+##########
+
+TARGET:compute-client.out
+DEPENDS:libSunsetGlow.a
+DIRS:
+SRCS:./compute-client.cpp
+LINKS: ./libSunsetGlow.a
+
+##########
+
+TARGET:compute-responser.out
+DEPENDS:libSunsetGlow.a
+DIRS:
+SRCS:./compute-responser.cpp
+LINKS: ./libSunsetGlow.a
+
+##########
+
+TARGET:compute-server.out
+DEPENDS:libSunsetGlow.a
+DIRS:
+SRCS:./compute-server.cpp
 LINKS: ./libSunsetGlow.a
 
