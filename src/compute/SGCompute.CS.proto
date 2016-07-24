@@ -1,0 +1,44 @@
+package SGCompute.CS;
+message PieceInfo {
+    required string describe = 1;
+    repeated uint32 keyDimesion = 2;
+}
+
+message ComputeInfo{
+    message FuncInfo {
+        required string formula = 1;
+        required string parameter = 2;
+        required string inputsType = 3;
+    }
+    required FuncInfo sFuncInfo = 1;
+    message FormulaInfo {
+        required string sConditionFormula = 1;
+        required string sVariableInfo = 2;
+    }
+    required FormulaInfo sConditionInfo = 2;
+    message KeyInfo {
+        message Key {
+            required uint32 index = 1;
+            required uint32 pos = 2;
+        }
+        repeated Key inputKey = 1;
+        repeated Key outputKey = 2;
+    }
+    required KeyInfo sKeyInfo = 3;
+    required PieceInfo inputPieceDescribe = 4;
+    required PieceInfo outputPieceDescribe = 5;
+}
+
+
+message Result {
+    enum StatusCode {
+        SUCCESS = 1;
+        FAIL = 2;
+    }
+    required StatusCode code = 1;
+}
+
+service ComputeServer {
+    rpc ByInfo (ComputeInfo) returns (Result);
+}
+

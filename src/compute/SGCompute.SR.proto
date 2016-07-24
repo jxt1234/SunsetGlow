@@ -1,0 +1,43 @@
+package SGCompute.SR;
+
+message RunInfo {
+    message Key {
+        required uint32 index = 1;
+        required uint32 pos = 2;
+        required uint32 key = 3;
+    }
+    repeated Key inputKey = 1;
+    repeated Key outputKey = 2;
+    required string inputPieceDescribe = 3;
+    required string outputPieceDescribe = 4;
+}
+
+message Compute{
+    message FuncInfo {
+        required string formula = 1;
+        required string parameter = 2;
+        required string inputsType = 3;
+    }
+    required FuncInfo sFuncInfo = 1;
+    required RunInfo sRunInfo = 2;
+}
+
+
+message ReceiveResult {
+    required int32 errorCode = 1;
+}
+
+message RunResult {
+    required RunInfo runInfo = 1;
+    required int32 errorCode = 2;
+}
+
+service ComputeResponser {
+    rpc ByInfo (Compute) returns (ReceiveResult);
+}
+
+service ComputeServerWaiter {
+    rpc ByResult(RunResult) returns (ReceiveResult);
+}
+
+
