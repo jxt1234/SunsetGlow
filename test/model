@@ -1,0 +1,13 @@
+#include "test/GPTest.h"
+class XXXXXXXXXXXXXX:public GPTest
+{
+    public:
+        virtual void run();
+        XXXXXXXXXXXXXX(){}
+        virtual ~XXXXXXXXXXXXXX(){}
+};
+void XXXXXXXXXXXXXX::run()
+{
+}
+
+static GPTestRegister<XXXXXXXXXXXXXX> a("XXXXXXXXXXXXXX");

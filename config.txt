@@ -39,3 +39,10 @@ DIRS:
 SRCS:./compute-server.cpp
 LINKS: ./libSunsetGlow.a
 
+##########
+
+TARGET:test.out
+DEPENDS:libSunsetGlow.a
+DIRS:test
+SRCS:
+LINKS: ./libSunsetGlow.a -lpthread -ldl
