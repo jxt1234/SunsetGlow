@@ -1,5 +1,5 @@
 #include "SGParallelMachine.h"
-#include "SGPiecesCreatorClient.h"
+#include "SGPiecesCreator.h"
 
 int SGParallelMachine::vMap(GPFLOAT* values)
 {

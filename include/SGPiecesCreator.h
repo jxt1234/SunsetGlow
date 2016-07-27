@@ -18,4 +18,14 @@ private:
 };
 
 
+class SGPiecesCreatorServer :public GPRefCount
+{
+public:
+    SGPiecesCreatorServer();
+    virtual ~SGPiecesCreatorServer();
+private:
+    ProtobufC_RPC_Server* mServer;
+};
+
+
 #endif

@@ -27,8 +27,8 @@ typedef struct _SGCompute__CS__Result SGCompute__CS__Result;
 /* --- enums --- */
 
 typedef enum _SGCompute__CS__Result__StatusCode {
-  SGCOMPUTE__CS__RESULT__STATUS_CODE__SUCCESS = 1,
-  SGCOMPUTE__CS__RESULT__STATUS_CODE__FAIL = 2
+  SGCOMPUTE__CS__RESULT__STATUS_CODE__SUCCESS = 0,
+  SGCOMPUTE__CS__RESULT__STATUS_CODE__FAIL = 1
     PROTOBUF_C__FORCE_ENUM_TO_BE_INT_SIZE(SGCOMPUTE__CS__RESULT__STATUS_CODE)
 } SGCompute__CS__Result__StatusCode;
 

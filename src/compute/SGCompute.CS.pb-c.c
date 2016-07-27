@@ -533,11 +533,11 @@ const ProtobufCMessageDescriptor sgcompute__cs__compute_info__descriptor =
 };
 static const ProtobufCEnumValue sgcompute__cs__result__status_code__enum_values_by_number[2] =
 {
-  { "SUCCESS", "SGCOMPUTE__CS__RESULT__STATUS_CODE__SUCCESS", 1 },
-  { "FAIL", "SGCOMPUTE__CS__RESULT__STATUS_CODE__FAIL", 2 },
+  { "SUCCESS", "SGCOMPUTE__CS__RESULT__STATUS_CODE__SUCCESS", 0 },
+  { "FAIL", "SGCOMPUTE__CS__RESULT__STATUS_CODE__FAIL", 1 },
 };
 static const ProtobufCIntRange sgcompute__cs__result__status_code__value_ranges[] = {
-{1, 0},{0, 2}
+{0, 0},{0, 2}
 };
 static const ProtobufCEnumValueIndex sgcompute__cs__result__status_code__enum_values_by_name[2] =
 {

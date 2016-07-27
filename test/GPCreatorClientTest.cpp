@@ -11,6 +11,7 @@ void GPCreatorClientTest::run()
 {
     SGParallelMachine parallelMachine;
     auto pair = parallelMachine.vGenerate(NULL, IParallelMachine::REDUCE);
+    pair.first->vPrepare(NULL, 0);
     delete pair.first;
 }
 
