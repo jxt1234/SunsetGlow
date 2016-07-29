@@ -51,9 +51,9 @@ GPPieces* SGPiecesCreatorClient::vPrepare(GPPieces** inputs, int inputNumber) co
     }
     ProtobufCService* server = (ProtobufCService*)mClient;
     SGCompute__CS__PieceInfo pieceInfo = SGCOMPUTE__CS__PIECE_INFO__INIT;
-    
+
     run_main_loop_without_blocking(protobuf_c_rpc_dispatch_default());
-    
+
     char* describe = "XXX";
     char* type = "YYY";
     pieceInfo.n_keydimesion = 0;
@@ -73,19 +73,13 @@ GPPieces* SGPiecesCreatorClient::vPrepare(GPPieces** inputs, int inputNumber) co
     return NULL;
 }
 
-static void compute__by_info (SGCompute__CS__ComputeServer_Service *service,
-                             const SGCompute__CS__ComputeInfo *input,
-                             SGCompute__CS__Result_Closure closure,
-                             void *closure_data)
+void SG_compute__by_info (SGCompute__CS__ComputeServer_Service *service, const SGCompute__CS__ComputeInfo *input, SGCompute__CS__Result_Closure closure, void *closure_data)
 {
     printf("create__by_info Server Received");
 }
 
 
-static void compute__create (SGCompute__CS__ComputeServer_Service *service,
-                            const SGCompute__CS__PieceInfo *input,
-                            SGCompute__CS__Result_Closure closure,
-                            void *closure_data)
+void SG_compute__create (SGCompute__CS__ComputeServer_Service *service, const SGCompute__CS__PieceInfo *input, SGCompute__CS__Result_Closure closure, void *closure_data)
 {
     printf("describe = %s\n", input->describe);
     SGCompute__CS__Result result =  {
@@ -94,22 +88,4 @@ static void compute__create (SGCompute__CS__ComputeServer_Service *service,
     result.code = SGCOMPUTE__CS__RESULT__STATUS_CODE__SUCCESS;
     printf("create__create Server Received\n");
     closure (&result, closure_data);
-}
-
-static SGCompute__CS__ComputeServer_Service create_service = SGCOMPUTE__CS__COMPUTE_SERVER__INIT(compute__);
-
-SGPiecesCreatorServer::SGPiecesCreatorServer()
-{
-    mServer = protobuf_c_rpc_server_new (PROTOBUF_C_RPC_ADDRESS_LOCAL, "3306", (ProtobufCService *) &create_service, NULL);
-    signal (SIGPIPE, SIG_IGN);
-
-    for (;;)
-    {
-        protobuf_c_rpc_dispatch_run (protobuf_c_rpc_dispatch_default ());
-    }
-}
-
-SGPiecesCreatorServer::~SGPiecesCreatorServer()
-{
-    
 }

@@ -17,15 +17,4 @@ private:
     ProtobufC_RPC_Client* mClient;
 };
 
-
-class SGPiecesCreatorServer :public GPRefCount
-{
-public:
-    SGPiecesCreatorServer();
-    virtual ~SGPiecesCreatorServer();
-private:
-    ProtobufC_RPC_Server* mServer;
-};
-
-
 #endif

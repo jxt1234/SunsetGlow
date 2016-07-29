@@ -1,6 +1,6 @@
-#include "SGPiecesCreator.h"
+#include "SGComputeServer.h"
 int main()
 {
-    SGPiecesCreatorServer server;
+    SGComputeServer server;
     return 1;
 }
