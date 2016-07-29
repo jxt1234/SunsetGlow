@@ -41,6 +41,6 @@ message Result {
 
 service ComputeServer {
     rpc ByInfo (ComputeInfo) returns (Result);
-    rpc Create (PieceInfo) returns (Result);
+    rpc Create (PieceInfo) returns (PieceInfo);
+    rpc Release (PieceInfo) returns (Result);
 }
-

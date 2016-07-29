@@ -9,4 +9,5 @@ void SG_compute__by_info (SGCompute__CS__ComputeServer_Service *service,
                           void *closure_data)
 {
     
+    //closure(closure_data);
 }

@@ -73,10 +73,6 @@ GPPieces* SGPiecesCreatorClient::vPrepare(GPPieces** inputs, int inputNumber) co
     return NULL;
 }
 
-void SG_compute__by_info (SGCompute__CS__ComputeServer_Service *service, const SGCompute__CS__ComputeInfo *input, SGCompute__CS__Result_Closure closure, void *closure_data)
-{
-    printf("create__by_info Server Received");
-}
 
 
 void SG_compute__create (SGCompute__CS__ComputeServer_Service *service, const SGCompute__CS__PieceInfo *input, SGCompute__CS__Result_Closure closure, void *closure_data)
