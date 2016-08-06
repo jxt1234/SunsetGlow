@@ -1,14 +1,33 @@
 #include "SGParallelMachine.h"
-#include "SGPiecesCreator.h"
 
 int SGParallelMachine::vMap(GPFLOAT* values)
 {
     return 0;
 }
 
-std::pair<IParallelMachine::Creator*, IParallelMachine::Executor*> SGParallelMachine::vGenerate(const GPParallelType* data, PARALLELTYPE type) const
+IParallelMachine::Executor* SGParallelMachine::vPrepare(const GPParallelType* data, PARALLELTYPE type) const
 {
-    IParallelMachine::Creator* creator = new SGPiecesCreatorClient;
     IParallelMachine::Executor* executor = NULL;
-    return std::make_pair(creator, executor);
+    return NULL;
+}
+
+GPPieces* SGParallelMachine::vCreatePieces(const char* description, std::vector<const IStatusType*> types, unsigned int* keys, int keyNum, USAGE usage) const
+{
+    //TODO
+    return mClient->vPrepare(NULL, 0);
+}
+
+SGParallelMachine::SGParallelMachine()
+{
+    mClient = new SGComputeClient;
+}
+SGParallelMachine::~SGParallelMachine()
+{
+    delete mClient;
+}
+
+bool SGParallelMachine::vCopyPieces(GPPieces* readPieces, GPPieces* writePieces) const
+{
+    //TODO
+    return false;
 }

@@ -2,9 +2,9 @@ extern "C"{
 #include "SGCompute.CS.pb-c.h"
 }
 #include <assert.h>
-#include "SGPiecesCreator.h"
+#include "SGComputeClient.h"
 
-SGPiecesCreatorClient::SGPiecesCreatorClient()
+SGComputeClient::SGComputeClient()
 {
     //FIXME
     auto service = protobuf_c_rpc_client_new(PROTOBUF_C_RPC_ADDRESS_LOCAL, "3306", &sgcompute__cs__compute_server__descriptor, NULL);
@@ -12,7 +12,7 @@ SGPiecesCreatorClient::SGPiecesCreatorClient()
     mClient = (ProtobufC_RPC_Client*)service;
     //protobuf_c_rpc_client_set_autoreconnect_period (mClient, 10);
 }
-SGPiecesCreatorClient::~SGPiecesCreatorClient()
+SGComputeClient::~SGComputeClient()
 {
     auto service = (ProtobufCService*)mClient;
     service->destroy(service);
@@ -41,7 +41,7 @@ run_main_loop_without_blocking (ProtobufCRPCDispatch *dispatch)
 }
 
 
-GPPieces* SGPiecesCreatorClient::vPrepare(GPPieces** inputs, int inputNumber) const
+GPPieces* SGComputeClient::vPrepare(GPPieces** inputs, int inputNumber) const
 {
     protobuf_c_rpc_dispatch_run (protobuf_c_rpc_dispatch_default ());
     while (!protobuf_c_rpc_client_is_connected (mClient))

@@ -6,11 +6,11 @@ extern "C" {
 }
 
 
-class SGPiecesCreatorClient : public IParallelMachine::Creator
+class SGComputeClient
 {
 public:
-    SGPiecesCreatorClient();
-    virtual ~SGPiecesCreatorClient();
+    SGComputeClient();
+    virtual ~SGComputeClient();
     
     virtual GPPieces* vPrepare(GPPieces** inputs, int inputNumber) const;
 private:
