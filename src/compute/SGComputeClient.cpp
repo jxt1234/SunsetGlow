@@ -3,6 +3,7 @@ extern "C"{
 }
 #include <assert.h>
 #include "SGComputeClient.h"
+#include "SGDebug.h"
 
 SGComputeClient::SGComputeClient()
 {
@@ -18,70 +19,114 @@ SGComputeClient::~SGComputeClient()
     service->destroy(service);
 }
 
-static void
-handle_create_response (const SGCompute__CS__Result *result,
+struct ClosureData
+{
+    GPPieces* pResult;
+    ProtobufCService* pServer;
+};
+
+static void GPPiecesClient_Handle_Release(const SGCompute__CS__Result *message, void *closure_data)
+{
+    protobuf_c_boolean* closure = (protobuf_c_boolean*)closure_data;
+    *closure = 1;
+}
+
+
+class GPPiecesClient:public GPPieces
+{
+public:
+    GPPiecesClient(uint64_t magic, ProtobufCService* server):mMagic(magic), mServer(server){}
+    virtual ~ GPPiecesClient()
+    {
+        SGCompute__CS__PieceInfo pieceInfo = SGCOMPUTE__CS__PIECE_INFO__INIT;
+        char* describe = (char*)"CACHE";
+        pieceInfo.describe = describe;
+        pieceInfo.magic = mMagic;
+        protobuf_c_boolean closureData = 0;
+        sgcompute__cs__compute_server__release(mServer, &pieceInfo, GPPiecesClient_Handle_Release, &closureData);
+        while (0 == closureData)
+        {
+            protobuf_c_rpc_dispatch_run (protobuf_c_rpc_dispatch_default ());
+        }
+    }
+    
+    virtual GPContents* vLoad(unsigned int* pKey, unsigned int keynum)
+    {
+        SGASSERT(false);//TODO
+        return NULL;
+    }
+    
+    virtual long vPreMeasure(unsigned int* pKey, unsigned int keynum) const {return -1;}
+    
+    virtual void vSave(unsigned int* pKey, unsigned int keynum, GPContents* c)
+    {
+        SGASSERT(false);//TODO
+    }
+private:
+    uint64_t mMagic;
+    ProtobufCService* mServer;
+
+};
+
+static void handle_create_response_cache(const SGCompute__CS__PieceInfo *result,
                        void *closure_data)
 {
-    if (result == NULL)
-        printf ("Error processing request.\n");
-    else if (result->code == SGCOMPUTE__CS__RESULT__STATUS_CODE__FAIL)
-        printf ("Error!!!.\n");
-    printf("Success\n");
-    *(protobuf_c_boolean *) closure_data = 1;
+    if (NULL == result)
+    {
+        FUNC_PRINT(1);
+        return;
+    }
+    /*TODO check result*/
+    ClosureData* _r = (ClosureData*)closure_data;
+    FUNC_PRINT((int)result->n_keydimesion);
+    FUNC_PRINT_ALL(result->describe, s);
+    FUNC_PRINT(result->type);
+    
+    GPPieces* piece_result = new GPPiecesClient(result->magic, _r->pServer);
+    piece_result->nKeyNumber = result->n_keydimesion;
+    for (int i=0; i<piece_result->nKeyNumber; ++i)
+    {
+        piece_result->pKeySize[i] = result->keydimesion[i];
+    }
+    _r->pResult = piece_result;
 }
-static void
-do_nothing (ProtobufCRPCDispatch *dispatch, void *unused)
+
+static void do_nothing (ProtobufCRPCDispatch *dispatch, void *unused)
 {
 }
-static void
-run_main_loop_without_blocking (ProtobufCRPCDispatch *dispatch)
+
+static void run_main_loop_without_blocking (ProtobufCRPCDispatch *dispatch)
 {
     protobuf_c_rpc_dispatch_add_idle (dispatch, do_nothing, NULL);
     protobuf_c_rpc_dispatch_run (dispatch);
 }
 
 
-GPPieces* SGComputeClient::vPrepare(GPPieces** inputs, int inputNumber) const
+GPPieces* SGComputeClient::createCache(unsigned int* keys, int keyNumber) const
 {
     protobuf_c_rpc_dispatch_run (protobuf_c_rpc_dispatch_default ());
     while (!protobuf_c_rpc_client_is_connected (mClient))
     {
-        printf("Connect Failed\n");
+        FUNC_PRINT(1);
         protobuf_c_rpc_dispatch_run (protobuf_c_rpc_dispatch_default ());
     }
     ProtobufCService* server = (ProtobufCService*)mClient;
     SGCompute__CS__PieceInfo pieceInfo = SGCOMPUTE__CS__PIECE_INFO__INIT;
 
-    run_main_loop_without_blocking(protobuf_c_rpc_dispatch_default());
 
-    char* describe = "XXX";
-    char* type = "YYY";
-    pieceInfo.n_keydimesion = 0;
-    pieceInfo.keydimesion= NULL;
+    char* describe = (char*)"CACHE";
+    pieceInfo.n_keydimesion = keyNumber;
+    pieceInfo.keydimesion= keys;
     pieceInfo.describe = describe;
-    pieceInfo.type = type;
-    /*TODO*/
-//    pieceInfo.keydimesion = inputs[0]->pKeySize;
-//    pieceInfo.n_keydimesion = inputs[0]->nKeyNumber;
-    protobuf_c_boolean is_done = 0;
+    pieceInfo.type = SGCOMPUTE__CS__PIECE_INFO__TYPE__CACHE;
+    ClosureData closureData;
+    closureData.pResult = NULL;
+    closureData.pServer = server;
 
-    sgcompute__cs__compute_server__create(server, &pieceInfo, handle_create_response, &is_done);
-    while (!is_done)
+    sgcompute__cs__compute_server__create(server, &pieceInfo, handle_create_response_cache, &closureData);
+    while (NULL == closureData.pResult)
     {
         protobuf_c_rpc_dispatch_run (protobuf_c_rpc_dispatch_default ());
     }
-    return NULL;
-}
-
-
-
-void SG_compute__create (SGCompute__CS__ComputeServer_Service *service, const SGCompute__CS__PieceInfo *input, SGCompute__CS__Result_Closure closure, void *closure_data)
-{
-    printf("describe = %s\n", input->describe);
-    SGCompute__CS__Result result =  {
-        PROTOBUF_C_MESSAGE_INIT (&sgcompute__cs__result__descriptor), SGCOMPUTE__CS__RESULT__STATUS_CODE__SUCCESS
-    };
-    result.code = SGCOMPUTE__CS__RESULT__STATUS_CODE__SUCCESS;
-    printf("create__create Server Received\n");
-    closure (&result, closure_data);
+    return closureData.pResult;
 }

@@ -14,7 +14,7 @@ IParallelMachine::Executor* SGParallelMachine::vPrepare(const GPParallelType* da
 GPPieces* SGParallelMachine::vCreatePieces(const char* description, std::vector<const IStatusType*> types, unsigned int* keys, int keyNum, USAGE usage) const
 {
     //TODO
-    return mClient->vPrepare(NULL, 0);
+    return mClient->createCache(keys, keyNum);
 }
 
 SGParallelMachine::SGParallelMachine()

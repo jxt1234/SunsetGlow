@@ -2,14 +2,11 @@ all:libSunsetGlow.a example.out compute-client.out compute-responser.out compute
 
 ALL_INCLUESlibSunsetGlow.a= include//SGComputeClient.h include//SGComputeServer.h include//SGDebug.h include//SGParallelMachine.h include//SGComputeClient.h include//SGComputeServer.h include//SGDebug.h include//SGParallelMachine.h
 
-libSunsetGlow.a:  build/src_compute_SGComputeClient_cpp.o build/src_compute_SGComputeCSMessage_cpp.o build/src_compute_SGComputeServer_cpp.o build/src_compute_SGParallelMachine_cpp.o build/src_compute_SGCompute_CS_pb-c_c.o build/src_compute_SGCompute_SR_pb-c_c.o build/third_protobuf-c_protobuf-c_c.o build/third_protobuf-c-rpc_protobuf-c-rpc-client_c.o build/third_protobuf-c-rpc_protobuf-c-rpc-data-buffer_c.o build/third_protobuf-c-rpc_protobuf-c-rpc-dispatch_c.o build/third_protobuf-c-rpc_protobuf-c-rpc-server_c.o 
+libSunsetGlow.a:  build/src_compute_SGComputeClient_cpp.o build/src_compute_SGComputeServer_cpp.o build/src_compute_SGParallelMachine_cpp.o build/src_compute_SGCompute_CS_pb-c_c.o build/src_compute_SGCompute_SR_pb-c_c.o build/third_protobuf-c_protobuf-c_c.o build/third_protobuf-c-rpc_protobuf-c-rpc-client_c.o build/third_protobuf-c-rpc_protobuf-c-rpc-data-buffer_c.o build/third_protobuf-c-rpc_protobuf-c-rpc-dispatch_c.o build/third_protobuf-c-rpc_protobuf-c-rpc-server_c.o 
 	rm -f libSunsetGlow.a
-	ar rcs libSunsetGlow.a  build/src_compute_SGComputeClient_cpp.o build/src_compute_SGComputeCSMessage_cpp.o build/src_compute_SGComputeServer_cpp.o build/src_compute_SGParallelMachine_cpp.o build/src_compute_SGCompute_CS_pb-c_c.o build/src_compute_SGCompute_SR_pb-c_c.o build/third_protobuf-c_protobuf-c_c.o build/third_protobuf-c-rpc_protobuf-c-rpc-client_c.o build/third_protobuf-c-rpc_protobuf-c-rpc-data-buffer_c.o build/third_protobuf-c-rpc_protobuf-c-rpc-dispatch_c.o build/third_protobuf-c-rpc_protobuf-c-rpc-server_c.o ${SELF_VARIABLES}
+	ar rcs libSunsetGlow.a  build/src_compute_SGComputeClient_cpp.o build/src_compute_SGComputeServer_cpp.o build/src_compute_SGParallelMachine_cpp.o build/src_compute_SGCompute_CS_pb-c_c.o build/src_compute_SGCompute_SR_pb-c_c.o build/third_protobuf-c_protobuf-c_c.o build/third_protobuf-c-rpc_protobuf-c-rpc-client_c.o build/third_protobuf-c-rpc_protobuf-c-rpc-data-buffer_c.o build/third_protobuf-c-rpc_protobuf-c-rpc-dispatch_c.o build/third_protobuf-c-rpc_protobuf-c-rpc-server_c.o ${SELF_VARIABLES}
 build/src_compute_SGComputeClient_cpp.o : src/compute/SGComputeClient.cpp   ${ALL_INCLUESlibSunsetGlow.a}
 	g++ -std=c++11 -O3 -g -fPIC -o build/src_compute_SGComputeClient_cpp.o -c src/compute/SGComputeClient.cpp -Iinclude -I../Renascence/include/ -Ithird
-  
-build/src_compute_SGComputeCSMessage_cpp.o : src/compute/SGComputeCSMessage.cpp   ${ALL_INCLUESlibSunsetGlow.a}
-	g++ -std=c++11 -O3 -g -fPIC -o build/src_compute_SGComputeCSMessage_cpp.o -c src/compute/SGComputeCSMessage.cpp -Iinclude -I../Renascence/include/ -Ithird
   
 build/src_compute_SGComputeServer_cpp.o : src/compute/SGComputeServer.cpp   ${ALL_INCLUESlibSunsetGlow.a}
 	g++ -std=c++11 -O3 -g -fPIC -o build/src_compute_SGComputeServer_cpp.o -c src/compute/SGComputeServer.cpp -Iinclude -I../Renascence/include/ -Ithird

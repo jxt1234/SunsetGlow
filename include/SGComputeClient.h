@@ -12,7 +12,7 @@ public:
     SGComputeClient();
     virtual ~SGComputeClient();
     
-    virtual GPPieces* vPrepare(GPPieces** inputs, int inputNumber) const;
+    GPPieces* createCache(unsigned int* keys, int keyNumber) const;
 private:
     ProtobufC_RPC_Client* mClient;
 };

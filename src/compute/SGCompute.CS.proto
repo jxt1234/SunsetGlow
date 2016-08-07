@@ -1,8 +1,14 @@
 package SGCompute.CS;
 message PieceInfo {
+    enum TYPE {
+        INPUT = 0;
+        CACHE = 1;
+        OUTPUT = 2;
+    }
     required string describe = 1;
-    required string type = 2;
-    repeated uint32 keyDimesion = 3;
+    required TYPE type = 2;
+    required uint64 magic = 3;
+    repeated uint32 keyDimesion = 4;
 }
 
 message ComputeInfo{
@@ -40,7 +46,7 @@ message Result {
 }
 
 service ComputeServer {
-    rpc ByInfo (ComputeInfo) returns (Result);
+    rpc Compute (ComputeInfo) returns (Result);
     rpc Create (PieceInfo) returns (PieceInfo);
     rpc Release (PieceInfo) returns (Result);
 }

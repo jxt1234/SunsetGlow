@@ -10,7 +10,9 @@ class GPCreatorClientTest:public GPTest
 void GPCreatorClientTest::run()
 {
     SGParallelMachine parallelMachine;
-    parallelMachine.vCreatePieces(NULL, std::vector<const IStatusType*>(), NULL, 0, IParallelMachine::INPUT);
+    unsigned int keySize = 5;
+    auto pieces = parallelMachine.vCreatePieces(NULL, std::vector<const IStatusType*>(), &keySize, 1, IParallelMachine::INPUT);
+    delete pieces;
 }
 
 static GPTestRegister<GPCreatorClientTest> a("GPCreatorClientTest");
