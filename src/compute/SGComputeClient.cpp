@@ -38,9 +38,7 @@ public:
     GPPiecesClient(uint64_t magic, ProtobufCService* server):mMagic(magic), mServer(server){}
     virtual ~ GPPiecesClient()
     {
-        SGCompute__CS__PieceInfo pieceInfo = SGCOMPUTE__CS__PIECE_INFO__INIT;
-        char* describe = (char*)"CACHE";
-        pieceInfo.describe = describe;
+        SGCompute__CS__Result pieceInfo = SGCOMPUTE__CS__RESULT__INIT;
         pieceInfo.magic = mMagic;
         protobuf_c_boolean closureData = 0;
         sgcompute__cs__compute_server__release(mServer, &pieceInfo, GPPiecesClient_Handle_Release, &closureData);
@@ -68,7 +66,7 @@ private:
 
 };
 
-static void handle_create_response_cache(const SGCompute__CS__PieceInfo *result,
+static void handle_create_response_cache(const SGCompute__CS__Result *result,
                        void *closure_data)
 {
     if (NULL == result)
@@ -78,16 +76,9 @@ static void handle_create_response_cache(const SGCompute__CS__PieceInfo *result,
     }
     /*TODO check result*/
     ClosureData* _r = (ClosureData*)closure_data;
-    FUNC_PRINT((int)result->n_keydimesion);
-    FUNC_PRINT_ALL(result->describe, s);
-    FUNC_PRINT(result->type);
+    FUNC_PRINT((int)result->magic);
     
     GPPieces* piece_result = new GPPiecesClient(result->magic, _r->pServer);
-    piece_result->nKeyNumber = result->n_keydimesion;
-    for (int i=0; i<piece_result->nKeyNumber; ++i)
-    {
-        piece_result->pKeySize[i] = result->keydimesion[i];
-    }
     _r->pResult = piece_result;
 }
 

@@ -7,7 +7,7 @@ extern "C"{
 
 SGComputeServer* SGComputeServer::gServer = NULL;
 
-static void SG_compute__compute (SGCompute__CS__ComputeServer_Service *service,
+static void SG_compute__execute (SGCompute__CS__ComputeServer_Service *service,
                           const SGCompute__CS__ComputeInfo *input,
                           SGCompute__CS__Result_Closure closure,
                           void *closure_data)
@@ -29,10 +29,10 @@ static bool _checkInput(const SGCompute__CS__PieceInfo* input)
 }
 
 
-void SG_compute__release (SGCompute__CS__ComputeServer_Service *service, const SGCompute__CS__PieceInfo *input, SGCompute__CS__Result_Closure closure, void *closure_data)
+void SG_compute__release (SGCompute__CS__ComputeServer_Service *service, const SGCompute__CS__Result *input, SGCompute__CS__Result_Closure closure, void *closure_data)
 {
     auto server = SGComputeServer::getInstance();
-    bool success = server->releaseCache(input->magic);
+    bool success = server->release(input->magic);
     SGCompute__CS__Result cs_result = SGCOMPUTE__CS__RESULT__INIT;
     if (!success)
     {
@@ -63,17 +63,13 @@ public:
 };
 
 
-static void SG_compute__create (SGCompute__CS__ComputeServer_Service *service, const SGCompute__CS__PieceInfo *input, SGCompute__CS__PieceInfo_Closure closure, void *closure_data)
+static void SG_compute__create (SGCompute__CS__ComputeServer_Service *service, const SGCompute__CS__PieceInfo *input, SGCompute__CS__Result_Closure closure, void *closure_data)
 {
     if (!_checkInput(input))
     {
         SGASSERT(false);//TODO
     }
-    SGCompute__CS__PieceInfo result =  SGCOMPUTE__CS__PIECE_INFO__INIT;
-    result.n_keydimesion = input->n_keydimesion;
-    result.keydimesion = input->keydimesion;
-    result.type = input->type;
-    result.describe = input->describe;
+    SGCompute__CS__Result result =  SGCOMPUTE__CS__RESULT__INIT;
     if (SGCOMPUTE__CS__PIECE_INFO__TYPE__CACHE == input->type)
     {
         unsigned int convertKeys[10];
@@ -81,10 +77,15 @@ static void SG_compute__create (SGCompute__CS__ComputeServer_Service *service, c
         {
             convertKeys[i] = input->keydimesion[i];
         }
-        unsigned int number = SGComputeServer::getInstance()->createCache(convertKeys, (int)(input->n_keydimesion));
+        uint64_t number = SGComputeServer::getInstance()->createCache(convertKeys, (int)(input->n_keydimesion));
         result.magic = number;
     }
     closure(&result, closure_data);
+}
+
+static void SG_compute__create_executor (SGCompute__CS__ComputeServer_Service *service, const SGCompute__CS__ExecuteInfo *input, SGCompute__CS__Result_Closure closure, void *closure_data)
+{
+    
 }
 
 
@@ -103,14 +104,6 @@ SGComputeServer::~SGComputeServer()
 {
     protobuf_c_rpc_server_destroy(mServer, true);
     for (auto iter:mCachePieces)
-    {
-        iter.second->decRef();
-    }
-    for (auto iter:mOutputPieces)
-    {
-        iter.second->decRef();
-    }
-    for (auto iter:mInputPieces)
     {
         iter.second->decRef();
     }
@@ -142,7 +135,7 @@ uint64_t SGComputeServer::createCache(unsigned int* keyDimesions, int keyNumber)
     FUNC_PRINT((int)mCachePieces.size());
     return number;
 }
-bool SGComputeServer::releaseCache(uint64_t number)
+bool SGComputeServer::release(uint64_t number)
 {
     auto iter = mCachePieces.find(number);
     if (iter == mCachePieces.end())
@@ -155,7 +148,7 @@ bool SGComputeServer::releaseCache(uint64_t number)
     FUNC_PRINT((int)mCachePieces.size());
     return true;
 }
-GPPieces* SGComputeServer::findCache(uint64_t number)
+GPPieces* SGComputeServer::find(uint64_t number)
 {
     auto iter = mCachePieces.find(number);
     if (iter == mCachePieces.end())

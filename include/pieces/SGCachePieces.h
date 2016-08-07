@@ -13,6 +13,6 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ******************************************************************/
-#ifndef COMPUTE_SGCOMPUTERESPONSER_H
-#define COMPUTE_SGCOMPUTERESPONSER_H
+#ifndef PIECES_SGCACHEPIECES_H
+#define PIECES_SGCACHEPIECES_H
 #endif

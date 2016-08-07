@@ -50,30 +50,6 @@ void   sgcompute__cs__piece_info__free_unpacked
   assert(message->base.descriptor == &sgcompute__cs__piece_info__descriptor);
   protobuf_c_message_free_unpacked ((ProtobufCMessage*)message, allocator);
 }
-void   sgcompute__cs__compute_info__func_info__init
-                     (SGCompute__CS__ComputeInfo__FuncInfo         *message)
-{
-  static SGCompute__CS__ComputeInfo__FuncInfo init_value = SGCOMPUTE__CS__COMPUTE_INFO__FUNC_INFO__INIT;
-  *message = init_value;
-}
-void   sgcompute__cs__compute_info__formula_info__init
-                     (SGCompute__CS__ComputeInfo__FormulaInfo         *message)
-{
-  static SGCompute__CS__ComputeInfo__FormulaInfo init_value = SGCOMPUTE__CS__COMPUTE_INFO__FORMULA_INFO__INIT;
-  *message = init_value;
-}
-void   sgcompute__cs__compute_info__key_info__key__init
-                     (SGCompute__CS__ComputeInfo__KeyInfo__Key         *message)
-{
-  static SGCompute__CS__ComputeInfo__KeyInfo__Key init_value = SGCOMPUTE__CS__COMPUTE_INFO__KEY_INFO__KEY__INIT;
-  *message = init_value;
-}
-void   sgcompute__cs__compute_info__key_info__init
-                     (SGCompute__CS__ComputeInfo__KeyInfo         *message)
-{
-  static SGCompute__CS__ComputeInfo__KeyInfo init_value = SGCOMPUTE__CS__COMPUTE_INFO__KEY_INFO__INIT;
-  *message = init_value;
-}
 void   sgcompute__cs__compute_info__init
                      (SGCompute__CS__ComputeInfo         *message)
 {
@@ -115,6 +91,67 @@ void   sgcompute__cs__compute_info__free_unpacked
                       ProtobufCAllocator *allocator)
 {
   assert(message->base.descriptor == &sgcompute__cs__compute_info__descriptor);
+  protobuf_c_message_free_unpacked ((ProtobufCMessage*)message, allocator);
+}
+void   sgcompute__cs__execute_info__key__init
+                     (SGCompute__CS__ExecuteInfo__Key         *message)
+{
+  static SGCompute__CS__ExecuteInfo__Key init_value = SGCOMPUTE__CS__EXECUTE_INFO__KEY__INIT;
+  *message = init_value;
+}
+void   sgcompute__cs__execute_info__func_info__init
+                     (SGCompute__CS__ExecuteInfo__FuncInfo         *message)
+{
+  static SGCompute__CS__ExecuteInfo__FuncInfo init_value = SGCOMPUTE__CS__EXECUTE_INFO__FUNC_INFO__INIT;
+  *message = init_value;
+}
+void   sgcompute__cs__execute_info__formula_info__init
+                     (SGCompute__CS__ExecuteInfo__FormulaInfo         *message)
+{
+  static SGCompute__CS__ExecuteInfo__FormulaInfo init_value = SGCOMPUTE__CS__EXECUTE_INFO__FORMULA_INFO__INIT;
+  *message = init_value;
+}
+void   sgcompute__cs__execute_info__init
+                     (SGCompute__CS__ExecuteInfo         *message)
+{
+  static SGCompute__CS__ExecuteInfo init_value = SGCOMPUTE__CS__EXECUTE_INFO__INIT;
+  *message = init_value;
+}
+size_t sgcompute__cs__execute_info__get_packed_size
+                     (const SGCompute__CS__ExecuteInfo *message)
+{
+  assert(message->base.descriptor == &sgcompute__cs__execute_info__descriptor);
+  return protobuf_c_message_get_packed_size ((const ProtobufCMessage*)(message));
+}
+size_t sgcompute__cs__execute_info__pack
+                     (const SGCompute__CS__ExecuteInfo *message,
+                      uint8_t       *out)
+{
+  assert(message->base.descriptor == &sgcompute__cs__execute_info__descriptor);
+  return protobuf_c_message_pack ((const ProtobufCMessage*)message, out);
+}
+size_t sgcompute__cs__execute_info__pack_to_buffer
+                     (const SGCompute__CS__ExecuteInfo *message,
+                      ProtobufCBuffer *buffer)
+{
+  assert(message->base.descriptor == &sgcompute__cs__execute_info__descriptor);
+  return protobuf_c_message_pack_to_buffer ((const ProtobufCMessage*)message, buffer);
+}
+SGCompute__CS__ExecuteInfo *
+       sgcompute__cs__execute_info__unpack
+                     (ProtobufCAllocator  *allocator,
+                      size_t               len,
+                      const uint8_t       *data)
+{
+  return (SGCompute__CS__ExecuteInfo *)
+     protobuf_c_message_unpack (&sgcompute__cs__execute_info__descriptor,
+                                allocator, len, data);
+}
+void   sgcompute__cs__execute_info__free_unpacked
+                     (SGCompute__CS__ExecuteInfo *message,
+                      ProtobufCAllocator *allocator)
+{
+  assert(message->base.descriptor == &sgcompute__cs__execute_info__descriptor);
   protobuf_c_message_free_unpacked ((ProtobufCMessage*)message, allocator);
 }
 void   sgcompute__cs__result__init
@@ -267,122 +304,71 @@ const ProtobufCMessageDescriptor sgcompute__cs__piece_info__descriptor =
   (ProtobufCMessageInit) sgcompute__cs__piece_info__init,
   NULL,NULL,NULL    /* reserved[123] */
 };
-static const ProtobufCFieldDescriptor sgcompute__cs__compute_info__func_info__field_descriptors[3] =
+static const ProtobufCFieldDescriptor sgcompute__cs__compute_info__field_descriptors[3] =
 {
   {
-    "formula",
+    "executor",
     1,
     PROTOBUF_C_LABEL_REQUIRED,
-    PROTOBUF_C_TYPE_STRING,
+    PROTOBUF_C_TYPE_UINT64,
     0,   /* quantifier_offset */
-    offsetof(SGCompute__CS__ComputeInfo__FuncInfo, formula),
+    offsetof(SGCompute__CS__ComputeInfo, executor),
     NULL,
     NULL,
     0,             /* flags */
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
   {
-    "parameter",
+    "inputPieces",
     2,
-    PROTOBUF_C_LABEL_REQUIRED,
-    PROTOBUF_C_TYPE_STRING,
-    0,   /* quantifier_offset */
-    offsetof(SGCompute__CS__ComputeInfo__FuncInfo, parameter),
+    PROTOBUF_C_LABEL_REPEATED,
+    PROTOBUF_C_TYPE_UINT64,
+    offsetof(SGCompute__CS__ComputeInfo, n_inputpieces),
+    offsetof(SGCompute__CS__ComputeInfo, inputpieces),
     NULL,
     NULL,
     0,             /* flags */
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
   {
-    "inputsType",
+    "outputPiece",
     3,
     PROTOBUF_C_LABEL_REQUIRED,
-    PROTOBUF_C_TYPE_STRING,
+    PROTOBUF_C_TYPE_UINT64,
     0,   /* quantifier_offset */
-    offsetof(SGCompute__CS__ComputeInfo__FuncInfo, inputstype),
+    offsetof(SGCompute__CS__ComputeInfo, outputpiece),
     NULL,
     NULL,
     0,             /* flags */
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
 };
-static const unsigned sgcompute__cs__compute_info__func_info__field_indices_by_name[] = {
-  0,   /* field[0] = formula */
-  2,   /* field[2] = inputsType */
-  1,   /* field[1] = parameter */
+static const unsigned sgcompute__cs__compute_info__field_indices_by_name[] = {
+  0,   /* field[0] = executor */
+  1,   /* field[1] = inputPieces */
+  2,   /* field[2] = outputPiece */
 };
-static const ProtobufCIntRange sgcompute__cs__compute_info__func_info__number_ranges[1 + 1] =
+static const ProtobufCIntRange sgcompute__cs__compute_info__number_ranges[1 + 1] =
 {
   { 1, 0 },
   { 0, 3 }
 };
-const ProtobufCMessageDescriptor sgcompute__cs__compute_info__func_info__descriptor =
+const ProtobufCMessageDescriptor sgcompute__cs__compute_info__descriptor =
 {
   PROTOBUF_C__MESSAGE_DESCRIPTOR_MAGIC,
-  "SGCompute.CS.ComputeInfo.FuncInfo",
-  "FuncInfo",
-  "SGCompute__CS__ComputeInfo__FuncInfo",
+  "SGCompute.CS.ComputeInfo",
+  "ComputeInfo",
+  "SGCompute__CS__ComputeInfo",
   "SGCompute.CS",
-  sizeof(SGCompute__CS__ComputeInfo__FuncInfo),
+  sizeof(SGCompute__CS__ComputeInfo),
   3,
-  sgcompute__cs__compute_info__func_info__field_descriptors,
-  sgcompute__cs__compute_info__func_info__field_indices_by_name,
-  1,  sgcompute__cs__compute_info__func_info__number_ranges,
-  (ProtobufCMessageInit) sgcompute__cs__compute_info__func_info__init,
+  sgcompute__cs__compute_info__field_descriptors,
+  sgcompute__cs__compute_info__field_indices_by_name,
+  1,  sgcompute__cs__compute_info__number_ranges,
+  (ProtobufCMessageInit) sgcompute__cs__compute_info__init,
   NULL,NULL,NULL    /* reserved[123] */
 };
-static const ProtobufCFieldDescriptor sgcompute__cs__compute_info__formula_info__field_descriptors[2] =
-{
-  {
-    "sConditionFormula",
-    1,
-    PROTOBUF_C_LABEL_REQUIRED,
-    PROTOBUF_C_TYPE_STRING,
-    0,   /* quantifier_offset */
-    offsetof(SGCompute__CS__ComputeInfo__FormulaInfo, sconditionformula),
-    NULL,
-    NULL,
-    0,             /* flags */
-    0,NULL,NULL    /* reserved1,reserved2, etc */
-  },
-  {
-    "sVariableInfo",
-    2,
-    PROTOBUF_C_LABEL_REQUIRED,
-    PROTOBUF_C_TYPE_STRING,
-    0,   /* quantifier_offset */
-    offsetof(SGCompute__CS__ComputeInfo__FormulaInfo, svariableinfo),
-    NULL,
-    NULL,
-    0,             /* flags */
-    0,NULL,NULL    /* reserved1,reserved2, etc */
-  },
-};
-static const unsigned sgcompute__cs__compute_info__formula_info__field_indices_by_name[] = {
-  0,   /* field[0] = sConditionFormula */
-  1,   /* field[1] = sVariableInfo */
-};
-static const ProtobufCIntRange sgcompute__cs__compute_info__formula_info__number_ranges[1 + 1] =
-{
-  { 1, 0 },
-  { 0, 2 }
-};
-const ProtobufCMessageDescriptor sgcompute__cs__compute_info__formula_info__descriptor =
-{
-  PROTOBUF_C__MESSAGE_DESCRIPTOR_MAGIC,
-  "SGCompute.CS.ComputeInfo.FormulaInfo",
-  "FormulaInfo",
-  "SGCompute__CS__ComputeInfo__FormulaInfo",
-  "SGCompute.CS",
-  sizeof(SGCompute__CS__ComputeInfo__FormulaInfo),
-  2,
-  sgcompute__cs__compute_info__formula_info__field_descriptors,
-  sgcompute__cs__compute_info__formula_info__field_indices_by_name,
-  1,  sgcompute__cs__compute_info__formula_info__number_ranges,
-  (ProtobufCMessageInit) sgcompute__cs__compute_info__formula_info__init,
-  NULL,NULL,NULL    /* reserved[123] */
-};
-static const ProtobufCFieldDescriptor sgcompute__cs__compute_info__key_info__key__field_descriptors[2] =
+static const ProtobufCFieldDescriptor sgcompute__cs__execute_info__key__field_descriptors[2] =
 {
   {
     "index",
@@ -390,7 +376,7 @@ static const ProtobufCFieldDescriptor sgcompute__cs__compute_info__key_info__key
     PROTOBUF_C_LABEL_REQUIRED,
     PROTOBUF_C_TYPE_UINT32,
     0,   /* quantifier_offset */
-    offsetof(SGCompute__CS__ComputeInfo__KeyInfo__Key, index),
+    offsetof(SGCompute__CS__ExecuteInfo__Key, index),
     NULL,
     NULL,
     0,             /* flags */
@@ -402,89 +388,166 @@ static const ProtobufCFieldDescriptor sgcompute__cs__compute_info__key_info__key
     PROTOBUF_C_LABEL_REQUIRED,
     PROTOBUF_C_TYPE_UINT32,
     0,   /* quantifier_offset */
-    offsetof(SGCompute__CS__ComputeInfo__KeyInfo__Key, pos),
+    offsetof(SGCompute__CS__ExecuteInfo__Key, pos),
     NULL,
     NULL,
     0,             /* flags */
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
 };
-static const unsigned sgcompute__cs__compute_info__key_info__key__field_indices_by_name[] = {
+static const unsigned sgcompute__cs__execute_info__key__field_indices_by_name[] = {
   0,   /* field[0] = index */
   1,   /* field[1] = pos */
 };
-static const ProtobufCIntRange sgcompute__cs__compute_info__key_info__key__number_ranges[1 + 1] =
+static const ProtobufCIntRange sgcompute__cs__execute_info__key__number_ranges[1 + 1] =
 {
   { 1, 0 },
   { 0, 2 }
 };
-const ProtobufCMessageDescriptor sgcompute__cs__compute_info__key_info__key__descriptor =
+const ProtobufCMessageDescriptor sgcompute__cs__execute_info__key__descriptor =
 {
   PROTOBUF_C__MESSAGE_DESCRIPTOR_MAGIC,
-  "SGCompute.CS.ComputeInfo.KeyInfo.Key",
+  "SGCompute.CS.ExecuteInfo.Key",
   "Key",
-  "SGCompute__CS__ComputeInfo__KeyInfo__Key",
+  "SGCompute__CS__ExecuteInfo__Key",
   "SGCompute.CS",
-  sizeof(SGCompute__CS__ComputeInfo__KeyInfo__Key),
+  sizeof(SGCompute__CS__ExecuteInfo__Key),
   2,
-  sgcompute__cs__compute_info__key_info__key__field_descriptors,
-  sgcompute__cs__compute_info__key_info__key__field_indices_by_name,
-  1,  sgcompute__cs__compute_info__key_info__key__number_ranges,
-  (ProtobufCMessageInit) sgcompute__cs__compute_info__key_info__key__init,
+  sgcompute__cs__execute_info__key__field_descriptors,
+  sgcompute__cs__execute_info__key__field_indices_by_name,
+  1,  sgcompute__cs__execute_info__key__number_ranges,
+  (ProtobufCMessageInit) sgcompute__cs__execute_info__key__init,
   NULL,NULL,NULL    /* reserved[123] */
 };
-static const ProtobufCFieldDescriptor sgcompute__cs__compute_info__key_info__field_descriptors[2] =
+static const ProtobufCFieldDescriptor sgcompute__cs__execute_info__func_info__field_descriptors[4] =
 {
   {
-    "inputKey",
+    "formula",
     1,
-    PROTOBUF_C_LABEL_REPEATED,
-    PROTOBUF_C_TYPE_MESSAGE,
-    offsetof(SGCompute__CS__ComputeInfo__KeyInfo, n_inputkey),
-    offsetof(SGCompute__CS__ComputeInfo__KeyInfo, inputkey),
-    &sgcompute__cs__compute_info__key_info__key__descriptor,
+    PROTOBUF_C_LABEL_REQUIRED,
+    PROTOBUF_C_TYPE_STRING,
+    0,   /* quantifier_offset */
+    offsetof(SGCompute__CS__ExecuteInfo__FuncInfo, formula),
+    NULL,
     NULL,
     0,             /* flags */
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
   {
-    "outputKey",
+    "parameter",
     2,
+    PROTOBUF_C_LABEL_REQUIRED,
+    PROTOBUF_C_TYPE_STRING,
+    0,   /* quantifier_offset */
+    offsetof(SGCompute__CS__ExecuteInfo__FuncInfo, parameter),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+  {
+    "inputsType",
+    3,
+    PROTOBUF_C_LABEL_REQUIRED,
+    PROTOBUF_C_TYPE_STRING,
+    0,   /* quantifier_offset */
+    offsetof(SGCompute__CS__ExecuteInfo__FuncInfo, inputstype),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+  {
+    "variableKey",
+    4,
     PROTOBUF_C_LABEL_REPEATED,
     PROTOBUF_C_TYPE_MESSAGE,
-    offsetof(SGCompute__CS__ComputeInfo__KeyInfo, n_outputkey),
-    offsetof(SGCompute__CS__ComputeInfo__KeyInfo, outputkey),
-    &sgcompute__cs__compute_info__key_info__key__descriptor,
+    offsetof(SGCompute__CS__ExecuteInfo__FuncInfo, n_variablekey),
+    offsetof(SGCompute__CS__ExecuteInfo__FuncInfo, variablekey),
+    &sgcompute__cs__execute_info__key__descriptor,
     NULL,
     0,             /* flags */
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
 };
-static const unsigned sgcompute__cs__compute_info__key_info__field_indices_by_name[] = {
-  0,   /* field[0] = inputKey */
-  1,   /* field[1] = outputKey */
+static const unsigned sgcompute__cs__execute_info__func_info__field_indices_by_name[] = {
+  0,   /* field[0] = formula */
+  2,   /* field[2] = inputsType */
+  1,   /* field[1] = parameter */
+  3,   /* field[3] = variableKey */
 };
-static const ProtobufCIntRange sgcompute__cs__compute_info__key_info__number_ranges[1 + 1] =
+static const ProtobufCIntRange sgcompute__cs__execute_info__func_info__number_ranges[1 + 1] =
+{
+  { 1, 0 },
+  { 0, 4 }
+};
+const ProtobufCMessageDescriptor sgcompute__cs__execute_info__func_info__descriptor =
+{
+  PROTOBUF_C__MESSAGE_DESCRIPTOR_MAGIC,
+  "SGCompute.CS.ExecuteInfo.FuncInfo",
+  "FuncInfo",
+  "SGCompute__CS__ExecuteInfo__FuncInfo",
+  "SGCompute.CS",
+  sizeof(SGCompute__CS__ExecuteInfo__FuncInfo),
+  4,
+  sgcompute__cs__execute_info__func_info__field_descriptors,
+  sgcompute__cs__execute_info__func_info__field_indices_by_name,
+  1,  sgcompute__cs__execute_info__func_info__number_ranges,
+  (ProtobufCMessageInit) sgcompute__cs__execute_info__func_info__init,
+  NULL,NULL,NULL    /* reserved[123] */
+};
+static const ProtobufCFieldDescriptor sgcompute__cs__execute_info__formula_info__field_descriptors[2] =
+{
+  {
+    "sConditionFormula",
+    1,
+    PROTOBUF_C_LABEL_REQUIRED,
+    PROTOBUF_C_TYPE_STRING,
+    0,   /* quantifier_offset */
+    offsetof(SGCompute__CS__ExecuteInfo__FormulaInfo, sconditionformula),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+  {
+    "sVariableInfo",
+    2,
+    PROTOBUF_C_LABEL_REQUIRED,
+    PROTOBUF_C_TYPE_STRING,
+    0,   /* quantifier_offset */
+    offsetof(SGCompute__CS__ExecuteInfo__FormulaInfo, svariableinfo),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+};
+static const unsigned sgcompute__cs__execute_info__formula_info__field_indices_by_name[] = {
+  0,   /* field[0] = sConditionFormula */
+  1,   /* field[1] = sVariableInfo */
+};
+static const ProtobufCIntRange sgcompute__cs__execute_info__formula_info__number_ranges[1 + 1] =
 {
   { 1, 0 },
   { 0, 2 }
 };
-const ProtobufCMessageDescriptor sgcompute__cs__compute_info__key_info__descriptor =
+const ProtobufCMessageDescriptor sgcompute__cs__execute_info__formula_info__descriptor =
 {
   PROTOBUF_C__MESSAGE_DESCRIPTOR_MAGIC,
-  "SGCompute.CS.ComputeInfo.KeyInfo",
-  "KeyInfo",
-  "SGCompute__CS__ComputeInfo__KeyInfo",
+  "SGCompute.CS.ExecuteInfo.FormulaInfo",
+  "FormulaInfo",
+  "SGCompute__CS__ExecuteInfo__FormulaInfo",
   "SGCompute.CS",
-  sizeof(SGCompute__CS__ComputeInfo__KeyInfo),
+  sizeof(SGCompute__CS__ExecuteInfo__FormulaInfo),
   2,
-  sgcompute__cs__compute_info__key_info__field_descriptors,
-  sgcompute__cs__compute_info__key_info__field_indices_by_name,
-  1,  sgcompute__cs__compute_info__key_info__number_ranges,
-  (ProtobufCMessageInit) sgcompute__cs__compute_info__key_info__init,
+  sgcompute__cs__execute_info__formula_info__field_descriptors,
+  sgcompute__cs__execute_info__formula_info__field_indices_by_name,
+  1,  sgcompute__cs__execute_info__formula_info__number_ranges,
+  (ProtobufCMessageInit) sgcompute__cs__execute_info__formula_info__init,
   NULL,NULL,NULL    /* reserved[123] */
 };
-static const ProtobufCFieldDescriptor sgcompute__cs__compute_info__field_descriptors[5] =
+static const ProtobufCFieldDescriptor sgcompute__cs__execute_info__field_descriptors[3] =
 {
   {
     "sFuncInfo",
@@ -492,8 +555,8 @@ static const ProtobufCFieldDescriptor sgcompute__cs__compute_info__field_descrip
     PROTOBUF_C_LABEL_REQUIRED,
     PROTOBUF_C_TYPE_MESSAGE,
     0,   /* quantifier_offset */
-    offsetof(SGCompute__CS__ComputeInfo, sfuncinfo),
-    &sgcompute__cs__compute_info__func_info__descriptor,
+    offsetof(SGCompute__CS__ExecuteInfo, sfuncinfo),
+    &sgcompute__cs__execute_info__func_info__descriptor,
     NULL,
     0,             /* flags */
     0,NULL,NULL    /* reserved1,reserved2, etc */
@@ -504,74 +567,48 @@ static const ProtobufCFieldDescriptor sgcompute__cs__compute_info__field_descrip
     PROTOBUF_C_LABEL_REQUIRED,
     PROTOBUF_C_TYPE_MESSAGE,
     0,   /* quantifier_offset */
-    offsetof(SGCompute__CS__ComputeInfo, sconditioninfo),
-    &sgcompute__cs__compute_info__formula_info__descriptor,
+    offsetof(SGCompute__CS__ExecuteInfo, sconditioninfo),
+    &sgcompute__cs__execute_info__formula_info__descriptor,
     NULL,
     0,             /* flags */
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
   {
-    "sKeyInfo",
+    "outputKey",
     3,
-    PROTOBUF_C_LABEL_REQUIRED,
+    PROTOBUF_C_LABEL_REPEATED,
     PROTOBUF_C_TYPE_MESSAGE,
-    0,   /* quantifier_offset */
-    offsetof(SGCompute__CS__ComputeInfo, skeyinfo),
-    &sgcompute__cs__compute_info__key_info__descriptor,
-    NULL,
-    0,             /* flags */
-    0,NULL,NULL    /* reserved1,reserved2, etc */
-  },
-  {
-    "inputPieceDescribe",
-    4,
-    PROTOBUF_C_LABEL_REQUIRED,
-    PROTOBUF_C_TYPE_MESSAGE,
-    0,   /* quantifier_offset */
-    offsetof(SGCompute__CS__ComputeInfo, inputpiecedescribe),
-    &sgcompute__cs__piece_info__descriptor,
-    NULL,
-    0,             /* flags */
-    0,NULL,NULL    /* reserved1,reserved2, etc */
-  },
-  {
-    "outputPieceDescribe",
-    5,
-    PROTOBUF_C_LABEL_REQUIRED,
-    PROTOBUF_C_TYPE_MESSAGE,
-    0,   /* quantifier_offset */
-    offsetof(SGCompute__CS__ComputeInfo, outputpiecedescribe),
-    &sgcompute__cs__piece_info__descriptor,
+    offsetof(SGCompute__CS__ExecuteInfo, n_outputkey),
+    offsetof(SGCompute__CS__ExecuteInfo, outputkey),
+    &sgcompute__cs__execute_info__key__descriptor,
     NULL,
     0,             /* flags */
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
 };
-static const unsigned sgcompute__cs__compute_info__field_indices_by_name[] = {
-  3,   /* field[3] = inputPieceDescribe */
-  4,   /* field[4] = outputPieceDescribe */
+static const unsigned sgcompute__cs__execute_info__field_indices_by_name[] = {
+  2,   /* field[2] = outputKey */
   1,   /* field[1] = sConditionInfo */
   0,   /* field[0] = sFuncInfo */
-  2,   /* field[2] = sKeyInfo */
 };
-static const ProtobufCIntRange sgcompute__cs__compute_info__number_ranges[1 + 1] =
+static const ProtobufCIntRange sgcompute__cs__execute_info__number_ranges[1 + 1] =
 {
   { 1, 0 },
-  { 0, 5 }
+  { 0, 3 }
 };
-const ProtobufCMessageDescriptor sgcompute__cs__compute_info__descriptor =
+const ProtobufCMessageDescriptor sgcompute__cs__execute_info__descriptor =
 {
   PROTOBUF_C__MESSAGE_DESCRIPTOR_MAGIC,
-  "SGCompute.CS.ComputeInfo",
-  "ComputeInfo",
-  "SGCompute__CS__ComputeInfo",
+  "SGCompute.CS.ExecuteInfo",
+  "ExecuteInfo",
+  "SGCompute__CS__ExecuteInfo",
   "SGCompute.CS",
-  sizeof(SGCompute__CS__ComputeInfo),
-  5,
-  sgcompute__cs__compute_info__field_descriptors,
-  sgcompute__cs__compute_info__field_indices_by_name,
-  1,  sgcompute__cs__compute_info__number_ranges,
-  (ProtobufCMessageInit) sgcompute__cs__compute_info__init,
+  sizeof(SGCompute__CS__ExecuteInfo),
+  3,
+  sgcompute__cs__execute_info__field_descriptors,
+  sgcompute__cs__execute_info__field_indices_by_name,
+  1,  sgcompute__cs__execute_info__number_ranges,
+  (ProtobufCMessageInit) sgcompute__cs__execute_info__init,
   NULL,NULL,NULL    /* reserved[123] */
 };
 static const ProtobufCEnumValue sgcompute__cs__result__status_code__enum_values_by_number[2] =
@@ -602,7 +639,7 @@ const ProtobufCEnumDescriptor sgcompute__cs__result__status_code__descriptor =
   sgcompute__cs__result__status_code__value_ranges,
   NULL,NULL,NULL,NULL   /* reserved[1234] */
 };
-static const ProtobufCFieldDescriptor sgcompute__cs__result__field_descriptors[1] =
+static const ProtobufCFieldDescriptor sgcompute__cs__result__field_descriptors[2] =
 {
   {
     "code",
@@ -616,14 +653,27 @@ static const ProtobufCFieldDescriptor sgcompute__cs__result__field_descriptors[1
     0,             /* flags */
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
+  {
+    "magic",
+    2,
+    PROTOBUF_C_LABEL_REQUIRED,
+    PROTOBUF_C_TYPE_UINT64,
+    0,   /* quantifier_offset */
+    offsetof(SGCompute__CS__Result, magic),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
 };
 static const unsigned sgcompute__cs__result__field_indices_by_name[] = {
   0,   /* field[0] = code */
+  1,   /* field[1] = magic */
 };
 static const ProtobufCIntRange sgcompute__cs__result__number_ranges[1 + 1] =
 {
   { 1, 0 },
-  { 0, 1 }
+  { 0, 2 }
 };
 const ProtobufCMessageDescriptor sgcompute__cs__result__descriptor =
 {
@@ -633,23 +683,25 @@ const ProtobufCMessageDescriptor sgcompute__cs__result__descriptor =
   "SGCompute__CS__Result",
   "SGCompute.CS",
   sizeof(SGCompute__CS__Result),
-  1,
+  2,
   sgcompute__cs__result__field_descriptors,
   sgcompute__cs__result__field_indices_by_name,
   1,  sgcompute__cs__result__number_ranges,
   (ProtobufCMessageInit) sgcompute__cs__result__init,
   NULL,NULL,NULL    /* reserved[123] */
 };
-static const ProtobufCMethodDescriptor sgcompute__cs__compute_server__method_descriptors[3] =
+static const ProtobufCMethodDescriptor sgcompute__cs__compute_server__method_descriptors[4] =
 {
-  { "Compute", &sgcompute__cs__compute_info__descriptor, &sgcompute__cs__result__descriptor },
-  { "Create", &sgcompute__cs__piece_info__descriptor, &sgcompute__cs__piece_info__descriptor },
-  { "Release", &sgcompute__cs__piece_info__descriptor, &sgcompute__cs__result__descriptor },
+  { "CreateExecutor", &sgcompute__cs__execute_info__descriptor, &sgcompute__cs__result__descriptor },
+  { "Execute", &sgcompute__cs__compute_info__descriptor, &sgcompute__cs__result__descriptor },
+  { "Create", &sgcompute__cs__piece_info__descriptor, &sgcompute__cs__result__descriptor },
+  { "Release", &sgcompute__cs__result__descriptor, &sgcompute__cs__result__descriptor },
 };
 const unsigned sgcompute__cs__compute_server__method_indices_by_name[] = {
-  0,        /* Compute */
-  1,        /* Create */
-  2         /* Release */
+  2,        /* Create */
+  0,        /* CreateExecutor */
+  1,        /* Execute */
+  3         /* Release */
 };
 const ProtobufCServiceDescriptor sgcompute__cs__compute_server__descriptor =
 {
@@ -658,33 +710,41 @@ const ProtobufCServiceDescriptor sgcompute__cs__compute_server__descriptor =
   "ComputeServer",
   "SGCompute__CS__ComputeServer",
   "SGCompute.CS",
-  3,
+  4,
   sgcompute__cs__compute_server__method_descriptors,
   sgcompute__cs__compute_server__method_indices_by_name
 };
-void sgcompute__cs__compute_server__compute(ProtobufCService *service,
+void sgcompute__cs__compute_server__create_executor(ProtobufCService *service,
+                                                    const SGCompute__CS__ExecuteInfo *input,
+                                                    SGCompute__CS__Result_Closure closure,
+                                                    void *closure_data)
+{
+  assert(service->descriptor == &sgcompute__cs__compute_server__descriptor);
+  service->invoke(service, 0, (const ProtobufCMessage *) input, (ProtobufCClosure) closure, closure_data);
+}
+void sgcompute__cs__compute_server__execute(ProtobufCService *service,
                                             const SGCompute__CS__ComputeInfo *input,
                                             SGCompute__CS__Result_Closure closure,
                                             void *closure_data)
 {
   assert(service->descriptor == &sgcompute__cs__compute_server__descriptor);
-  service->invoke(service, 0, (const ProtobufCMessage *) input, (ProtobufCClosure) closure, closure_data);
+  service->invoke(service, 1, (const ProtobufCMessage *) input, (ProtobufCClosure) closure, closure_data);
 }
 void sgcompute__cs__compute_server__create(ProtobufCService *service,
                                            const SGCompute__CS__PieceInfo *input,
-                                           SGCompute__CS__PieceInfo_Closure closure,
+                                           SGCompute__CS__Result_Closure closure,
                                            void *closure_data)
 {
   assert(service->descriptor == &sgcompute__cs__compute_server__descriptor);
-  service->invoke(service, 1, (const ProtobufCMessage *) input, (ProtobufCClosure) closure, closure_data);
+  service->invoke(service, 2, (const ProtobufCMessage *) input, (ProtobufCClosure) closure, closure_data);
 }
 void sgcompute__cs__compute_server__release(ProtobufCService *service,
-                                            const SGCompute__CS__PieceInfo *input,
+                                            const SGCompute__CS__Result *input,
                                             SGCompute__CS__Result_Closure closure,
                                             void *closure_data)
 {
   assert(service->descriptor == &sgcompute__cs__compute_server__descriptor);
-  service->invoke(service, 2, (const ProtobufCMessage *) input, (ProtobufCClosure) closure, closure_data);
+  service->invoke(service, 3, (const ProtobufCMessage *) input, (ProtobufCClosure) closure, closure_data);
 }
 void sgcompute__cs__compute_server__init (SGCompute__CS__ComputeServer_Service *service,
                                           SGCompute__CS__ComputeServer_ServiceDestroy destroy)

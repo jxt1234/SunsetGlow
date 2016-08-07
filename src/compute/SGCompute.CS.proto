@@ -12,10 +12,21 @@ message PieceInfo {
 }
 
 message ComputeInfo{
+    required uint64 executor = 1;
+    repeated uint64 inputPieces = 2;
+    required uint64 outputPiece = 3;
+}
+
+message ExecuteInfo {
+    message Key {
+        required uint32 index = 1;
+        required uint32 pos = 2;
+    }
     message FuncInfo {
         required string formula = 1;
         required string parameter = 2;
         required string inputsType = 3;
+        repeated Key variableKey = 4;
     }
     required FuncInfo sFuncInfo = 1;
     message FormulaInfo {
@@ -23,17 +34,7 @@ message ComputeInfo{
         required string sVariableInfo = 2;
     }
     required FormulaInfo sConditionInfo = 2;
-    message KeyInfo {
-        message Key {
-            required uint32 index = 1;
-            required uint32 pos = 2;
-        }
-        repeated Key inputKey = 1;
-        repeated Key outputKey = 2;
-    }
-    required KeyInfo sKeyInfo = 3;
-    required PieceInfo inputPieceDescribe = 4;
-    required PieceInfo outputPieceDescribe = 5;
+    repeated Key outputKey = 3;
 }
 
 
@@ -43,10 +44,12 @@ message Result {
         FAIL = 1;
     }
     required StatusCode code = 1;
+    required uint64 magic = 2;
 }
 
 service ComputeServer {
-    rpc Compute (ComputeInfo) returns (Result);
-    rpc Create (PieceInfo) returns (PieceInfo);
-    rpc Release (PieceInfo) returns (Result);
+    rpc CreateExecutor (ExecuteInfo) returns (Result);
+    rpc Execute (ComputeInfo) returns (Result);
+    rpc Create (PieceInfo) returns (Result);
+    rpc Release (Result) returns (Result);
 }
