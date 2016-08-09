@@ -40,9 +40,15 @@ message Result {
     required uint64 magic = 2;
 }
 
+message CopyInfo {
+    required uint64 read_magic = 1;
+    required uint64 write_magic = 2;
+}
+
 service ComputeServer {
     rpc CreateExecutor (ExecuteInfo) returns (Result);
     rpc Execute (ComputeInfo) returns (Result);
     rpc Create (PieceInfo) returns (Result);
     rpc Release (Result) returns (Result);
+    rpc Copy (CopyInfo) returns (Result);
 }

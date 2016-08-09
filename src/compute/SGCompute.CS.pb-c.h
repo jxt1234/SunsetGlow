@@ -22,6 +22,7 @@ typedef struct _SGCompute__CS__ExecuteInfo__Key SGCompute__CS__ExecuteInfo__Key;
 typedef struct _SGCompute__CS__ExecuteInfo__FuncInfo SGCompute__CS__ExecuteInfo__FuncInfo;
 typedef struct _SGCompute__CS__ExecuteInfo__FormulaInfo SGCompute__CS__ExecuteInfo__FormulaInfo;
 typedef struct _SGCompute__CS__Result SGCompute__CS__Result;
+typedef struct _SGCompute__CS__CopyInfo SGCompute__CS__CopyInfo;
 
 
 /* --- enums --- */
@@ -124,6 +125,17 @@ struct  _SGCompute__CS__Result
     , 0, 0 }
 
 
+struct  _SGCompute__CS__CopyInfo
+{
+  ProtobufCMessage base;
+  uint64_t read_magic;
+  uint64_t write_magic;
+};
+#define SGCOMPUTE__CS__COPY_INFO__INIT \
+ { PROTOBUF_C_MESSAGE_INIT (&sgcompute__cs__copy_info__descriptor) \
+    , 0, 0 }
+
+
 /* SGCompute__CS__PieceInfo methods */
 void   sgcompute__cs__piece_info__init
                      (SGCompute__CS__PieceInfo         *message);
@@ -209,6 +221,25 @@ SGCompute__CS__Result *
 void   sgcompute__cs__result__free_unpacked
                      (SGCompute__CS__Result *message,
                       ProtobufCAllocator *allocator);
+/* SGCompute__CS__CopyInfo methods */
+void   sgcompute__cs__copy_info__init
+                     (SGCompute__CS__CopyInfo         *message);
+size_t sgcompute__cs__copy_info__get_packed_size
+                     (const SGCompute__CS__CopyInfo   *message);
+size_t sgcompute__cs__copy_info__pack
+                     (const SGCompute__CS__CopyInfo   *message,
+                      uint8_t             *out);
+size_t sgcompute__cs__copy_info__pack_to_buffer
+                     (const SGCompute__CS__CopyInfo   *message,
+                      ProtobufCBuffer     *buffer);
+SGCompute__CS__CopyInfo *
+       sgcompute__cs__copy_info__unpack
+                     (ProtobufCAllocator  *allocator,
+                      size_t               len,
+                      const uint8_t       *data);
+void   sgcompute__cs__copy_info__free_unpacked
+                     (SGCompute__CS__CopyInfo *message,
+                      ProtobufCAllocator *allocator);
 /* --- per-message closures --- */
 
 typedef void (*SGCompute__CS__PieceInfo_Closure)
@@ -231,6 +262,9 @@ typedef void (*SGCompute__CS__ExecuteInfo_Closure)
                   void *closure_data);
 typedef void (*SGCompute__CS__Result_Closure)
                  (const SGCompute__CS__Result *message,
+                  void *closure_data);
+typedef void (*SGCompute__CS__CopyInfo_Closure)
+                 (const SGCompute__CS__CopyInfo *message,
                   void *closure_data);
 
 /* --- services --- */
@@ -255,6 +289,10 @@ struct _SGCompute__CS__ComputeServer_Service
                   const SGCompute__CS__Result *input,
                   SGCompute__CS__Result_Closure closure,
                   void *closure_data);
+  void (*copy)(SGCompute__CS__ComputeServer_Service *service,
+               const SGCompute__CS__CopyInfo *input,
+               SGCompute__CS__Result_Closure closure,
+               void *closure_data);
 };
 typedef void (*SGCompute__CS__ComputeServer_ServiceDestroy)(SGCompute__CS__ComputeServer_Service *);
 void sgcompute__cs__compute_server__init (SGCompute__CS__ComputeServer_Service *service,
@@ -266,7 +304,8 @@ void sgcompute__cs__compute_server__init (SGCompute__CS__ComputeServer_Service *
       function_prefix__ ## create_executor,\
       function_prefix__ ## execute,\
       function_prefix__ ## create,\
-      function_prefix__ ## release  }
+      function_prefix__ ## release,\
+      function_prefix__ ## copy  }
 void sgcompute__cs__compute_server__create_executor(ProtobufCService *service,
                                                     const SGCompute__CS__ExecuteInfo *input,
                                                     SGCompute__CS__Result_Closure closure,
@@ -283,6 +322,10 @@ void sgcompute__cs__compute_server__release(ProtobufCService *service,
                                             const SGCompute__CS__Result *input,
                                             SGCompute__CS__Result_Closure closure,
                                             void *closure_data);
+void sgcompute__cs__compute_server__copy(ProtobufCService *service,
+                                         const SGCompute__CS__CopyInfo *input,
+                                         SGCompute__CS__Result_Closure closure,
+                                         void *closure_data);
 
 /* --- descriptors --- */
 
@@ -293,6 +336,7 @@ extern const ProtobufCMessageDescriptor sgcompute__cs__execute_info__key__descri
 extern const ProtobufCMessageDescriptor sgcompute__cs__execute_info__func_info__descriptor;
 extern const ProtobufCMessageDescriptor sgcompute__cs__execute_info__formula_info__descriptor;
 extern const ProtobufCMessageDescriptor sgcompute__cs__result__descriptor;
+extern const ProtobufCMessageDescriptor sgcompute__cs__copy_info__descriptor;
 extern const ProtobufCServiceDescriptor sgcompute__cs__compute_server__descriptor;
 
 PROTOBUF_C__END_DECLS

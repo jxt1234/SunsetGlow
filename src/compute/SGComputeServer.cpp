@@ -12,6 +12,20 @@ extern "C"{
 
 SGComputeServer* SGComputeServer::gServer = NULL;
 
+static void SG_compute__copy (SGCompute__CS__ComputeServer_Service *service, const SGCompute__CS__CopyInfo *input, SGCompute__CS__Result_Closure closure, void *closure_data)
+{
+    auto server = SGComputeServer::getInstance();
+    auto read = server->find(input->read_magic);
+    auto write = server->find(input->write_magic);
+    GPSingleParallelMachine machine;
+    machine.vCopyPieces(read, write);
+    SGCompute__CS__Result report = SGCOMPUTE__CS__RESULT__INIT;
+    report.code = 0;
+    report.magic = 0;
+    closure(&report, closure_data);
+}
+
+
 static void SG_compute__execute (SGCompute__CS__ComputeServer_Service *service, const SGCompute__CS__ComputeInfo *input, SGCompute__CS__Result_Closure closure, void *closure_data)
 {
     auto server = SGComputeServer::getInstance();
@@ -250,15 +264,22 @@ uint64_t SGComputeServer::createOutput(const char* path)
 bool SGComputeServer::release(uint64_t number)
 {
     auto iter = mCachePieces.find(number);
-    if (iter == mCachePieces.end())
+    if (iter != mCachePieces.end())
     {
-        FUNC_PRINT(1);
-        return false;
+        iter->second->decRef();
+        mCachePieces.erase(iter);
+        FUNC_PRINT((int)mCachePieces.size());
+        return true;
     }
-    iter->second->decRef();
-    mCachePieces.erase(iter);
-    FUNC_PRINT((int)mCachePieces.size());
-    return true;
+    auto iter2 = mExecutors.find(number);
+    if (iter2 != mExecutors.end())
+    {
+        iter2->second->decRef();
+        mExecutors.erase(iter2);
+        FUNC_PRINT((int)mExecutors.size());
+        return true;
+    }
+    return false;
 }
 GPPieces* SGComputeServer::find(uint64_t number)
 {

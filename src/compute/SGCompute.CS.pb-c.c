@@ -197,6 +197,49 @@ void   sgcompute__cs__result__free_unpacked
   assert(message->base.descriptor == &sgcompute__cs__result__descriptor);
   protobuf_c_message_free_unpacked ((ProtobufCMessage*)message, allocator);
 }
+void   sgcompute__cs__copy_info__init
+                     (SGCompute__CS__CopyInfo         *message)
+{
+  static SGCompute__CS__CopyInfo init_value = SGCOMPUTE__CS__COPY_INFO__INIT;
+  *message = init_value;
+}
+size_t sgcompute__cs__copy_info__get_packed_size
+                     (const SGCompute__CS__CopyInfo *message)
+{
+  assert(message->base.descriptor == &sgcompute__cs__copy_info__descriptor);
+  return protobuf_c_message_get_packed_size ((const ProtobufCMessage*)(message));
+}
+size_t sgcompute__cs__copy_info__pack
+                     (const SGCompute__CS__CopyInfo *message,
+                      uint8_t       *out)
+{
+  assert(message->base.descriptor == &sgcompute__cs__copy_info__descriptor);
+  return protobuf_c_message_pack ((const ProtobufCMessage*)message, out);
+}
+size_t sgcompute__cs__copy_info__pack_to_buffer
+                     (const SGCompute__CS__CopyInfo *message,
+                      ProtobufCBuffer *buffer)
+{
+  assert(message->base.descriptor == &sgcompute__cs__copy_info__descriptor);
+  return protobuf_c_message_pack_to_buffer ((const ProtobufCMessage*)message, buffer);
+}
+SGCompute__CS__CopyInfo *
+       sgcompute__cs__copy_info__unpack
+                     (ProtobufCAllocator  *allocator,
+                      size_t               len,
+                      const uint8_t       *data)
+{
+  return (SGCompute__CS__CopyInfo *)
+     protobuf_c_message_unpack (&sgcompute__cs__copy_info__descriptor,
+                                allocator, len, data);
+}
+void   sgcompute__cs__copy_info__free_unpacked
+                     (SGCompute__CS__CopyInfo *message,
+                      ProtobufCAllocator *allocator)
+{
+  assert(message->base.descriptor == &sgcompute__cs__copy_info__descriptor);
+  protobuf_c_message_free_unpacked ((ProtobufCMessage*)message, allocator);
+}
 static const ProtobufCFieldDescriptor sgcompute__cs__piece_info__field_descriptors[5] =
 {
   {
@@ -658,14 +701,67 @@ const ProtobufCMessageDescriptor sgcompute__cs__result__descriptor =
   (ProtobufCMessageInit) sgcompute__cs__result__init,
   NULL,NULL,NULL    /* reserved[123] */
 };
-static const ProtobufCMethodDescriptor sgcompute__cs__compute_server__method_descriptors[4] =
+static const ProtobufCFieldDescriptor sgcompute__cs__copy_info__field_descriptors[2] =
+{
+  {
+    "read_magic",
+    1,
+    PROTOBUF_C_LABEL_REQUIRED,
+    PROTOBUF_C_TYPE_UINT64,
+    0,   /* quantifier_offset */
+    offsetof(SGCompute__CS__CopyInfo, read_magic),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+  {
+    "write_magic",
+    2,
+    PROTOBUF_C_LABEL_REQUIRED,
+    PROTOBUF_C_TYPE_UINT64,
+    0,   /* quantifier_offset */
+    offsetof(SGCompute__CS__CopyInfo, write_magic),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+};
+static const unsigned sgcompute__cs__copy_info__field_indices_by_name[] = {
+  0,   /* field[0] = read_magic */
+  1,   /* field[1] = write_magic */
+};
+static const ProtobufCIntRange sgcompute__cs__copy_info__number_ranges[1 + 1] =
+{
+  { 1, 0 },
+  { 0, 2 }
+};
+const ProtobufCMessageDescriptor sgcompute__cs__copy_info__descriptor =
+{
+  PROTOBUF_C__MESSAGE_DESCRIPTOR_MAGIC,
+  "SGCompute.CS.CopyInfo",
+  "CopyInfo",
+  "SGCompute__CS__CopyInfo",
+  "SGCompute.CS",
+  sizeof(SGCompute__CS__CopyInfo),
+  2,
+  sgcompute__cs__copy_info__field_descriptors,
+  sgcompute__cs__copy_info__field_indices_by_name,
+  1,  sgcompute__cs__copy_info__number_ranges,
+  (ProtobufCMessageInit) sgcompute__cs__copy_info__init,
+  NULL,NULL,NULL    /* reserved[123] */
+};
+static const ProtobufCMethodDescriptor sgcompute__cs__compute_server__method_descriptors[5] =
 {
   { "CreateExecutor", &sgcompute__cs__execute_info__descriptor, &sgcompute__cs__result__descriptor },
   { "Execute", &sgcompute__cs__compute_info__descriptor, &sgcompute__cs__result__descriptor },
   { "Create", &sgcompute__cs__piece_info__descriptor, &sgcompute__cs__result__descriptor },
   { "Release", &sgcompute__cs__result__descriptor, &sgcompute__cs__result__descriptor },
+  { "Copy", &sgcompute__cs__copy_info__descriptor, &sgcompute__cs__result__descriptor },
 };
 const unsigned sgcompute__cs__compute_server__method_indices_by_name[] = {
+  4,        /* Copy */
   2,        /* Create */
   0,        /* CreateExecutor */
   1,        /* Execute */
@@ -678,7 +774,7 @@ const ProtobufCServiceDescriptor sgcompute__cs__compute_server__descriptor =
   "ComputeServer",
   "SGCompute__CS__ComputeServer",
   "SGCompute.CS",
-  4,
+  5,
   sgcompute__cs__compute_server__method_descriptors,
   sgcompute__cs__compute_server__method_indices_by_name
 };
@@ -713,6 +809,14 @@ void sgcompute__cs__compute_server__release(ProtobufCService *service,
 {
   assert(service->descriptor == &sgcompute__cs__compute_server__descriptor);
   service->invoke(service, 3, (const ProtobufCMessage *) input, (ProtobufCClosure) closure, closure_data);
+}
+void sgcompute__cs__compute_server__copy(ProtobufCService *service,
+                                         const SGCompute__CS__CopyInfo *input,
+                                         SGCompute__CS__Result_Closure closure,
+                                         void *closure_data)
+{
+  assert(service->descriptor == &sgcompute__cs__compute_server__descriptor);
+  service->invoke(service, 4, (const ProtobufCMessage *) input, (ProtobufCClosure) closure, closure_data);
 }
 void sgcompute__cs__compute_server__init (SGCompute__CS__ComputeServer_Service *service,
                                           SGCompute__CS__ComputeServer_ServiceDestroy destroy)
