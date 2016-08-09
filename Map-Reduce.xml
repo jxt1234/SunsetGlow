@@ -1,0 +1,9 @@
+<libpics>
+    <TrPackageCompse>
+        REDUCE((x0), C(x0, y0), [a0]->[1])
+    </TrPackageCompse>
+
+    <TrPackageSaturation>
+        MAP((MAP((x0), F(x0), [a0]->[a0])), S(x0), [a0]->[a0])
+    </TrPackageSaturation>
+</libpics>

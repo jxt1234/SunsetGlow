@@ -21,4 +21,8 @@ private:
     ProtobufC_RPC_Client* mClient;
 };
 
+extern "C"{
+    IParallelMachine* libSunsetGlow_PARALLELMACHINE_CREATE_FUNC(const std::string& name);
+};
+
 #endif

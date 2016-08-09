@@ -235,7 +235,7 @@ IParallelMachine::Executor* SGComputeClient::vPrepare(const GPParallelType* data
     
     executoInfo.sconditioninfo->sconditionformula = (char*)data->sConditionInfo.sConditionFormula.c_str();
     executoInfo.sconditioninfo->svariableinfo = (char*)data->sVariableInfo.c_str();
-    
+
     sgcompute__cs__compute_server__create_executor((ProtobufCService*)mClient, &executoInfo, handle_create_response_execute, &closure);
     while (NULL == closure.pResult)
     {
@@ -307,3 +307,11 @@ bool SGComputeClient::vCopyPieces(GPPieces* readPieces, GPPieces* writePieces) c
     return true;
 }
 
+IParallelMachine* libSunsetGlow_PARALLELMACHINE_CREATE_FUNC(const std::string& name)
+{
+    if (name == "server")
+    {
+        return new SGComputeClient;
+    }
+    return NULL;
+}
