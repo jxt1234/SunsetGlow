@@ -28,6 +28,12 @@
 #define SGPRINT_FL(format,...) printf(format", FUNC: %s, LINE: %d \n", ##__VA_ARGS__,__func__, __LINE__)
 #endif
 /*Add with line and function*/
+#ifdef FUNC_PRINT
+#undef FUNC_PRINT
+#endif
+#ifdef FUNC_PRINT_ALL
+#undef FUNC_PRINT_ALL
+#endif
 #define FUNC_PRINT(x) SGPRINT(#x"=%d in %s, %d \n",x,  __func__, __LINE__);
 #define FUNC_PRINT_ALL(x, type) SGPRINT(#x"= "#type" %"#type" in %s, %d \n",x,  __func__, __LINE__);
 #define CHECK_POINTER(x) {if(NULL==x){FUNC_PRINT_ALL(x,p);break;}}

@@ -11,6 +11,12 @@ SGComputeClient::SGComputeClient()
     auto service = protobuf_c_rpc_client_new(PROTOBUF_C_RPC_ADDRESS_LOCAL, "3306", &sgcompute__cs__compute_server__descriptor, NULL);
     assert(NULL!=service);
     mClient = (ProtobufC_RPC_Client*)service;
+    protobuf_c_rpc_dispatch_run (protobuf_c_rpc_dispatch_default ());
+    while (!protobuf_c_rpc_client_is_connected (mClient))
+    {
+        FUNC_PRINT(1);
+        protobuf_c_rpc_dispatch_run (protobuf_c_rpc_dispatch_default ());
+    }
     //protobuf_c_rpc_client_set_autoreconnect_period (mClient, 10);
 }
 SGComputeClient::~SGComputeClient()
@@ -95,21 +101,17 @@ static void run_main_loop_without_blocking (ProtobufCRPCDispatch *dispatch)
 
 GPPieces* SGComputeClient::createCache(unsigned int* keys, int keyNumber) const
 {
-    protobuf_c_rpc_dispatch_run (protobuf_c_rpc_dispatch_default ());
-    while (!protobuf_c_rpc_client_is_connected (mClient))
-    {
-        FUNC_PRINT(1);
-        protobuf_c_rpc_dispatch_run (protobuf_c_rpc_dispatch_default ());
-    }
     ProtobufCService* server = (ProtobufCService*)mClient;
     SGCompute__CS__PieceInfo pieceInfo = SGCOMPUTE__CS__PIECE_INFO__INIT;
 
 
     char* describe = (char*)"CACHE";
+    char* dataType = (char*)"NULL";
     pieceInfo.n_keydimesion = keyNumber;
     pieceInfo.keydimesion= keys;
-    pieceInfo.describe = describe;
-    pieceInfo.type = SGCOMPUTE__CS__PIECE_INFO__TYPE__CACHE;
+    pieceInfo.path = describe;
+    pieceInfo.datatype = dataType;
+    pieceInfo.piecetype = 1;//cache
     ClosureData closureData;
     closureData.pResult = NULL;
     closureData.pServer = server;
@@ -121,3 +123,21 @@ GPPieces* SGComputeClient::createCache(unsigned int* keys, int keyNumber) const
     }
     return closureData.pResult;
 }
+
+
+
+IParallelMachine::Executor* SGComputeClient::vPrepare(const GPParallelType* data, PARALLELTYPE type) const
+{
+    return NULL;
+}
+
+GPPieces* SGComputeClient::vCreatePieces(const char* description, std::vector<const IStatusType*> types, unsigned int* keys, int keyNum, USAGE usage) const
+{
+    return NULL;
+}
+
+bool SGComputeClient::vCopyPieces(GPPieces* readPieces, GPPieces* writePieces) const
+{
+    return false;
+}
+

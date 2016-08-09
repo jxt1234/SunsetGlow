@@ -21,6 +21,10 @@ extern "C" {
 #include "lowlevelAPI/IParallelMachine.h"
 #include <map>
 #include <string>
+#include "core/GPProducer.h"
+#include "core/GPFactory.h"
+
+
 class SGComputeServer :public GPRefCount
 {
 public:
@@ -29,9 +33,17 @@ public:
     
     //Pieces manager
     uint64_t createCache(unsigned int* keyDimesions, int keyNumber);
+    uint64_t createInput(const char* path, const char* type, unsigned int* keyDimesions, int keyNumber);
+    uint64_t createOutput(const char* path);
     bool release(uint64_t number);
     GPPieces* find(uint64_t number);
+    void addMetaFile(const char* metaFile);
     
+    IParallelMachine::Executor* findExecutor(uint64_t number);
+    uint64_t createExecutor(const GPParallelType* data, IParallelMachine::PARALLELTYPE type);
+    
+    std::vector<const IStatusType*> translateTypes(const std::string& typeInfos) const;
+
 private:
     static SGComputeServer* gServer;
     SGComputeServer();
@@ -39,6 +51,12 @@ private:
     
     ProtobufC_RPC_Server* mServer;
     std::map<uint64_t, GPPieces*> mCachePieces;
-    uint64_t mCacheOrder = 0;
+    uint64_t mCacheOrder;
+    
+    std::map<uint64_t, IParallelMachine::Executor*> mExecutors;
+    uint64_t mExecutorOrder;
+    
+    GPPtr<GPFunctionDataBase> mDataBase;
+    GPPtr<GPProducer> mProducer;
 };
 #endif

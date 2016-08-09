@@ -26,32 +26,25 @@ typedef struct _SGCompute__CS__Result SGCompute__CS__Result;
 
 /* --- enums --- */
 
-typedef enum _SGCompute__CS__PieceInfo__TYPE {
-  SGCOMPUTE__CS__PIECE_INFO__TYPE__INPUT = 0,
-  SGCOMPUTE__CS__PIECE_INFO__TYPE__CACHE = 1,
-  SGCOMPUTE__CS__PIECE_INFO__TYPE__OUTPUT = 2
-    PROTOBUF_C__FORCE_ENUM_TO_BE_INT_SIZE(SGCOMPUTE__CS__PIECE_INFO__TYPE)
-} SGCompute__CS__PieceInfo__TYPE;
-typedef enum _SGCompute__CS__Result__StatusCode {
-  SGCOMPUTE__CS__RESULT__STATUS_CODE__SUCCESS = 0,
-  SGCOMPUTE__CS__RESULT__STATUS_CODE__FAIL = 1
-    PROTOBUF_C__FORCE_ENUM_TO_BE_INT_SIZE(SGCOMPUTE__CS__RESULT__STATUS_CODE)
-} SGCompute__CS__Result__StatusCode;
 
 /* --- messages --- */
 
 struct  _SGCompute__CS__PieceInfo
 {
   ProtobufCMessage base;
-  char *describe;
-  SGCompute__CS__PieceInfo__TYPE type;
+  char *path;
+  char *datatype;
+  /*
+   *0: input, 1:cache, 2:output
+   */
+  uint32_t piecetype;
   uint64_t magic;
   size_t n_keydimesion;
   uint32_t *keydimesion;
 };
 #define SGCOMPUTE__CS__PIECE_INFO__INIT \
  { PROTOBUF_C_MESSAGE_INIT (&sgcompute__cs__piece_info__descriptor) \
-    , NULL, SGCOMPUTE__CS__PIECE_INFO__TYPE__CACHE, 0, 0,NULL }
+    , NULL, NULL, 0, 0, 0,NULL }
 
 
 struct  _SGCompute__CS__ComputeInfo
@@ -110,21 +103,25 @@ struct  _SGCompute__CS__ExecuteInfo
   SGCompute__CS__ExecuteInfo__FormulaInfo *sconditioninfo;
   size_t n_outputkey;
   SGCompute__CS__ExecuteInfo__Key **outputkey;
+  uint32_t type;
 };
 #define SGCOMPUTE__CS__EXECUTE_INFO__INIT \
  { PROTOBUF_C_MESSAGE_INIT (&sgcompute__cs__execute_info__descriptor) \
-    , NULL, NULL, 0,NULL }
+    , NULL, NULL, 0,NULL, 0 }
 
 
 struct  _SGCompute__CS__Result
 {
   ProtobufCMessage base;
-  SGCompute__CS__Result__StatusCode code;
+  /*
+   *0: success, 1:fail
+   */
+  uint32_t code;
   uint64_t magic;
 };
 #define SGCOMPUTE__CS__RESULT__INIT \
  { PROTOBUF_C_MESSAGE_INIT (&sgcompute__cs__result__descriptor) \
-    , SGCOMPUTE__CS__RESULT__STATUS_CODE__SUCCESS, 0 }
+    , 0, 0 }
 
 
 /* SGCompute__CS__PieceInfo methods */
@@ -290,14 +287,12 @@ void sgcompute__cs__compute_server__release(ProtobufCService *service,
 /* --- descriptors --- */
 
 extern const ProtobufCMessageDescriptor sgcompute__cs__piece_info__descriptor;
-extern const ProtobufCEnumDescriptor    sgcompute__cs__piece_info__type__descriptor;
 extern const ProtobufCMessageDescriptor sgcompute__cs__compute_info__descriptor;
 extern const ProtobufCMessageDescriptor sgcompute__cs__execute_info__descriptor;
 extern const ProtobufCMessageDescriptor sgcompute__cs__execute_info__key__descriptor;
 extern const ProtobufCMessageDescriptor sgcompute__cs__execute_info__func_info__descriptor;
 extern const ProtobufCMessageDescriptor sgcompute__cs__execute_info__formula_info__descriptor;
 extern const ProtobufCMessageDescriptor sgcompute__cs__result__descriptor;
-extern const ProtobufCEnumDescriptor    sgcompute__cs__result__status_code__descriptor;
 extern const ProtobufCServiceDescriptor sgcompute__cs__compute_server__descriptor;
 
 PROTOBUF_C__END_DECLS

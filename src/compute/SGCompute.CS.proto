@@ -1,14 +1,10 @@
 package SGCompute.CS;
 message PieceInfo {
-    enum TYPE {
-        INPUT = 0;
-        CACHE = 1;
-        OUTPUT = 2;
-    }
-    required string describe = 1;
-    required TYPE type = 2;
-    required uint64 magic = 3;
-    repeated uint32 keyDimesion = 4;
+    required string path = 1;
+    required string datatype = 2;
+    required uint32 pieceType = 3;//0: input, 1:cache, 2:output
+    required uint64 magic = 4;
+    repeated uint32 keyDimesion = 5;
 }
 
 message ComputeInfo{
@@ -35,15 +31,12 @@ message ExecuteInfo {
     }
     required FormulaInfo sConditionInfo = 2;
     repeated Key outputKey = 3;
+    required uint32 type = 4;
 }
 
 
 message Result {
-    enum StatusCode {
-        SUCCESS = 0;
-        FAIL = 1;
-    }
-    required StatusCode code = 1;
+    required uint32 code = 1;//0: success, 1:fail
     required uint64 magic = 2;
 }
 

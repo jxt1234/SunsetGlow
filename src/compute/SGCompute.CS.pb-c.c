@@ -197,65 +197,47 @@ void   sgcompute__cs__result__free_unpacked
   assert(message->base.descriptor == &sgcompute__cs__result__descriptor);
   protobuf_c_message_free_unpacked ((ProtobufCMessage*)message, allocator);
 }
-static const ProtobufCEnumValue sgcompute__cs__piece_info__type__enum_values_by_number[3] =
-{
-  { "INPUT", "SGCOMPUTE__CS__PIECE_INFO__TYPE__INPUT", 0 },
-  { "CACHE", "SGCOMPUTE__CS__PIECE_INFO__TYPE__CACHE", 1 },
-  { "OUTPUT", "SGCOMPUTE__CS__PIECE_INFO__TYPE__OUTPUT", 2 },
-};
-static const ProtobufCIntRange sgcompute__cs__piece_info__type__value_ranges[] = {
-{0, 0},{0, 3}
-};
-static const ProtobufCEnumValueIndex sgcompute__cs__piece_info__type__enum_values_by_name[3] =
-{
-  { "CACHE", 1 },
-  { "INPUT", 0 },
-  { "OUTPUT", 2 },
-};
-const ProtobufCEnumDescriptor sgcompute__cs__piece_info__type__descriptor =
-{
-  PROTOBUF_C__ENUM_DESCRIPTOR_MAGIC,
-  "SGCompute.CS.PieceInfo.TYPE",
-  "TYPE",
-  "SGCompute__CS__PieceInfo__TYPE",
-  "SGCompute.CS",
-  3,
-  sgcompute__cs__piece_info__type__enum_values_by_number,
-  3,
-  sgcompute__cs__piece_info__type__enum_values_by_name,
-  1,
-  sgcompute__cs__piece_info__type__value_ranges,
-  NULL,NULL,NULL,NULL   /* reserved[1234] */
-};
-static const ProtobufCFieldDescriptor sgcompute__cs__piece_info__field_descriptors[4] =
+static const ProtobufCFieldDescriptor sgcompute__cs__piece_info__field_descriptors[5] =
 {
   {
-    "describe",
+    "path",
     1,
     PROTOBUF_C_LABEL_REQUIRED,
     PROTOBUF_C_TYPE_STRING,
     0,   /* quantifier_offset */
-    offsetof(SGCompute__CS__PieceInfo, describe),
+    offsetof(SGCompute__CS__PieceInfo, path),
     NULL,
     NULL,
     0,             /* flags */
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
   {
-    "type",
+    "datatype",
     2,
     PROTOBUF_C_LABEL_REQUIRED,
-    PROTOBUF_C_TYPE_ENUM,
+    PROTOBUF_C_TYPE_STRING,
     0,   /* quantifier_offset */
-    offsetof(SGCompute__CS__PieceInfo, type),
-    &sgcompute__cs__piece_info__type__descriptor,
+    offsetof(SGCompute__CS__PieceInfo, datatype),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+  {
+    "pieceType",
+    3,
+    PROTOBUF_C_LABEL_REQUIRED,
+    PROTOBUF_C_TYPE_UINT32,
+    0,   /* quantifier_offset */
+    offsetof(SGCompute__CS__PieceInfo, piecetype),
+    NULL,
     NULL,
     0,             /* flags */
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
   {
     "magic",
-    3,
+    4,
     PROTOBUF_C_LABEL_REQUIRED,
     PROTOBUF_C_TYPE_UINT64,
     0,   /* quantifier_offset */
@@ -267,7 +249,7 @@ static const ProtobufCFieldDescriptor sgcompute__cs__piece_info__field_descripto
   },
   {
     "keyDimesion",
-    4,
+    5,
     PROTOBUF_C_LABEL_REPEATED,
     PROTOBUF_C_TYPE_UINT32,
     offsetof(SGCompute__CS__PieceInfo, n_keydimesion),
@@ -279,15 +261,16 @@ static const ProtobufCFieldDescriptor sgcompute__cs__piece_info__field_descripto
   },
 };
 static const unsigned sgcompute__cs__piece_info__field_indices_by_name[] = {
-  0,   /* field[0] = describe */
-  3,   /* field[3] = keyDimesion */
-  2,   /* field[2] = magic */
-  1,   /* field[1] = type */
+  1,   /* field[1] = datatype */
+  4,   /* field[4] = keyDimesion */
+  3,   /* field[3] = magic */
+  0,   /* field[0] = path */
+  2,   /* field[2] = pieceType */
 };
 static const ProtobufCIntRange sgcompute__cs__piece_info__number_ranges[1 + 1] =
 {
   { 1, 0 },
-  { 0, 4 }
+  { 0, 5 }
 };
 const ProtobufCMessageDescriptor sgcompute__cs__piece_info__descriptor =
 {
@@ -297,7 +280,7 @@ const ProtobufCMessageDescriptor sgcompute__cs__piece_info__descriptor =
   "SGCompute__CS__PieceInfo",
   "SGCompute.CS",
   sizeof(SGCompute__CS__PieceInfo),
-  4,
+  5,
   sgcompute__cs__piece_info__field_descriptors,
   sgcompute__cs__piece_info__field_indices_by_name,
   1,  sgcompute__cs__piece_info__number_ranges,
@@ -547,7 +530,7 @@ const ProtobufCMessageDescriptor sgcompute__cs__execute_info__formula_info__desc
   (ProtobufCMessageInit) sgcompute__cs__execute_info__formula_info__init,
   NULL,NULL,NULL    /* reserved[123] */
 };
-static const ProtobufCFieldDescriptor sgcompute__cs__execute_info__field_descriptors[3] =
+static const ProtobufCFieldDescriptor sgcompute__cs__execute_info__field_descriptors[4] =
 {
   {
     "sFuncInfo",
@@ -585,16 +568,29 @@ static const ProtobufCFieldDescriptor sgcompute__cs__execute_info__field_descrip
     0,             /* flags */
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
+  {
+    "type",
+    4,
+    PROTOBUF_C_LABEL_REQUIRED,
+    PROTOBUF_C_TYPE_UINT32,
+    0,   /* quantifier_offset */
+    offsetof(SGCompute__CS__ExecuteInfo, type),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
 };
 static const unsigned sgcompute__cs__execute_info__field_indices_by_name[] = {
   2,   /* field[2] = outputKey */
   1,   /* field[1] = sConditionInfo */
   0,   /* field[0] = sFuncInfo */
+  3,   /* field[3] = type */
 };
 static const ProtobufCIntRange sgcompute__cs__execute_info__number_ranges[1 + 1] =
 {
   { 1, 0 },
-  { 0, 3 }
+  { 0, 4 }
 };
 const ProtobufCMessageDescriptor sgcompute__cs__execute_info__descriptor =
 {
@@ -604,40 +600,12 @@ const ProtobufCMessageDescriptor sgcompute__cs__execute_info__descriptor =
   "SGCompute__CS__ExecuteInfo",
   "SGCompute.CS",
   sizeof(SGCompute__CS__ExecuteInfo),
-  3,
+  4,
   sgcompute__cs__execute_info__field_descriptors,
   sgcompute__cs__execute_info__field_indices_by_name,
   1,  sgcompute__cs__execute_info__number_ranges,
   (ProtobufCMessageInit) sgcompute__cs__execute_info__init,
   NULL,NULL,NULL    /* reserved[123] */
-};
-static const ProtobufCEnumValue sgcompute__cs__result__status_code__enum_values_by_number[2] =
-{
-  { "SUCCESS", "SGCOMPUTE__CS__RESULT__STATUS_CODE__SUCCESS", 0 },
-  { "FAIL", "SGCOMPUTE__CS__RESULT__STATUS_CODE__FAIL", 1 },
-};
-static const ProtobufCIntRange sgcompute__cs__result__status_code__value_ranges[] = {
-{0, 0},{0, 2}
-};
-static const ProtobufCEnumValueIndex sgcompute__cs__result__status_code__enum_values_by_name[2] =
-{
-  { "FAIL", 1 },
-  { "SUCCESS", 0 },
-};
-const ProtobufCEnumDescriptor sgcompute__cs__result__status_code__descriptor =
-{
-  PROTOBUF_C__ENUM_DESCRIPTOR_MAGIC,
-  "SGCompute.CS.Result.StatusCode",
-  "StatusCode",
-  "SGCompute__CS__Result__StatusCode",
-  "SGCompute.CS",
-  2,
-  sgcompute__cs__result__status_code__enum_values_by_number,
-  2,
-  sgcompute__cs__result__status_code__enum_values_by_name,
-  1,
-  sgcompute__cs__result__status_code__value_ranges,
-  NULL,NULL,NULL,NULL   /* reserved[1234] */
 };
 static const ProtobufCFieldDescriptor sgcompute__cs__result__field_descriptors[2] =
 {
@@ -645,10 +613,10 @@ static const ProtobufCFieldDescriptor sgcompute__cs__result__field_descriptors[2
     "code",
     1,
     PROTOBUF_C_LABEL_REQUIRED,
-    PROTOBUF_C_TYPE_ENUM,
+    PROTOBUF_C_TYPE_UINT32,
     0,   /* quantifier_offset */
     offsetof(SGCompute__CS__Result, code),
-    &sgcompute__cs__result__status_code__descriptor,
+    NULL,
     NULL,
     0,             /* flags */
     0,NULL,NULL    /* reserved1,reserved2, etc */

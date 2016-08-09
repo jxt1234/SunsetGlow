@@ -6,13 +6,17 @@ extern "C" {
 }
 
 
-class SGComputeClient
+class SGComputeClient:public IParallelMachine
 {
 public:
     SGComputeClient();
     virtual ~SGComputeClient();
     
     GPPieces* createCache(unsigned int* keys, int keyNumber) const;
+    virtual Executor* vPrepare(const GPParallelType* data, PARALLELTYPE type) const override;
+    virtual GPPieces* vCreatePieces(const char* description, std::vector<const IStatusType*> types, unsigned int* keys, int keyNum, USAGE usage) const override;
+    virtual bool vCopyPieces(GPPieces* readPieces, GPPieces* writePieces) const override;
+
 private:
     ProtobufC_RPC_Client* mClient;
 };

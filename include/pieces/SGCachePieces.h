@@ -15,4 +15,15 @@
 ******************************************************************/
 #ifndef PIECES_SGCACHEPIECES_H
 #define PIECES_SGCACHEPIECES_H
+#include "lowlevelAPI/GPPieces.h"
+class SGCachePieces:public GPPieces
+{
+public:
+    SGCachePieces(unsigned int* pKey, unsigned int keynum);
+    virtual ~SGCachePieces();
+
+    virtual GPContents* vLoad(unsigned int* pKey, unsigned int keynum) override;
+    virtual long vPreMeasure(unsigned int* pKey, unsigned int keynum) const override;
+    virtual void vSave(unsigned int* pKey, unsigned int keynum, GPContents* c) override;
+};
 #endif

@@ -1,48 +1,48 @@
 INCLUDE:include ../Renascence/include/ third
 **********
 
-TARGET:libSunsetGlow.a
+TARGET:libSunsetGlow.so
 DEPENDS:
 DIRS:src third
 SRCS:
-LINKS:
+LINKS:../Renascence/libGP.a
 
 ##########
 
 TARGET:example.out
-DEPENDS:libSunsetGlow.a
+DEPENDS:libSunsetGlow.so
 DIRS:
 SRCS:simple_main.cpp
-LINKS: ./libSunsetGlow.a
+LINKS: ./libSunsetGlow.so
 
 ##########
 
 TARGET:compute-client.out
-DEPENDS:libSunsetGlow.a
+DEPENDS:libSunsetGlow.so
 DIRS:
 SRCS:./compute-client.cpp
-LINKS: ./libSunsetGlow.a
+LINKS: ./libSunsetGlow.so
 
 ##########
 
 TARGET:compute-responser.out
-DEPENDS:libSunsetGlow.a
+DEPENDS:libSunsetGlow.so
 DIRS:
 SRCS:./compute-responser.cpp
-LINKS: ./libSunsetGlow.a
+LINKS: ./libSunsetGlow.so
 
 ##########
 
 TARGET:compute-server.out
-DEPENDS:libSunsetGlow.a
+DEPENDS:libSunsetGlow.so
 DIRS:
 SRCS:./compute-server.cpp
-LINKS: ./libSunsetGlow.a
+LINKS: ./libSunsetGlow.so
 
 ##########
 
 TARGET:test.out
-DEPENDS:libSunsetGlow.a
+DEPENDS:libSunsetGlow.so
 DIRS:test
 SRCS:
-LINKS: ./libSunsetGlow.a -lpthread -ldl
+LINKS: ./libSunsetGlow.so -lpthread -ldl
