@@ -40,7 +40,7 @@ public:
     void addMetaFile(const char* metaFile);
     
     IParallelMachine::Executor* findExecutor(uint64_t number);
-    uint64_t createExecutor(const GPParallelType* data, IParallelMachine::PARALLELTYPE type);
+    uint64_t createExecutor(GPParallelType* data, IParallelMachine::PARALLELTYPE type);
     
     std::vector<const IStatusType*> translateTypes(const std::string& typeInfos) const;
 

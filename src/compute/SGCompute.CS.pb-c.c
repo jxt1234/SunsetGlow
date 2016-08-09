@@ -462,7 +462,7 @@ static const ProtobufCFieldDescriptor sgcompute__cs__execute_info__func_info__fi
   {
     "parameter",
     2,
-    PROTOBUF_C_LABEL_REQUIRED,
+    PROTOBUF_C_LABEL_OPTIONAL,
     PROTOBUF_C_TYPE_STRING,
     0,   /* quantifier_offset */
     offsetof(SGCompute__CS__ExecuteInfo__FuncInfo, parameter),
@@ -590,7 +590,7 @@ static const ProtobufCFieldDescriptor sgcompute__cs__execute_info__field_descrip
   {
     "sConditionInfo",
     2,
-    PROTOBUF_C_LABEL_REQUIRED,
+    PROTOBUF_C_LABEL_OPTIONAL,
     PROTOBUF_C_TYPE_MESSAGE,
     0,   /* quantifier_offset */
     offsetof(SGCompute__CS__ExecuteInfo, sconditioninfo),

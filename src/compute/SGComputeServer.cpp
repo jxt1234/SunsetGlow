@@ -124,8 +124,11 @@ static void SG_compute__create_executor (SGCompute__CS__ComputeServer_Service *s
         data.sFuncInfo.variableKey.push_back(std::make_pair(input->sfuncinfo->variablekey[i]->index, input->sfuncinfo->variablekey[i]->pos));
     }
 
-    data.sVariableInfo = input->sconditioninfo->svariableinfo;
-    data.sConditionInfo.sConditionFormula = input->sconditioninfo->sconditionformula;
+    if (NULL!=input->sconditioninfo)
+    {
+        data.sVariableInfo = input->sconditioninfo->svariableinfo;
+        data.sConditionInfo.sConditionFormula = input->sconditioninfo->sconditionformula;
+    }
     data.mOutputKey.clear();
     for (int i=0; i<input->n_outputkey; ++i)
     {
@@ -303,8 +306,9 @@ IParallelMachine::Executor* SGComputeServer::findExecutor(uint64_t number)
     return iter->second;
 }
 
-uint64_t SGComputeServer::createExecutor(const GPParallelType* data, IParallelMachine::PARALLELTYPE type)
+uint64_t SGComputeServer::createExecutor(GPParallelType* data, IParallelMachine::PARALLELTYPE type)
 {
+    data->pContext = mProducer.get();
     GPSingleParallelMachine machine;
     auto executor = machine.vPrepare(data, type);
     mExecutors.insert(std::make_pair(mExecutorOrder, executor));

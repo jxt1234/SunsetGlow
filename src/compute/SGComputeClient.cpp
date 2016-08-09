@@ -167,58 +167,33 @@ static void run_main_loop_without_blocking (ProtobufCRPCDispatch *dispatch)
     protobuf_c_rpc_dispatch_run (dispatch);
 }
 
-
-GPPieces* SGComputeClient::createCache(unsigned int* keys, int keyNumber) const
-{
-    ProtobufCService* server = (ProtobufCService*)mClient;
-    SGCompute__CS__PieceInfo pieceInfo = SGCOMPUTE__CS__PIECE_INFO__INIT;
-
-
-    char* describe = (char*)"CACHE";
-    char* dataType = (char*)"NULL";
-    pieceInfo.n_keydimesion = keyNumber;
-    pieceInfo.keydimesion= keys;
-    pieceInfo.path = describe;
-    pieceInfo.datatype = dataType;
-    pieceInfo.piecetype = 1;//cache
-    ClosureDataGPPieces ClosureDataGPPieces;
-    ClosureDataGPPieces.pResult = NULL;
-    ClosureDataGPPieces.pServer = server;
-
-    sgcompute__cs__compute_server__create(server, &pieceInfo, handle_create_response_cache, &ClosureDataGPPieces);
-    while (NULL == ClosureDataGPPieces.pResult)
-    {
-        protobuf_c_rpc_dispatch_run (protobuf_c_rpc_dispatch_default ());
-    }
-    return ClosureDataGPPieces.pResult;
-}
-
-
-
 IParallelMachine::Executor* SGComputeClient::vPrepare(const GPParallelType* data, PARALLELTYPE type) const
 {
+    SGASSERT(NULL!=data);
     SGCompute__CS__ExecuteInfo executoInfo = SGCOMPUTE__CS__EXECUTE_INFO__INIT;
-    ClosureDataExecutor closure;
-    closure.pResult = NULL;
-    closure.pServer = (ProtobufCService*)mClient;
     
     executoInfo.n_outputkey = data->mOutputKey.size();
     AUTOSTORAGE(outputKey, SGCompute__CS__ExecuteInfo__Key, (int)data->mOutputKey.size());
     AUTOSTORAGE(outputKeyPoint, SGCompute__CS__ExecuteInfo__Key*, (int)data->mOutputKey.size());
     for (int i=0; i<data->mOutputKey.size(); ++i)
     {
+        outputKey[i] = SGCOMPUTE__CS__EXECUTE_INFO__KEY__INIT;
         outputKey[i].index = data->mOutputKey[i].first;
         outputKey[i].pos = data->mOutputKey[i].second;
         outputKeyPoint[i] = outputKey + i;
     }
     executoInfo.outputkey = outputKeyPoint;
-    
-    executoInfo.sfuncinfo->formula = (char*)data->sFuncInfo.formula.c_str();
+
+    _SGCompute__CS__ExecuteInfo__FuncInfo sfuncinfo = SGCOMPUTE__CS__EXECUTE_INFO__FUNC_INFO__INIT;
+    executoInfo.sfuncinfo = &sfuncinfo;
     executoInfo.sfuncinfo->n_variablekey = data->sFuncInfo.variableKey.size();
+    executoInfo.sfuncinfo->formula = (char*)data->sFuncInfo.formula.c_str();
+
     AUTOSTORAGE(variableKey, SGCompute__CS__ExecuteInfo__Key, (int)data->sFuncInfo.variableKey.size());
     AUTOSTORAGE(variableKeyPoint, SGCompute__CS__ExecuteInfo__Key*, (int)data->sFuncInfo.variableKey.size());
     for (int i=0; i<data->sFuncInfo.variableKey.size(); ++i)
     {
+        variableKey[i] = SGCOMPUTE__CS__EXECUTE_INFO__KEY__INIT;
         variableKey[i].index = data->sFuncInfo.variableKey[i].first;
         variableKey[i].pos = data->sFuncInfo.variableKey[i].second;
         variableKeyPoint[i] = variableKey + i;
@@ -232,10 +207,27 @@ IParallelMachine::Executor* SGComputeClient::vPrepare(const GPParallelType* data
     }
     auto typeString = os.str();
     executoInfo.sfuncinfo->inputstype = (char*)typeString.c_str();
-    
-    executoInfo.sconditioninfo->sconditionformula = (char*)data->sConditionInfo.sConditionFormula.c_str();
-    executoInfo.sconditioninfo->svariableinfo = (char*)data->sVariableInfo.c_str();
 
+    SGCompute__CS__ExecuteInfo__FormulaInfo sconditioninfo = SGCOMPUTE__CS__EXECUTE_INFO__FORMULA_INFO__INIT;
+    if (data->sConditionInfo.sConditionFormula.size() > 0)
+    {
+        executoInfo.sconditioninfo = &sconditioninfo;
+        executoInfo.sconditioninfo->sconditionformula = (char*)data->sConditionInfo.sConditionFormula.c_str();
+        executoInfo.sconditioninfo->svariableinfo = (char*)data->sVariableInfo.c_str();
+    }
+    
+    if (IParallelMachine::REDUCE == type)
+    {
+        executoInfo.type = 1;
+    }
+    else
+    {
+        executoInfo.type = 0;
+    }
+
+    ClosureDataExecutor closure;
+    closure.pResult = NULL;
+    closure.pServer = (ProtobufCService*)mClient;
     sgcompute__cs__compute_server__create_executor((ProtobufCService*)mClient, &executoInfo, handle_create_response_execute, &closure);
     while (NULL == closure.pResult)
     {
@@ -251,6 +243,7 @@ GPPieces* SGComputeClient::vCreatePieces(const char* description, std::vector<co
     
     char* describe = (char*)description;
     char* dataType = (char*)"NULL";
+    char* cacheDescribe = (char*)"CACHE";
     std::string dataTypeString;
     pieceInfo.n_keydimesion = keyNum;
     pieceInfo.keydimesion= keys;
@@ -271,7 +264,7 @@ GPPieces* SGComputeClient::vCreatePieces(const char* description, std::vector<co
             break;
         }
         case IParallelMachine::CACHE:
-            describe = (char*)"CACHE";
+            pieceInfo.path = cacheDescribe;
             pieceInfo.piecetype = 1;
             break;
         case IParallelMachine::OUTPUT:
@@ -284,11 +277,15 @@ GPPieces* SGComputeClient::vCreatePieces(const char* description, std::vector<co
     ClosureDataGPPieces ClosureDataGPPieces;
     ClosureDataGPPieces.pResult = NULL;
     ClosureDataGPPieces.pServer = server;
-    
     sgcompute__cs__compute_server__create(server, &pieceInfo, handle_create_response_cache, &ClosureDataGPPieces);
     while (NULL == ClosureDataGPPieces.pResult)
     {
         protobuf_c_rpc_dispatch_run (protobuf_c_rpc_dispatch_default ());
+    }
+    ClosureDataGPPieces.pResult->nKeyNumber = keyNum;
+    for (int i=0; i<keyNum; ++i)
+    {
+        ClosureDataGPPieces.pResult->pKeySize[i] = keys[i];
     }
     return ClosureDataGPPieces.pResult;
 }

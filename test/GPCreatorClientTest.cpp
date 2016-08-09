@@ -1,5 +1,5 @@
 #include "test/GPTest.h"
-#include "SGParallelMachine.h"
+#include "SGComputeClient.h"
 class GPCreatorClientTest:public GPTest
 {
     public:
@@ -9,9 +9,9 @@ class GPCreatorClientTest:public GPTest
 };
 void GPCreatorClientTest::run()
 {
-    SGParallelMachine parallelMachine;
+    SGComputeClient parallelMachine;
     unsigned int keySize = 5;
-    auto pieces = parallelMachine.vCreatePieces(NULL, std::vector<const IStatusType*>(), &keySize, 1, IParallelMachine::INPUT);
+    auto pieces = parallelMachine.vCreatePieces(NULL, std::vector<const IStatusType*>(), &keySize, 1, IParallelMachine::CACHE);
     delete pieces;
 }
 

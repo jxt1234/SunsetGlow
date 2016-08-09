@@ -20,7 +20,7 @@ message ExecuteInfo {
     }
     message FuncInfo {
         required string formula = 1;
-        required string parameter = 2;
+        optional string parameter = 2;
         required string inputsType = 3;
         repeated Key variableKey = 4;
     }
@@ -29,7 +29,7 @@ message ExecuteInfo {
         required string sConditionFormula = 1;
         required string sVariableInfo = 2;
     }
-    required FormulaInfo sConditionInfo = 2;
+    optional FormulaInfo sConditionInfo = 2;
     repeated Key outputKey = 3;
     required uint32 type = 4;
 }
