@@ -1,7 +1,5 @@
 #include "SGComputeServer.h"
-extern "C"{
 #include "SGCompute.CS.pb-c.h"
-}
 #include <assert.h>
 #include "SGDebug.h"
 #include "core/GPPieceFactory.h"
@@ -38,7 +36,7 @@ static void SG_compute__execute (SGCompute__CS__ComputeServer_Service *service, 
         inputs[i] = server->find(input->inputpieces[i]);
     }
     //TODO check inputs
-    
+
     bool result = executor->vRun(output, inputs, inputNumber);
     FUNC_PRINT(result);
     SGCompute__CS__Result report = SGCOMPUTE__CS__RESULT__INIT;

@@ -1,6 +1,4 @@
-extern "C"{
 #include "SGCompute.CS.pb-c.h"
-}
 #include <assert.h>
 #include "SGComputeClient.h"
 #include "SGDebug.h"

@@ -39,13 +39,12 @@ struct  _SGCompute__CS__PieceInfo
    *0: input, 1:cache, 2:output
    */
   uint32_t piecetype;
-  uint64_t magic;
   size_t n_keydimesion;
   uint32_t *keydimesion;
 };
 #define SGCOMPUTE__CS__PIECE_INFO__INIT \
  { PROTOBUF_C_MESSAGE_INIT (&sgcompute__cs__piece_info__descriptor) \
-    , NULL, NULL, 0, 0, 0,NULL }
+    , NULL, NULL, 0, 0,NULL }
 
 
 struct  _SGCompute__CS__ComputeInfo

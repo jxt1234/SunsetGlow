@@ -240,7 +240,7 @@ void   sgcompute__cs__copy_info__free_unpacked
   assert(message->base.descriptor == &sgcompute__cs__copy_info__descriptor);
   protobuf_c_message_free_unpacked ((ProtobufCMessage*)message, allocator);
 }
-static const ProtobufCFieldDescriptor sgcompute__cs__piece_info__field_descriptors[5] =
+static const ProtobufCFieldDescriptor sgcompute__cs__piece_info__field_descriptors[4] =
 {
   {
     "path",
@@ -279,20 +279,8 @@ static const ProtobufCFieldDescriptor sgcompute__cs__piece_info__field_descripto
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
   {
-    "magic",
-    4,
-    PROTOBUF_C_LABEL_REQUIRED,
-    PROTOBUF_C_TYPE_UINT64,
-    0,   /* quantifier_offset */
-    offsetof(SGCompute__CS__PieceInfo, magic),
-    NULL,
-    NULL,
-    0,             /* flags */
-    0,NULL,NULL    /* reserved1,reserved2, etc */
-  },
-  {
     "keyDimesion",
-    5,
+    4,
     PROTOBUF_C_LABEL_REPEATED,
     PROTOBUF_C_TYPE_UINT32,
     offsetof(SGCompute__CS__PieceInfo, n_keydimesion),
@@ -305,15 +293,14 @@ static const ProtobufCFieldDescriptor sgcompute__cs__piece_info__field_descripto
 };
 static const unsigned sgcompute__cs__piece_info__field_indices_by_name[] = {
   1,   /* field[1] = datatype */
-  4,   /* field[4] = keyDimesion */
-  3,   /* field[3] = magic */
+  3,   /* field[3] = keyDimesion */
   0,   /* field[0] = path */
   2,   /* field[2] = pieceType */
 };
 static const ProtobufCIntRange sgcompute__cs__piece_info__number_ranges[1 + 1] =
 {
   { 1, 0 },
-  { 0, 5 }
+  { 0, 4 }
 };
 const ProtobufCMessageDescriptor sgcompute__cs__piece_info__descriptor =
 {
@@ -323,7 +310,7 @@ const ProtobufCMessageDescriptor sgcompute__cs__piece_info__descriptor =
   "SGCompute__CS__PieceInfo",
   "SGCompute.CS",
   sizeof(SGCompute__CS__PieceInfo),
-  5,
+  4,
   sgcompute__cs__piece_info__field_descriptors,
   sgcompute__cs__piece_info__field_indices_by_name,
   1,  sgcompute__cs__piece_info__number_ranges,

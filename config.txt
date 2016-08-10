@@ -17,14 +17,6 @@ LINKS: ./libSunsetGlow.so
 
 ##########
 
-TARGET:compute-client.out
-DEPENDS:libSunsetGlow.so
-DIRS:
-SRCS:./compute-client.cpp
-LINKS: ./libSunsetGlow.so
-
-##########
-
 TARGET:compute-responser.out
 DEPENDS:libSunsetGlow.so
 DIRS:

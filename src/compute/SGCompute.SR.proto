@@ -1,43 +1,45 @@
 package SGCompute.SR;
 
+message WorkInfo {
+    message FileInfo {
+        repeated uint32 key_dimesion = 1;
+        required string path = 2;
+    }
+    repeated FileInfo inputs = 1;
+    required FileInfo output = 2;
+    enum TYPE {
+        MAP = 0;
+        REDUCE = 1;
+    }
+    required TYPE type = 3 [default = MAP];
+}
+
 message RunInfo {
-    message Key {
-        required uint32 index = 1;
-        required uint32 pos = 2;
-        required uint32 key = 3;
+    message Unit {
+        repeated uint32 inputKeys = 1;
+        repeated uint32 outputKeys = 2;
     }
-    repeated Key inputKey = 1;
-    repeated Key outputKey = 2;
-    required string inputPieceDescribe = 3;
-    required string outputPieceDescribe = 4;
+    repeated Unit work_content = 1;
+    required uint64 work_magic = 2;
 }
 
-message Compute{
-    message FuncInfo {
-        required string formula = 1;
-        required string parameter = 2;
-        required string inputsType = 3;
+message ResultInfo {
+    enum STATUS {
+        SUCCESS = 0;
+        FAILED = 1;
     }
-    required FuncInfo sFuncInfo = 1;
-    required RunInfo sRunInfo = 2;
-}
-
-
-message ReceiveResult {
-    required int32 errorCode = 1;
-}
-
-message RunResult {
-    required RunInfo runInfo = 1;
-    required int32 errorCode = 2;
+    required STATUS status = 1 [default=SUCCESS];
+    optional string message = 2;
+    required uint64 magic = 3;
 }
 
 service ComputeResponser {
-    rpc ByInfo (Compute) returns (ReceiveResult);
+    rpc CreateWork (WorkInfo) returns (ResultInfo);
+    rpc RunWork (RunInfo) returns (ResultInfo);
 }
 
 service ComputeServerWaiter {
-    rpc ByResult(RunResult) returns (ReceiveResult);
+    rpc ReportSuccess(RunInfo) returns (ResultInfo);
 }
 
 
