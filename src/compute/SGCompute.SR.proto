@@ -39,7 +39,7 @@ service ComputeResponser {
 }
 
 service ComputeServerWaiter {
-    rpc ReportSuccess(RunInfo) returns (ResultInfo);
+    rpc ReportSuccess(ResultInfo) returns (ResultInfo);
 }
 
 

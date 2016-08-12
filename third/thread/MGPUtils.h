@@ -13,30 +13,18 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ******************************************************************/
-#ifndef COMPUTE_SGCOMPUTERESPONSER_H
-#define COMPUTE_SGCOMPUTERESPONSER_H
-extern "C" {
-#include "protobuf-c-rpc/protobuf-c-rpc.h"
-}
-
-class SGComputeResponser
-{
-public:
-    static bool init(const char* port, const char* master_port);
-
-    //After init, can do this
-    static SGComputeResponser* getInstance();
-    
-    void runLoop();
-    bool install(const char* meta);
-
-private:
-    static SGComputeResponser* gInstance;
-    
-    SGComputeResponser(const char* port, const char* master_port);
-    virtual ~ SGComputeResponser();
-    
-    ProtobufC_RPC_Server* mComputeService;
-    ProtobufC_RPC_Client* mReportClient;
-};
+#ifndef MGPUTILS_H
+#define MGPUTILS_H
+#include <assert.h>
+#include <string.h>
+#include <stdio.h>
+#define MGPASSERT(x) assert(x)
+#ifdef BUILD_FOR_ANDROID
+#include <android/log.h>
+#define MGPPRINT(format, ...) __android_log_print(ANDROID_LOG_INFO, "GP", format,##__VA_ARGS__)
+#else
+#define MGPPRINT(format, ...) printf(format,##__VA_ARGS__)
+#endif
+#define FUNC_PRINT(x) MGPPRINT(#x"=%d in %s, %d \n",x,  __func__, __LINE__);
+#define FUNC_PRINT_ALL(x, type) MGPPRINT(#x"= "#type" %"#type" in %s, %d \n",x,  __func__, __LINE__);
 #endif

@@ -13,4 +13,5 @@ def main():
     outputPieces = sub_p_producer.createOutput('output/pythonTestParallel')
     tempPiece = pfunction.run([inputPieces])
     sub_p_producer.copyPiece(tempPiece, outputPieces)
+
 main()

@@ -18,6 +18,7 @@ PROTOBUF_C__BEGIN_DECLS
 typedef struct _SGCompute__SR__WorkInfo SGCompute__SR__WorkInfo;
 typedef struct _SGCompute__SR__WorkInfo__FileInfo SGCompute__SR__WorkInfo__FileInfo;
 typedef struct _SGCompute__SR__RunInfo SGCompute__SR__RunInfo;
+typedef struct _SGCompute__SR__RunInfo__Unit SGCompute__SR__RunInfo__Unit;
 typedef struct _SGCompute__SR__ResultInfo SGCompute__SR__ResultInfo;
 
 
@@ -61,18 +62,29 @@ struct  _SGCompute__SR__WorkInfo
     , 0,NULL, NULL, SGCOMPUTE__SR__WORK_INFO__TYPE__MAP }
 
 
-struct  _SGCompute__SR__RunInfo
+struct  _SGCompute__SR__RunInfo__Unit
 {
   ProtobufCMessage base;
   size_t n_inputkeys;
   uint32_t *inputkeys;
   size_t n_outputkeys;
   uint32_t *outputkeys;
+};
+#define SGCOMPUTE__SR__RUN_INFO__UNIT__INIT \
+ { PROTOBUF_C_MESSAGE_INIT (&sgcompute__sr__run_info__unit__descriptor) \
+    , 0,NULL, 0,NULL }
+
+
+struct  _SGCompute__SR__RunInfo
+{
+  ProtobufCMessage base;
+  size_t n_work_content;
+  SGCompute__SR__RunInfo__Unit **work_content;
   uint64_t work_magic;
 };
 #define SGCOMPUTE__SR__RUN_INFO__INIT \
  { PROTOBUF_C_MESSAGE_INIT (&sgcompute__sr__run_info__descriptor) \
-    , 0,NULL, 0,NULL, 0 }
+    , 0,NULL, 0 }
 
 
 struct  _SGCompute__SR__ResultInfo
@@ -109,6 +121,9 @@ SGCompute__SR__WorkInfo *
 void   sgcompute__sr__work_info__free_unpacked
                      (SGCompute__SR__WorkInfo *message,
                       ProtobufCAllocator *allocator);
+/* SGCompute__SR__RunInfo__Unit methods */
+void   sgcompute__sr__run_info__unit__init
+                     (SGCompute__SR__RunInfo__Unit         *message);
 /* SGCompute__SR__RunInfo methods */
 void   sgcompute__sr__run_info__init
                      (SGCompute__SR__RunInfo         *message);
@@ -155,6 +170,9 @@ typedef void (*SGCompute__SR__WorkInfo__FileInfo_Closure)
 typedef void (*SGCompute__SR__WorkInfo_Closure)
                  (const SGCompute__SR__WorkInfo *message,
                   void *closure_data);
+typedef void (*SGCompute__SR__RunInfo__Unit_Closure)
+                 (const SGCompute__SR__RunInfo__Unit *message,
+                  void *closure_data);
 typedef void (*SGCompute__SR__RunInfo_Closure)
                  (const SGCompute__SR__RunInfo *message,
                   void *closure_data);
@@ -199,7 +217,7 @@ struct _SGCompute__SR__ComputeServerWaiter_Service
 {
   ProtobufCService base;
   void (*report_success)(SGCompute__SR__ComputeServerWaiter_Service *service,
-                         const SGCompute__SR__RunInfo *input,
+                         const SGCompute__SR__ResultInfo *input,
                          SGCompute__SR__ResultInfo_Closure closure,
                          void *closure_data);
 };
@@ -212,7 +230,7 @@ void sgcompute__sr__compute_server_waiter__init (SGCompute__SR__ComputeServerWai
     { SGCOMPUTE__SR__COMPUTE_SERVER_WAITER__BASE_INIT,\
       function_prefix__ ## report_success  }
 void sgcompute__sr__compute_server_waiter__report_success(ProtobufCService *service,
-                                                          const SGCompute__SR__RunInfo *input,
+                                                          const SGCompute__SR__ResultInfo *input,
                                                           SGCompute__SR__ResultInfo_Closure closure,
                                                           void *closure_data);
 
@@ -222,6 +240,7 @@ extern const ProtobufCMessageDescriptor sgcompute__sr__work_info__descriptor;
 extern const ProtobufCMessageDescriptor sgcompute__sr__work_info__file_info__descriptor;
 extern const ProtobufCEnumDescriptor    sgcompute__sr__work_info__type__descriptor;
 extern const ProtobufCMessageDescriptor sgcompute__sr__run_info__descriptor;
+extern const ProtobufCMessageDescriptor sgcompute__sr__run_info__unit__descriptor;
 extern const ProtobufCMessageDescriptor sgcompute__sr__result_info__descriptor;
 extern const ProtobufCEnumDescriptor    sgcompute__sr__result_info__status__descriptor;
 extern const ProtobufCServiceDescriptor sgcompute__sr__compute_responser__descriptor;

@@ -9,7 +9,7 @@ SGComputeClient::SGComputeClient()
 {
     //FIXME
     auto service = protobuf_c_rpc_client_new(PROTOBUF_C_RPC_ADDRESS_LOCAL, "3306", &sgcompute__cs__compute_server__descriptor, NULL);
-    assert(NULL!=service);
+    SGASSERT(NULL!=service);
     mClient = (ProtobufC_RPC_Client*)service;
     protobuf_c_rpc_dispatch_run (protobuf_c_rpc_dispatch_default ());
     while (!protobuf_c_rpc_client_is_connected (mClient))

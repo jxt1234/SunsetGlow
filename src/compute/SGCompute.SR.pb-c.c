@@ -56,6 +56,12 @@ void   sgcompute__sr__work_info__free_unpacked
   assert(message->base.descriptor == &sgcompute__sr__work_info__descriptor);
   protobuf_c_message_free_unpacked ((ProtobufCMessage*)message, allocator);
 }
+void   sgcompute__sr__run_info__unit__init
+                     (SGCompute__SR__RunInfo__Unit         *message)
+{
+  static SGCompute__SR__RunInfo__Unit init_value = SGCOMPUTE__SR__RUN_INFO__UNIT__INIT;
+  *message = init_value;
+}
 void   sgcompute__sr__run_info__init
                      (SGCompute__SR__RunInfo         *message)
 {
@@ -286,15 +292,15 @@ const ProtobufCMessageDescriptor sgcompute__sr__work_info__descriptor =
   (ProtobufCMessageInit) sgcompute__sr__work_info__init,
   NULL,NULL,NULL    /* reserved[123] */
 };
-static const ProtobufCFieldDescriptor sgcompute__sr__run_info__field_descriptors[3] =
+static const ProtobufCFieldDescriptor sgcompute__sr__run_info__unit__field_descriptors[2] =
 {
   {
     "inputKeys",
     1,
     PROTOBUF_C_LABEL_REPEATED,
     PROTOBUF_C_TYPE_UINT32,
-    offsetof(SGCompute__SR__RunInfo, n_inputkeys),
-    offsetof(SGCompute__SR__RunInfo, inputkeys),
+    offsetof(SGCompute__SR__RunInfo__Unit, n_inputkeys),
+    offsetof(SGCompute__SR__RunInfo__Unit, inputkeys),
     NULL,
     NULL,
     0,             /* flags */
@@ -305,16 +311,55 @@ static const ProtobufCFieldDescriptor sgcompute__sr__run_info__field_descriptors
     2,
     PROTOBUF_C_LABEL_REPEATED,
     PROTOBUF_C_TYPE_UINT32,
-    offsetof(SGCompute__SR__RunInfo, n_outputkeys),
-    offsetof(SGCompute__SR__RunInfo, outputkeys),
+    offsetof(SGCompute__SR__RunInfo__Unit, n_outputkeys),
+    offsetof(SGCompute__SR__RunInfo__Unit, outputkeys),
     NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+};
+static const unsigned sgcompute__sr__run_info__unit__field_indices_by_name[] = {
+  0,   /* field[0] = inputKeys */
+  1,   /* field[1] = outputKeys */
+};
+static const ProtobufCIntRange sgcompute__sr__run_info__unit__number_ranges[1 + 1] =
+{
+  { 1, 0 },
+  { 0, 2 }
+};
+const ProtobufCMessageDescriptor sgcompute__sr__run_info__unit__descriptor =
+{
+  PROTOBUF_C__MESSAGE_DESCRIPTOR_MAGIC,
+  "SGCompute.SR.RunInfo.Unit",
+  "Unit",
+  "SGCompute__SR__RunInfo__Unit",
+  "SGCompute.SR",
+  sizeof(SGCompute__SR__RunInfo__Unit),
+  2,
+  sgcompute__sr__run_info__unit__field_descriptors,
+  sgcompute__sr__run_info__unit__field_indices_by_name,
+  1,  sgcompute__sr__run_info__unit__number_ranges,
+  (ProtobufCMessageInit) sgcompute__sr__run_info__unit__init,
+  NULL,NULL,NULL    /* reserved[123] */
+};
+static const ProtobufCFieldDescriptor sgcompute__sr__run_info__field_descriptors[2] =
+{
+  {
+    "work_content",
+    1,
+    PROTOBUF_C_LABEL_REPEATED,
+    PROTOBUF_C_TYPE_MESSAGE,
+    offsetof(SGCompute__SR__RunInfo, n_work_content),
+    offsetof(SGCompute__SR__RunInfo, work_content),
+    &sgcompute__sr__run_info__unit__descriptor,
     NULL,
     0,             /* flags */
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
   {
     "work_magic",
-    3,
+    2,
     PROTOBUF_C_LABEL_REQUIRED,
     PROTOBUF_C_TYPE_UINT64,
     0,   /* quantifier_offset */
@@ -326,14 +371,13 @@ static const ProtobufCFieldDescriptor sgcompute__sr__run_info__field_descriptors
   },
 };
 static const unsigned sgcompute__sr__run_info__field_indices_by_name[] = {
-  0,   /* field[0] = inputKeys */
-  1,   /* field[1] = outputKeys */
-  2,   /* field[2] = work_magic */
+  0,   /* field[0] = work_content */
+  1,   /* field[1] = work_magic */
 };
 static const ProtobufCIntRange sgcompute__sr__run_info__number_ranges[1 + 1] =
 {
   { 1, 0 },
-  { 0, 3 }
+  { 0, 2 }
 };
 const ProtobufCMessageDescriptor sgcompute__sr__run_info__descriptor =
 {
@@ -343,7 +387,7 @@ const ProtobufCMessageDescriptor sgcompute__sr__run_info__descriptor =
   "SGCompute__SR__RunInfo",
   "SGCompute.SR",
   sizeof(SGCompute__SR__RunInfo),
-  3,
+  2,
   sgcompute__sr__run_info__field_descriptors,
   sgcompute__sr__run_info__field_indices_by_name,
   1,  sgcompute__sr__run_info__number_ranges,
@@ -488,7 +532,7 @@ void sgcompute__sr__compute_responser__init (SGCompute__SR__ComputeResponser_Ser
 }
 static const ProtobufCMethodDescriptor sgcompute__sr__compute_server_waiter__method_descriptors[1] =
 {
-  { "ReportSuccess", &sgcompute__sr__run_info__descriptor, &sgcompute__sr__result_info__descriptor },
+  { "ReportSuccess", &sgcompute__sr__result_info__descriptor, &sgcompute__sr__result_info__descriptor },
 };
 const unsigned sgcompute__sr__compute_server_waiter__method_indices_by_name[] = {
   0         /* ReportSuccess */
@@ -505,7 +549,7 @@ const ProtobufCServiceDescriptor sgcompute__sr__compute_server_waiter__descripto
   sgcompute__sr__compute_server_waiter__method_indices_by_name
 };
 void sgcompute__sr__compute_server_waiter__report_success(ProtobufCService *service,
-                                                          const SGCompute__SR__RunInfo *input,
+                                                          const SGCompute__SR__ResultInfo *input,
                                                           SGCompute__SR__ResultInfo_Closure closure,
                                                           void *closure_data)
 {
