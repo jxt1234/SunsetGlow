@@ -148,7 +148,7 @@ void   sgcompute__sr__result_info__free_unpacked
   assert(message->base.descriptor == &sgcompute__sr__result_info__descriptor);
   protobuf_c_message_free_unpacked ((ProtobufCMessage*)message, allocator);
 }
-static const ProtobufCFieldDescriptor sgcompute__sr__work_info__file_info__field_descriptors[2] =
+static const ProtobufCFieldDescriptor sgcompute__sr__work_info__file_info__field_descriptors[3] =
 {
   {
     "key_dimesion",
@@ -174,15 +174,28 @@ static const ProtobufCFieldDescriptor sgcompute__sr__work_info__file_info__field
     0,             /* flags */
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
+  {
+    "type",
+    3,
+    PROTOBUF_C_LABEL_REQUIRED,
+    PROTOBUF_C_TYPE_STRING,
+    0,   /* quantifier_offset */
+    offsetof(SGCompute__SR__WorkInfo__FileInfo, type),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
 };
 static const unsigned sgcompute__sr__work_info__file_info__field_indices_by_name[] = {
   0,   /* field[0] = key_dimesion */
   1,   /* field[1] = path */
+  2,   /* field[2] = type */
 };
 static const ProtobufCIntRange sgcompute__sr__work_info__file_info__number_ranges[1 + 1] =
 {
   { 1, 0 },
-  { 0, 2 }
+  { 0, 3 }
 };
 const ProtobufCMessageDescriptor sgcompute__sr__work_info__file_info__descriptor =
 {
@@ -192,7 +205,7 @@ const ProtobufCMessageDescriptor sgcompute__sr__work_info__file_info__descriptor
   "SGCompute__SR__WorkInfo__FileInfo",
   "SGCompute.SR",
   sizeof(SGCompute__SR__WorkInfo__FileInfo),
-  2,
+  3,
   sgcompute__sr__work_info__file_info__field_descriptors,
   sgcompute__sr__work_info__file_info__field_indices_by_name,
   1,  sgcompute__sr__work_info__file_info__number_ranges,
@@ -228,7 +241,7 @@ const ProtobufCEnumDescriptor sgcompute__sr__work_info__type__descriptor =
   NULL,NULL,NULL,NULL   /* reserved[1234] */
 };
 static const SGCompute__SR__WorkInfo__TYPE sgcompute__sr__work_info__type__default_value = SGCOMPUTE__SR__WORK_INFO__TYPE__MAP;
-static const ProtobufCFieldDescriptor sgcompute__sr__work_info__field_descriptors[3] =
+static const ProtobufCFieldDescriptor sgcompute__sr__work_info__field_descriptors[6] =
 {
   {
     "inputs",
@@ -266,16 +279,55 @@ static const ProtobufCFieldDescriptor sgcompute__sr__work_info__field_descriptor
     0,             /* flags */
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
+  {
+    "formula",
+    4,
+    PROTOBUF_C_LABEL_REQUIRED,
+    PROTOBUF_C_TYPE_STRING,
+    0,   /* quantifier_offset */
+    offsetof(SGCompute__SR__WorkInfo, formula),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+  {
+    "inputTypes",
+    5,
+    PROTOBUF_C_LABEL_REQUIRED,
+    PROTOBUF_C_TYPE_STRING,
+    0,   /* quantifier_offset */
+    offsetof(SGCompute__SR__WorkInfo, inputtypes),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+  {
+    "parameters",
+    6,
+    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_TYPE_STRING,
+    0,   /* quantifier_offset */
+    offsetof(SGCompute__SR__WorkInfo, parameters),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
 };
 static const unsigned sgcompute__sr__work_info__field_indices_by_name[] = {
+  3,   /* field[3] = formula */
+  4,   /* field[4] = inputTypes */
   0,   /* field[0] = inputs */
   1,   /* field[1] = output */
+  5,   /* field[5] = parameters */
   2,   /* field[2] = type */
 };
 static const ProtobufCIntRange sgcompute__sr__work_info__number_ranges[1 + 1] =
 {
   { 1, 0 },
-  { 0, 3 }
+  { 0, 6 }
 };
 const ProtobufCMessageDescriptor sgcompute__sr__work_info__descriptor =
 {
@@ -285,7 +337,7 @@ const ProtobufCMessageDescriptor sgcompute__sr__work_info__descriptor =
   "SGCompute__SR__WorkInfo",
   "SGCompute.SR",
   sizeof(SGCompute__SR__WorkInfo),
-  3,
+  6,
   sgcompute__sr__work_info__field_descriptors,
   sgcompute__sr__work_info__field_indices_by_name,
   1,  sgcompute__sr__work_info__number_ranges,

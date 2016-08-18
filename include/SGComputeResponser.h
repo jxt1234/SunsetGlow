@@ -16,8 +16,12 @@
 #ifndef COMPUTE_SGCOMPUTERESPONSER_H
 #define COMPUTE_SGCOMPUTERESPONSER_H
 extern "C" {
-#include "protobuf-c-rpc/protobuf-c-rpc.h"
+    #include "protobuf-c-rpc/protobuf-c-rpc.h"
 }
+#include "thread/MGPThreadPool.h"
+#include "core/GPProducer.h"
+#include "core/GPFactory.h"
+
 
 class SGComputeResponser
 {
@@ -30,7 +34,54 @@ public:
     void runLoop();
     bool install(const char* meta);
 
+    struct KeyCombine
+    {
+        unsigned int* pInputKeys;
+        unsigned int nInputKeyNumber;
+        unsigned int* pOutputKeys;
+        unsigned int nOutuptKeyNumber;
+    };
+    
+    class Work
+    {
+    public:
+        Work();
+        virtual ~Work();
+        
+        virtual bool vRun(const std::vector<KeyCombine>& subWorks) = 0;
+
+        GPPieces** pInputs;
+        int nInput;
+        GPPieces* pOutput;
+        IGPFunction* pWorkFunction;
+    };
+    
+    class MapWork:public Work
+    {
+    public:
+        MapWork() = default;
+        ~ MapWork() = default;
+        
+        virtual bool vRun(const std::vector<KeyCombine>& subWorks);
+    };
+    
+    class ReduceWork:public Work
+    {
+    public:
+        ReduceWork() = default;
+        ~ ReduceWork() = default;
+
+        virtual bool vRun(const std::vector<KeyCombine>& subWorks);
+    };
+    
+    uint64_t insertWork(const void* workInfo);
+    Work* queryWork(uint64_t magic) const;
+    bool releaseWork(uint64_t magic);
+    
+    MGPThreadPool* getPool() const {return mPool.get();}
+
 private:
+    
     static SGComputeResponser* gInstance;
     
     SGComputeResponser(const char* port, const char* master_port);
@@ -38,5 +89,12 @@ private:
     
     ProtobufC_RPC_Server* mComputeService;
     ProtobufC_RPC_Client* mReportClient;
+    
+    GPPtr<MGPThreadPool> mPool;
+    GPPtr<GPFunctionDataBase> mDataBase;
+    GPPtr<GPProducer> mProducer;
+    
+    std::map<uint64_t, Work*> mWorks;
+    uint64_t mWorkMagic;
 };
 #endif

@@ -119,6 +119,18 @@ MGPSema* MGPThreadPool::pushTask(Runnable* runnable)
     }
     return sema;
 }
+
+void MGPThreadPool::pushTaskWithoutSema(Runnable* runnable)
+{
+    MGPASSERT(NULL!=runnable);
+    MGPAutoMutex __l(mQueueMutex);
+    mQueues.push(runnable);
+    for (auto t : mThreads)
+    {
+        t->wake();
+    }
+}
+
 MGPThreadPool::Runnable* MGPThreadPool::queueTask()
 {
     MGPAutoMutex __l(mQueueMutex);

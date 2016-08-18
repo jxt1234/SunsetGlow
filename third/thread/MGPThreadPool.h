@@ -23,7 +23,6 @@ class MGPThreadPool:public GPRefCount
 {
 public:
     MGPThreadPool(std::vector<void*> userdata);
-    void start();
     virtual ~MGPThreadPool();
     
     class Runnable:public GPRefCount
@@ -38,8 +37,15 @@ public:
     
     /*API
      * The Runnable will be free by pool, don't delete it any more
+     * MGPSema should be waited before and then deleted
      */
     MGPSema* pushTask(Runnable* runnables);
+    
+    /*API
+     *pushTask Without sema
+     */
+    void pushTaskWithoutSema(Runnable* runnable);
+    
     
     
     /*For child thread*/
