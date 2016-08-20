@@ -539,13 +539,15 @@ const ProtobufCMessageDescriptor sgcompute__sr__result_info__descriptor =
   (ProtobufCMessageInit) sgcompute__sr__result_info__init,
   NULL,NULL,NULL    /* reserved[123] */
 };
-static const ProtobufCMethodDescriptor sgcompute__sr__compute_responser__method_descriptors[2] =
+static const ProtobufCMethodDescriptor sgcompute__sr__compute_responser__method_descriptors[3] =
 {
   { "CreateWork", &sgcompute__sr__work_info__descriptor, &sgcompute__sr__result_info__descriptor },
   { "RunWork", &sgcompute__sr__run_info__descriptor, &sgcompute__sr__result_info__descriptor },
+  { "ReleaseWork", &sgcompute__sr__result_info__descriptor, &sgcompute__sr__result_info__descriptor },
 };
 const unsigned sgcompute__sr__compute_responser__method_indices_by_name[] = {
   0,        /* CreateWork */
+  2,        /* ReleaseWork */
   1         /* RunWork */
 };
 const ProtobufCServiceDescriptor sgcompute__sr__compute_responser__descriptor =
@@ -555,7 +557,7 @@ const ProtobufCServiceDescriptor sgcompute__sr__compute_responser__descriptor =
   "ComputeResponser",
   "SGCompute__SR__ComputeResponser",
   "SGCompute.SR",
-  2,
+  3,
   sgcompute__sr__compute_responser__method_descriptors,
   sgcompute__sr__compute_responser__method_indices_by_name
 };
@@ -574,6 +576,14 @@ void sgcompute__sr__compute_responser__run_work(ProtobufCService *service,
 {
   assert(service->descriptor == &sgcompute__sr__compute_responser__descriptor);
   service->invoke(service, 1, (const ProtobufCMessage *) input, (ProtobufCClosure) closure, closure_data);
+}
+void sgcompute__sr__compute_responser__release_work(ProtobufCService *service,
+                                                    const SGCompute__SR__ResultInfo *input,
+                                                    SGCompute__SR__ResultInfo_Closure closure,
+                                                    void *closure_data)
+{
+  assert(service->descriptor == &sgcompute__sr__compute_responser__descriptor);
+  service->invoke(service, 2, (const ProtobufCMessage *) input, (ProtobufCClosure) closure, closure_data);
 }
 void sgcompute__sr__compute_responser__init (SGCompute__SR__ComputeResponser_Service *service,
                                              SGCompute__SR__ComputeResponser_ServiceDestroy destroy)

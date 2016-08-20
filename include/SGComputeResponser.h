@@ -73,28 +73,30 @@ public:
 
         virtual bool vRun(const std::vector<KeyCombine>& subWorks);
     };
-    
+
     uint64_t insertWork(const void* workInfo);
-    Work* queryWork(uint64_t magic) const;
+    bool runWork(const void* runInfo);
+    void reportStatus(uint64_t runMagic, bool status);
+
     bool releaseWork(uint64_t magic);
     
-    MGPThreadPool* getPool() const {return mPool.get();}
 
 private:
-    
+
     static SGComputeResponser* gInstance;
-    
+
     SGComputeResponser(const char* port, const char* master_port);
     virtual ~ SGComputeResponser();
-    
+
     ProtobufC_RPC_Server* mComputeService;
     ProtobufC_RPC_Client* mReportClient;
-    
+
     GPPtr<MGPThreadPool> mPool;
     GPPtr<GPFunctionDataBase> mDataBase;
     GPPtr<GPProducer> mProducer;
-    
+
     std::map<uint64_t, Work*> mWorks;
     uint64_t mWorkMagic;
+    uint64_t mRunMagic;
 };
 #endif

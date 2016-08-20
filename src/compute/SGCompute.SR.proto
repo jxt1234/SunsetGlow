@@ -40,6 +40,7 @@ message ResultInfo {
 service ComputeResponser {
     rpc CreateWork (WorkInfo) returns (ResultInfo);
     rpc RunWork (RunInfo) returns (ResultInfo);
+    rpc ReleaseWork (ResultInfo) returns (ResultInfo);
 }
 
 service ComputeServerWaiter {

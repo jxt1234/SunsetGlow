@@ -33,42 +33,26 @@ void SG_Response__create_work (SGCompute__SR__ComputeResponser_Service *service,
     result.status = SGCOMPUTE__SR__RESULT_INFO__STATUS__SUCCESS;
     closure(&result, closure_data);
 }
+
+void SG_Response__release_work (SGCompute__SR__ComputeResponser_Service *service,
+                            const SGCompute__SR__ResultInfo *input,
+                            SGCompute__SR__ResultInfo_Closure closure,
+                            void *closure_data)
+{
+    SGComputeResponser::getInstance()->releaseWork(input->magic);
+    SGCompute__SR__ResultInfo result = SGCOMPUTE__SR__RESULT_INFO__INIT;
+    result.magic = input->magic;
+    result.status = SGCOMPUTE__SR__RESULT_INFO__STATUS__SUCCESS;
+    closure(&result, closure_data);
+}
+
+
 void SG_Response__run_work (SGCompute__SR__ComputeResponser_Service *service,
                  const SGCompute__SR__RunInfo *input,
                  SGCompute__SR__ResultInfo_Closure closure,
                  void *closure_data)
 {
-    auto work = SGComputeResponser::getInstance()->queryWork(input->work_magic);
-    SGASSERT(NULL!=work);
-    std::vector<SGComputeResponser::KeyCombine> subWorks;
-    for (int i=0; i<input->n_work_content; ++i)
-    {
-        auto w = input->work_content[i];
-        SGComputeResponser::KeyCombine keyCombine;
-        keyCombine.pOutputKeys = new unsigned int[w->n_outputkeys];
-        keyCombine.pInputKeys = new unsigned int[w->n_inputkeys];
-        SGASSERT(NULL!=keyCombine.pInputKeys);
-        SGASSERT(NULL!=keyCombine.pOutputKeys);
-        keyCombine.nInputKeyNumber = (unsigned int)w->n_inputkeys;
-        keyCombine.nOutuptKeyNumber = (unsigned int)w->n_outputkeys;
-        
-        for (int k=0; k<w->n_outputkeys; ++k)
-        {
-            keyCombine.pOutputKeys[i] = w->outputkeys[k];
-        }
-        for (int k=0; k<w->n_inputkeys; ++k)
-        {
-            keyCombine.pInputKeys[i] = w->inputkeys[k];
-        }
-        subWorks.push_back(keyCombine);
-    }
-
-    bool res = work->vRun(subWorks);
-    for (auto key : subWorks)
-    {
-        delete [] key.pInputKeys;
-        delete [] key.pOutputKeys;
-    }
+    bool res = SGComputeResponser::getInstance()->runWork((const void*)input);
     SGCompute__SR__ResultInfo result = SGCOMPUTE__SR__RESULT_INFO__INIT;
     result.magic = input->work_magic;
     if (res)
@@ -99,6 +83,7 @@ SGComputeResponser::SGComputeResponser(const char* port, const char* master_port
     mReportClient = (ProtobufC_RPC_Client*)service;
     mDataBase = new GPFunctionDataBase;
     mWorkMagic = 0;
+    mRunMagic = 0;
 }
 
 SGComputeResponser::~SGComputeResponser()
@@ -107,6 +92,8 @@ SGComputeResponser::~SGComputeResponser()
 
 void SGComputeResponser::runLoop()
 {
+    mProducer = GPFactory::createProducer(mDataBase.get(), GPFactory::STREAM);
+    mPool = new MGPThreadPool(std::vector<void*>{});
     for (;;)
     {
         //TODO Add mechanism to stop
@@ -115,11 +102,9 @@ void SGComputeResponser::runLoop()
 }
 bool SGComputeResponser::install(const char* meta)
 {
-    mPool = new MGPThreadPool(std::vector<void*>{NULL});
     auto stream_wrap = GPStreamFactory::NewStream(meta);
     mDataBase->loadXml(stream_wrap);
     stream_wrap->decRef();
-    mProducer = GPFactory::createProducer(mDataBase.get(), GPFactory::STREAM);
     return true;
 }
 
@@ -165,15 +150,6 @@ uint64_t SGComputeResponser::insertWork(const void* workInfo)
 
     mWorks.insert(std::make_pair(mWorkMagic, work));
     return mWorkMagic++;
-}
-SGComputeResponser::Work* SGComputeResponser::queryWork(uint64_t magic) const
-{
-    auto iter = mWorks.find(magic);
-    if (iter == mWorks.end())
-    {
-        return NULL;
-    }
-    return iter->second;
 }
 
 bool SGComputeResponser::releaseWork(uint64_t magic)
@@ -300,6 +276,79 @@ bool SGComputeResponser::ReduceWork::vRun(const std::vector<KeyCombine>& subWork
         pOutput->vSave(outputKey, outputKeyNumber, output);
         output->decRef();
     }
-    
     return true;
 }
+
+class WorkRunnable : public MGPThreadPool::Runnable
+{
+public:
+    WorkRunnable(std::vector<SGComputeResponser::KeyCombine>* keys, SGComputeResponser::Work* work, uint64_t magic)
+    {
+        mWork = work;
+        mKeysP = keys;
+        mMagic = magic;
+    }
+    virtual ~WorkRunnable()
+    {
+        auto& subWorks = *mKeysP;
+        for (auto key : subWorks)
+        {
+            delete [] key.pInputKeys;
+            delete [] key.pOutputKeys;
+        }
+        delete mKeysP;
+    }
+    virtual void vRun(void*)
+    {
+        auto res = mWork->vRun(*mKeysP);
+        SGComputeResponser::getInstance()->reportStatus(mMagic, res);
+    }
+private:
+    std::vector<SGComputeResponser::KeyCombine>* mKeysP;
+    SGComputeResponser::Work* mWork;
+    uint64_t mMagic;
+};
+
+bool SGComputeResponser::runWork(const void* runInfo)
+{
+    auto input = (const SGCompute__SR__RunInfo*)runInfo;
+    auto iter = mWorks.find(input->work_magic);
+    if (iter == mWorks.end())
+    {
+        return false;
+    }
+    auto work = iter->second;
+    SGASSERT(NULL!=work);
+    std::vector<SGComputeResponser::KeyCombine>* subWorksP = new std::vector<SGComputeResponser::KeyCombine>;
+    std::vector<SGComputeResponser::KeyCombine>& subWorks = *subWorksP;
+    for (int i=0; i<input->n_work_content; ++i)
+    {
+        auto w = input->work_content[i];
+        SGComputeResponser::KeyCombine keyCombine;
+        keyCombine.pOutputKeys = new unsigned int[w->n_outputkeys];
+        keyCombine.pInputKeys = new unsigned int[w->n_inputkeys];
+        SGASSERT(NULL!=keyCombine.pInputKeys);
+        SGASSERT(NULL!=keyCombine.pOutputKeys);
+        keyCombine.nInputKeyNumber = (unsigned int)w->n_inputkeys;
+        keyCombine.nOutuptKeyNumber = (unsigned int)w->n_outputkeys;
+        
+        for (int k=0; k<w->n_outputkeys; ++k)
+        {
+            keyCombine.pOutputKeys[i] = w->outputkeys[k];
+        }
+        for (int k=0; k<w->n_inputkeys; ++k)
+        {
+            keyCombine.pInputKeys[i] = w->inputkeys[k];
+        }
+        subWorks.push_back(keyCombine);
+    }
+    mPool->pushTaskWithoutSema(new WorkRunnable(subWorksP, work, mRunMagic));
+
+    return true;
+}
+
+void SGComputeResponser::reportStatus(uint64_t runMagic, bool status)
+{
+    
+}
+
