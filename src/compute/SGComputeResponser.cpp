@@ -347,8 +347,31 @@ bool SGComputeResponser::runWork(const void* runInfo)
     return true;
 }
 
+
+static void Responser_Report(const SGCompute__SR__ResultInfo *message, void *closure_data)
+{
+    bool* c = (bool*)closure_data;
+    *c = true;
+}
+
+
 void SGComputeResponser::reportStatus(uint64_t runMagic, bool status)
 {
-    
+    SGCompute__SR__ResultInfo result = SGCOMPUTE__SR__RESULT_INFO__INIT;
+    result.magic = runMagic;
+    if (status)
+    {
+        result.status = SGCOMPUTE__SR__RESULT_INFO__STATUS__SUCCESS;
+    }
+    else
+    {
+        result.status = SGCOMPUTE__SR__RESULT_INFO__STATUS__FAILED;
+    }
+    bool ok = false;
+    sgcompute__sr__compute_server_waiter__report_success((ProtobufCService*)mReportClient, &result, Responser_Report, &ok);
+    while (!ok)
+    {
+        protobuf_c_rpc_dispatch_run (protobuf_c_rpc_dispatch_default ());
+    }
 }
 

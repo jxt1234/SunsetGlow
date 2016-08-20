@@ -1,5 +1,3 @@
-#ifndef THIRD_PROTOBUF-C-RPC_CONFIG_H
-#define THIRD_PROTOBUF-C-RPC_CONFIG_H
 /* config.h.  Generated from config.h.in by configure.  */
 /* config.h.in.  Generated from configure.ac by autoheader.  */
 /* Define to 1 if you have the <alloca.h> header file. */
@@ -91,4 +89,3 @@
 /* #undef _POSIX_1_SOURCE */
 /* Define to 1 if you need to in order for `stat' and other things to work. */
 /* #undef _POSIX_SOURCE */
-#endif
