@@ -1,30 +1,133 @@
 #include "SGResponserExecutor.h"
-#include "MGPThread.h"
+#include "thread/MGPThread.h"
 #include "SGDebug.h"
 #include "SGCompute.SR.pb-c.h"
 #include "utils/AutoStorage.h"
+#include <sstream>
+#include "SGMacro.h"
 
-
-SGResponserExecutor::SGResponserExecutor(const std::vector<ProtobufC_RPC_Client*>& responsers, ProtobufC_RPC_Server* report, GPPtr<Handler> handler)
+SGResponserExecutor::SGResponserExecutor(const std::vector<ProtobufC_RPC_Client*>& responsers, SGComputeServer::Reporter* report, GPPtr<Handler> handler, const GPParallelType* data)
 {
     mTaskClients = responsers;
-    mReportServer = report;
+    mReport = report;
     mHandler = handler;
+    mFormula = data->sFuncInfo.formula;
+    std::ostringstream os;
+    for (auto t : data->sFuncInfo.inputs)
+    {
+        os << t->name() <<" ";
+    }
+    mInputTypes = os.str();
 }
 SGResponserExecutor::~SGResponserExecutor()
 {
 }
 
+
+static void SGCompute__SR__ResultInfo_Closure_CreateWork(const SGCompute__SR__ResultInfo *message, void *closure_data)
+{
+    uint64_t* magicP = (uint64_t*)closure_data;
+    *magicP = message->magic;
+}
+
+class IntWrap : public GPRefCount
+{
+public:
+    IntWrap(uint32_t* p)
+    {
+        mP = p;
+    }
+    virtual ~IntWrap()
+    {
+        delete [] mP;
+    }
+private:
+    uint32_t* mP;
+};
+
+static void _copyFileInfo(SGCompute__SR__WorkInfo__FileInfo* dst, GPPieces* src, std::vector<std::string>& forrelease, std::vector<GPPtr<IntWrap>>& forReleaseKey)
+{
+    *dst = SGCOMPUTE__SR__WORK_INFO__FILE_INFO__INIT;
+    dst->n_key_dimesion = src->nKeyNumber;
+    dst->key_dimesion = new uint32_t[src->nKeyNumber];
+    forReleaseKey.push_back(new IntWrap(dst->key_dimesion));
+    for (int i=0; i<src->nKeyNumber; ++i)
+    {
+        dst->key_dimesion[i] = src->pKeySize[i];
+    }
+    dst->path = (char*)src->sInfo.c_str();
+    std::ostringstream os;
+    for (auto t : src->pTypes)
+    {
+        os << t->name() << " ";
+    }
+    size_t n = forrelease.size();
+    forrelease.push_back(os.str());
+    dst->type = (char*)forrelease[n].c_str();
+    SGASSERT(0<src->sInfo.size());
+//    FUNC_PRINT_ALL(dst->path, s);
+//    FUNC_PRINT_ALL(dst->type, s);
+}
+
 bool SGResponserExecutor::vRun(GPPieces* output, GPPieces** inputs, int inputNumber) const
 {
-    return mHandler->vRun(output, inputs, inputNumber, mReportServer, mTaskClients);
+    uint64_t magic;
+    SGCompute__SR__WorkInfo input = SGCOMPUTE__SR__WORK_INFO__INIT;
+    SGCompute__SR__WorkInfo__FileInfo outputInfo = SGCOMPUTE__SR__WORK_INFO__FILE_INFO__INIT;
+    std::vector<std::string> forRelease;
+    std::vector<GPPtr<IntWrap>> forReleaseKey;
+    _copyFileInfo(&outputInfo, output, forRelease, forReleaseKey);
+    
+    AUTOSTORAGE(totalInput, SGCompute__SR__WorkInfo__FileInfo, inputNumber);
+    AUTOSTORAGE(totalInputP, SGCompute__SR__WorkInfo__FileInfo*, inputNumber);
+    for (int ip=0; ip<inputNumber; ++ip)
+    {
+        _copyFileInfo(totalInput+ip, inputs[ip], forRelease, forReleaseKey);
+        totalInputP[ip] = totalInput + ip;
+    }
+    
+    input.type = SGCOMPUTE__SR__WORK_INFO__TYPE__MAP;//TODO
+    input.n_inputs = inputNumber;
+    input.output = &outputInfo;
+    input.inputs = totalInputP;
+    input.formula = (char*)mFormula.c_str();
+    input.inputtypes = (char*)mInputTypes.c_str();
+    input.parameters = NULL;
+    SGASSERT(mFormula.size()>0);
+    //SGASSERT(mInputTypes.size()>0);
+    
+    
+    std::map<ProtobufC_RPC_Client*, uint64_t> maps;
+    for (auto s : mTaskClients)
+    {
+        magic = 0;
+        sgcompute__sr__compute_responser__create_work((ProtobufCService*)s, &input, SGCompute__SR__ResultInfo_Closure_CreateWork, &magic);
+        while (magic == 0)
+        {
+            protobuf_c_rpc_dispatch_run (protobuf_c_rpc_dispatch_default ());
+        }
+        maps.insert(std::make_pair(s, magic));
+    }
+    bool result = mHandler->vRun(output, inputs, inputNumber, mReport, maps);
+    for (auto kv : maps)
+    {
+        magic = 0;
+        SGCompute__SR__ResultInfo resultInput = SGCOMPUTE__SR__RESULT_INFO__INIT;
+        resultInput.magic = kv.second;
+        resultInput.status = SGCOMPUTE__SR__RESULT_INFO__STATUS__SUCCESS;
+        sgcompute__sr__compute_responser__release_work((ProtobufCService*)kv.first, &resultInput, SGCompute__SR__ResultInfo_Closure_CreateWork, &magic);
+        while (magic == 0)
+        {
+            protobuf_c_rpc_dispatch_run (protobuf_c_rpc_dispatch_default ());
+        }
+    }
+    return result;
 }
 
 
-MapHandler::MapHandler(GPPtr<GPKeyIteratorFactory> factory, uint64_t workMagic)
+MapHandler::MapHandler(GPPtr<GPKeyIteratorFactory> factory)
 {
     mFactory = factory;
-    mWorkMagic = workMagic;
 }
 
 MapHandler::~MapHandler()
@@ -42,43 +145,43 @@ static void Handler_SGCompute__SR__ResultInfo_Closure(const SGCompute__SR__Resul
 }
 
 
-bool MapHandler::vRun(GPPieces* output, GPPieces** inputs, int inputNumber, ProtobufC_RPC_Server* server, const std::vector<ProtobufC_RPC_Client*>& slave) const
+bool MapHandler::vRun(GPPieces* output, GPPieces** inputs, int inputNumber, SGComputeServer::Reporter* report, const std::map<ProtobufC_RPC_Client*, uint64_t>& slaveMagicMap) const
 {
     SGASSERT(NULL!=output);
     SGASSERT(NULL!=inputs);
-    SGASSERT(NULL!=server);
-    SGASSERT(slave.size() > 1);
-    for (auto s : slave)
+    SGASSERT(NULL!=report);
+    SGASSERT(slaveMagicMap.size() > 1);
+    for (auto s : slaveMagicMap)
     {
-        SGASSERT(NULL!=s);
+        SGASSERT(NULL!=s.first);
     }
     GPPtr<IGPKeyIterator> iterator = mFactory->create(inputs, inputNumber, output);
     auto keySize = iterator->vGetSize();
     std::vector<SGResponserExecutor::WorkKey*> keys;
     SGResponserExecutor::WorkKey::generate(iterator.get(), keys);
-    size_t pieceNumber = keys.size() / slave.size();
+    size_t pieceNumber = keys.size() / slaveMagicMap.size();
     if (pieceNumber <= 0)
     {
         pieceNumber = 1;
     }
     size_t sta = 0;
-    MGPSema taskSema;
     int waitNumber = 0;
-    for (int i=0; i<slave.size(); ++i, sta+=pieceNumber)
+    for (auto kv : slaveMagicMap)
     {
         auto fin = sta + pieceNumber;
-        if (fin > slave.size())
+        if (fin > slaveMagicMap.size())
         {
-            fin = slave.size();
+            fin = slaveMagicMap.size();
         }
         if (sta >= fin)
         {
             break;
         }
-        waitNumber++;
+        report->addListenContent(kv.second, waitNumber++);
         auto n = fin-sta;
         SGCompute__SR__RunInfo runInfo = SGCOMPUTE__SR__RUN_INFO__INIT;
         runInfo.n_work_content = n;
+        runInfo.work_magic = kv.second;
         AUTOSTORAGE(units, SGCompute__SR__RunInfo__Unit, (int)(n));
         AUTOSTORAGE(units_inputsKeysTotal, uint32_t, (int)(n*keySize.first));
         AUTOSTORAGE(units_outputKeysTotal, uint32_t, (int)(n*keySize.second));
@@ -102,17 +205,17 @@ bool MapHandler::vRun(GPPieces* output, GPPieces** inputs, int inputNumber, Prot
             }
         }
         bool complete = false;
-        sgcompute__sr__compute_responser__run_work((ProtobufCService*)slave[i], &runInfo, Handler_SGCompute__SR__ResultInfo_Closure, &complete);
+        sgcompute__sr__compute_responser__run_work((ProtobufCService*)kv.first, &runInfo, Handler_SGCompute__SR__ResultInfo_Closure, &complete);
         while (!complete)
         {
             protobuf_c_rpc_dispatch_run (protobuf_c_rpc_dispatch_default ());
         }
+        sta+=pieceNumber;
     }
-    for (int i=0; i<waitNumber; ++i)
+    for (auto kv : slaveMagicMap)
     {
-        taskSema.wait();
+        report->waitForListener(kv.second);
     }
-    
     for(auto k : keys)
     {
         delete k;

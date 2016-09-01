@@ -1,0 +1,8 @@
+#ifndef INCLUDE_SGMACRO_H
+#define INCLUDE_SGMACRO_H
+#define SGREPORT_PORT "3307"
+#define SGSERVER_PORT "3306"
+#define SGRESPONSE_PORT "1000"
+
+#define CACHE_PATH "cache/"
+#endif

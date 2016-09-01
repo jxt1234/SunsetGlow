@@ -294,7 +294,7 @@ static const ProtobufCFieldDescriptor sgcompute__sr__work_info__field_descriptor
   {
     "inputTypes",
     5,
-    PROTOBUF_C_LABEL_REQUIRED,
+    PROTOBUF_C_LABEL_OPTIONAL,
     PROTOBUF_C_TYPE_STRING,
     0,   /* quantifier_offset */
     offsetof(SGCompute__SR__WorkInfo, inputtypes),

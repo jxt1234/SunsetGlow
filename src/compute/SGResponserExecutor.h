@@ -1,3 +1,5 @@
+#ifndef SRC_COMPUTE_SGRESPONSEREXECUTOR_H
+#define SRC_COMPUTE_SGRESPONSEREXECUTOR_H
 #include "lowlevelAPI/IParallelMachine.h"
 extern "C"{
 #include "protobuf-c-rpc/protobuf-c-rpc.h"
@@ -6,7 +8,7 @@ extern "C"{
 #include <string>
 #include "backend/IGPKeyIterator.h"
 #include "backend/GPKeyIteratorFactory.h"
-
+#include "SGComputeServer.h"
 class SGResponserExecutor:public IParallelMachine::Executor
 {
 public:
@@ -24,7 +26,6 @@ public:
     private:
         unsigned int* mInputKey;
         unsigned int* mOutputKey;
-        
     };
     
     class Handler:public GPRefCount
@@ -32,39 +33,28 @@ public:
     public:
         Handler(){}
         virtual ~ Handler(){}
-        virtual bool vRun(GPPieces* output, GPPieces** inputs, int inputNumber, ProtobufC_RPC_Server* server, const std::vector<ProtobufC_RPC_Client*>& slave) const = 0;
+        virtual bool vRun(GPPieces* output, GPPieces** inputs, int inputNumber, SGComputeServer::Reporter* report, const std::map<ProtobufC_RPC_Client*, uint64_t>& slaveMagicMap) const = 0;
     };
     
     
-    SGResponserExecutor(const std::vector<ProtobufC_RPC_Client*>& responsers, ProtobufC_RPC_Server* report, GPPtr<Handler> handler);
+    SGResponserExecutor(const std::vector<ProtobufC_RPC_Client*>& responsers, SGComputeServer::Reporter* report, GPPtr<Handler> handler, const GPParallelType* data);
     virtual ~SGResponserExecutor();
     
     virtual bool vRun(GPPieces* output, GPPieces** inputs, int inputNumber) const override;
 private:
-    ProtobufC_RPC_Server* mReportServer;
+    SGComputeServer::Reporter* mReport;
     std::vector<ProtobufC_RPC_Client*> mTaskClients;
     GPPtr<Handler> mHandler;
+    std::string mFormula;
+    std::string mInputTypes;
 };
-
-
 class MapHandler:public SGResponserExecutor::Handler
 {
 public:
-    MapHandler(GPPtr<GPKeyIteratorFactory> factory, uint64_t workMagic);
+    MapHandler(GPPtr<GPKeyIteratorFactory> factory);
     virtual ~ MapHandler();
-    virtual bool vRun(GPPieces* output, GPPieces** inputs, int inputNumber, ProtobufC_RPC_Server* server, const std::vector<ProtobufC_RPC_Client*>& slave) const override;
+    virtual bool vRun(GPPieces* output, GPPieces** inputs, int inputNumber, SGComputeServer::Reporter* report, const std::map<ProtobufC_RPC_Client*, uint64_t>& slaveMagicMap) const override;
 private:
     GPPtr<GPKeyIteratorFactory> mFactory;
-    uint64_t mWorkMagic;
 };
-
-class ReduceHandler:public SGResponserExecutor::Handler
-{
-public:
-    ReduceHandler(GPPtr<GPKeyIteratorFactory> factory, uint64_t workMagic);
-    virtual ~ ReduceHandler();
-    virtual bool vRun(GPPieces* output, GPPieces** inputs, int inputNumber, ProtobufC_RPC_Server* server, const std::vector<ProtobufC_RPC_Client*>& slave) const override;
-private:
-    GPPtr<GPKeyIteratorFactory> mFactory;
-    uint64_t mWorkMagic;
-};
+#endif

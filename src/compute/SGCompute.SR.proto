@@ -14,7 +14,7 @@ message WorkInfo {
     }
     required TYPE type = 3 [default = MAP];
     required string formula = 4;
-    required string inputTypes = 5;
+    optional string inputTypes = 5;
     optional string parameters = 6;
 }
 

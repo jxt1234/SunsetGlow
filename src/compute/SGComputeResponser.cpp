@@ -30,6 +30,7 @@ void SG_Response__create_work (SGCompute__SR__ComputeResponser_Service *service,
     uint64_t magic = SGComputeResponser::getInstance()->insertWork((const void*)input);
     SGCompute__SR__ResultInfo result = SGCOMPUTE__SR__RESULT_INFO__INIT;
     result.magic = magic;
+    FUNC_PRINT(magic);
     result.status = SGCOMPUTE__SR__RESULT_INFO__STATUS__SUCCESS;
     closure(&result, closure_data);
 }
@@ -55,6 +56,7 @@ void SG_Response__run_work (SGCompute__SR__ComputeResponser_Service *service,
     bool res = SGComputeResponser::getInstance()->runWork((const void*)input);
     SGCompute__SR__ResultInfo result = SGCOMPUTE__SR__RESULT_INFO__INIT;
     result.magic = input->work_magic;
+    FUNC_PRINT(result.magic);
     if (res)
     {
         result.status = SGCOMPUTE__SR__RESULT_INFO__STATUS__SUCCESS;
@@ -82,8 +84,8 @@ SGComputeResponser::SGComputeResponser(const char* port, const char* master_port
     SGASSERT(NULL!=service);
     mReportClient = (ProtobufC_RPC_Client*)service;
     mDataBase = new GPFunctionDataBase;
-    mWorkMagic = 0;
-    mRunMagic = 0;
+    mWorkMagic = 1;
+    mRunMagic = 1;
 }
 
 SGComputeResponser::~SGComputeResponser()
@@ -93,7 +95,7 @@ SGComputeResponser::~SGComputeResponser()
 void SGComputeResponser::runLoop()
 {
     mProducer = GPFactory::createProducer(mDataBase.get(), GPFactory::STREAM);
-    mPool = new MGPThreadPool(std::vector<void*>{});
+    mPool = new MGPThreadPool(std::vector<void*>{NULL});
     for (;;)
     {
         //TODO Add mechanism to stop

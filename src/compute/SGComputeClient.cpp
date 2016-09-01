@@ -4,11 +4,12 @@
 #include "SGDebug.h"
 #include "utils/AutoStorage.h"
 #include <sstream>
+#include "SGMacro.h"
 
 SGComputeClient::SGComputeClient()
 {
     //FIXME
-    auto service = protobuf_c_rpc_client_new(PROTOBUF_C_RPC_ADDRESS_LOCAL, "3306", &sgcompute__cs__compute_server__descriptor, NULL);
+    auto service = protobuf_c_rpc_client_new(PROTOBUF_C_RPC_ADDRESS_LOCAL, SGSERVER_PORT, &sgcompute__cs__compute_server__descriptor, NULL);
     SGASSERT(NULL!=service);
     mClient = (ProtobufC_RPC_Client*)service;
     protobuf_c_rpc_dispatch_run (protobuf_c_rpc_dispatch_default ());
@@ -240,24 +241,24 @@ GPPieces* SGComputeClient::vCreatePieces(const char* description, std::vector<co
     SGCompute__CS__PieceInfo pieceInfo = SGCOMPUTE__CS__PIECE_INFO__INIT;
     
     char* describe = (char*)description;
-    char* dataType = (char*)"NULL";
     char* cacheDescribe = (char*)"CACHE";
     std::string dataTypeString;
     pieceInfo.n_keydimesion = keyNum;
     pieceInfo.keydimesion= keys;
     pieceInfo.path = describe;
-    pieceInfo.datatype = dataType;
+    std::ostringstream os;
+    for (auto t : types)
+    {
+        os << t->name() << " ";
+    }
+    dataTypeString = os.str();
+    pieceInfo.datatype = (char*)dataTypeString.c_str();
+    FUNC_PRINT_ALL(dataTypeString.c_str(), s);
+    FUNC_PRINT(usage);
     switch (usage)
     {
         case IParallelMachine::INPUT:
         {
-            std::ostringstream os;
-            for (auto t : types)
-            {
-                os << t->name() << " ";
-            }
-            dataTypeString = os.str();
-            pieceInfo.datatype = (char*)dataTypeString.c_str();
             pieceInfo.piecetype = 0;
             break;
         }

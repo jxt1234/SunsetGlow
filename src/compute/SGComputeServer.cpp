@@ -1,14 +1,60 @@
 #include "SGComputeServer.h"
 #include "SGCompute.CS.pb-c.h"
+#include "SGCompute.SR.pb-c.h"
 #include <assert.h>
 #include "SGDebug.h"
+#include "SGMacro.h"
 #include "core/GPPieceFactory.h"
 #include "core/GPStreamFactory.h"
 #include <sstream>
 #include "backend/GPSingleParallelMachine.h"
+#include "thread/MGPThread.h"
+#include "SGResponserExecutor.h"
 
 
 SGComputeServer* SGComputeServer::gServer = NULL;
+
+class BasicReporter:public SGComputeServer::Reporter
+{
+public:
+    BasicReporter()
+    {
+        
+    }
+    virtual ~BasicReporter()
+    {
+    }
+    virtual void addListenContent(uint64_t magic, uint64_t index)
+    {
+        auto iter = mWaitCounts.find(magic);
+        if (iter != mWaitCounts.end())
+        {
+            iter->second++;
+        }
+    }
+    virtual bool waitForListener(uint64_t magic, uint64_t maxTimeInMs)
+    {
+        auto count = mWaitCounts.find(magic)->second;
+        auto sema = mSemas.find(magic)->second;
+        for (int i=0; i<count; ++i)
+        {
+            sema->wait();
+        }
+        return true;
+    }
+    virtual bool postListener(uint64_t magic)
+    {
+        auto iter = mSemas.find(magic);
+        SGASSERT(iter!=mSemas.end());
+        iter->second->post();
+        return true;
+    }
+    
+private:
+    std::map<uint64_t, MGPSema*> mSemas;
+    std::map<uint64_t, int> mWaitCounts;
+};
+
 
 static void SG_compute__copy (SGCompute__CS__ComputeServer_Service *service, const SGCompute__CS__CopyInfo *input, SGCompute__CS__Result_Closure closure, void *closure_data)
 {
@@ -87,7 +133,7 @@ static void SG_compute__create (SGCompute__CS__ComputeServer_Service *service, c
     {
         case 1:
         {
-            auto number = SGComputeServer::getInstance()->createCache(convertKeys, (int)(input->n_keydimesion));
+            auto number = SGComputeServer::getInstance()->createCache(convertKeys, (int)(input->n_keydimesion), input->datatype);
             result.magic = number;
             break;
         }
@@ -115,6 +161,7 @@ static void SG_compute__create_executor (SGCompute__CS__ComputeServer_Service *s
     GPParallelType data;
     auto server = SGComputeServer::getInstance();
     data.sFuncInfo.inputs = server->translateTypes(input->sfuncinfo->inputstype);
+    //SGASSERT(data.sFuncInfo.inputs.size()>0);
     data.sFuncInfo.formula = input->sfuncinfo->formula;
     data.sFuncInfo.parameter = input->sfuncinfo->parameter;
     for (int i=0; i<input->sfuncinfo->n_variablekey; ++i)
@@ -146,25 +193,46 @@ static void SG_compute__create_executor (SGCompute__CS__ComputeServer_Service *s
     closure(&result_message, closure_data);
 }
 
+static void SG_compute_wait_report_success(SGCompute__SR__ComputeServerWaiter_Service *service,
+                       const SGCompute__SR__ResultInfo *input,
+                       SGCompute__SR__ResultInfo_Closure closure,
+                       void *closure_data)
+{
+    SGComputeServer::getInstance()->getReporter()->postListener(input->magic);
+    SGCompute__SR__ResultInfo outputResult = SGCOMPUTE__SR__RESULT_INFO__INIT;
+    outputResult.magic = input->magic;
+    outputResult.status = SGCOMPUTE__SR__RESULT_INFO__STATUS__SUCCESS;
+    closure(&outputResult, closure_data);
+}
+
+
 
 static SGCompute__CS__ComputeServer_Service create_service = SGCOMPUTE__CS__COMPUTE_SERVER__INIT(SG_compute__);
 
+
+static SGCompute__SR__ComputeServerWaiter_Service wait_service = SGCOMPUTE__SR__COMPUTE_SERVER_WAITER__INIT(SG_compute_wait_);
 
 
 
 SGComputeServer::SGComputeServer()
 {
     //TODO
-    mServer = protobuf_c_rpc_server_new(PROTOBUF_C_RPC_ADDRESS_LOCAL, "3306", (ProtobufCService *) &create_service, NULL);
+    mServer = protobuf_c_rpc_server_new(PROTOBUF_C_RPC_ADDRESS_LOCAL, SGSERVER_PORT, (ProtobufCService *) &create_service, NULL);
+    mReportServer = protobuf_c_rpc_server_new(PROTOBUF_C_RPC_ADDRESS_LOCAL, SGREPORT_PORT, (ProtobufCService *) &wait_service, NULL);
     mDataBase = new GPFunctionDataBase;
     mProducer = NULL;
     mCacheOrder = 0;
     mExecutorOrder = 0;
+    mReporter = new BasicReporter;
+    
+    auto responseClient = protobuf_c_rpc_client_new(PROTOBUF_C_RPC_ADDRESS_LOCAL, SGRESPONSE_PORT, &sgcompute__sr__compute_responser__descriptor, NULL);
+    mResponseClients.push_back((ProtobufC_RPC_Client*)responseClient);
 }
 
 SGComputeServer::~SGComputeServer()
 {
     protobuf_c_rpc_server_destroy(mServer, true);
+    protobuf_c_rpc_server_destroy(mReportServer, true);
     for (auto iter:mCachePieces)
     {
         iter.second->decRef();
@@ -172,6 +240,11 @@ SGComputeServer::~SGComputeServer()
     for (auto iter:mExecutors)
     {
         iter.second->decRef();
+    }
+    for (auto c : mResponseClients)
+    {
+        auto service = (ProtobufCService*)c;
+        service->destroy(service);
     }
 }
 SGComputeServer* SGComputeServer::getInstance()
@@ -194,6 +267,15 @@ void SGComputeServer::addMetaFile(const char* metaFile)
 
 void SGComputeServer::runLoop()
 {
+    for (auto c : mResponseClients)
+    {
+        protobuf_c_rpc_dispatch_run (protobuf_c_rpc_dispatch_default ());
+        while (!protobuf_c_rpc_client_is_connected (c))
+        {
+            FUNC_PRINT(1);
+            protobuf_c_rpc_dispatch_run (protobuf_c_rpc_dispatch_default());
+        }
+    }
     for (;;)
     {
         //TODO Add mechanism to stop
@@ -201,7 +283,7 @@ void SGComputeServer::runLoop()
     }
 }
 
-uint64_t SGComputeServer::createCache(unsigned int* keyDimesions, int keyNumber)
+uint64_t SGComputeServer::createCache(unsigned int* keyDimesions, int keyNumber, const char* type)
 {
     SGASSERT(NULL!=keyDimesions);
     SGASSERT(keyNumber>0);
@@ -212,9 +294,17 @@ uint64_t SGComputeServer::createCache(unsigned int* keyDimesions, int keyNumber)
     {
         keyDV.push_back(keyDimesions[i]);
     }
-    GPPieces* pieces = GPPieceFactory::createMemoryPiece(keyDV);
+    std::ostringstream os;
+    os << "cache/"<<number;
+    GPPieces* pieces = GPPieceFactory::createLocalFilePiece(translateTypes(type), os.str().c_str(), 0, true);
     mCachePieces.insert(std::make_pair(number, pieces));
     FUNC_PRINT((int)mCachePieces.size());
+    pieces->nKeyNumber = keyNumber;
+    for (int i=0; i<keyNumber; ++i)
+    {
+        pieces->pKeySize[i] = keyDimesions[i];
+    }
+    pieces->sInfo = os.str();
     return number;
 }
 
@@ -249,6 +339,7 @@ uint64_t SGComputeServer::createInput(const char* path, const char* type, unsign
     }
     mCachePieces.insert(std::make_pair(number, pieces));
     FUNC_PRINT((int)mCachePieces.size());
+    pieces->sInfo = path;
     return number;
 }
 uint64_t SGComputeServer::createOutput(const char* path)
@@ -259,6 +350,7 @@ uint64_t SGComputeServer::createOutput(const char* path)
     GPPieces* pieces = GPPieceFactory::createLocalFilePiece(std::vector<const IStatusType*>(), path, 0, true);
     mCachePieces.insert(std::make_pair(number, pieces));
     FUNC_PRINT((int)mCachePieces.size());
+    pieces->sInfo = path;
     return number;
 }
 
@@ -307,8 +399,18 @@ IParallelMachine::Executor* SGComputeServer::findExecutor(uint64_t number)
 uint64_t SGComputeServer::createExecutor(GPParallelType* data, IParallelMachine::PARALLELTYPE type)
 {
     data->pContext = mProducer.get();
-    GPSingleParallelMachine machine;
-    auto executor = machine.vPrepare(data, type);
-    mExecutors.insert(std::make_pair(mExecutorOrder, executor));
+    if (type == IParallelMachine::REDUCE)
+    {
+        GPSingleParallelMachine machine;
+        auto executor = machine.vPrepare(data, type);
+        mExecutors.insert(std::make_pair(mExecutorOrder, executor));
+    }
+    else
+    {
+        GPPtr<GPKeyIteratorFactory> keyIteratorFactory = new GPKeyIteratorFactory(data);
+        GPPtr<SGResponserExecutor::Handler> handler = new MapHandler(keyIteratorFactory);
+        SGResponserExecutor* executor = new SGResponserExecutor(mResponseClients, mReporter.get(), handler, data);
+        mExecutors.insert(std::make_pair(mExecutorOrder, executor));
+    }
     return mExecutorOrder++;
 }
