@@ -28,6 +28,11 @@
 
 #ifndef __PROTOBUF_C_RPC_H_
 #define __PROTOBUF_C_RPC_H_
+
+#ifdef __cplusplus
+extern "C"{
+#endif
+
 #include "config.h"
 #include <protobuf-c/protobuf-c.h>
 #include <protobuf-c-rpc/protobuf-c-rpc-dispatch.h>
@@ -213,4 +218,9 @@ void protobuf_c_rpc_server_set_error_handler (ProtobufC_RPC_Server *server,
                                               ProtobufC_RPC_Error_Func func,
                                               void                 *error_func_data);
 
+#ifdef __cplusplus
+}
+#endif
+
+    
 #endif

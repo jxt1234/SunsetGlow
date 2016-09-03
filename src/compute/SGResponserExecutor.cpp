@@ -104,7 +104,7 @@ bool SGResponserExecutor::vRun(GPPieces* output, GPPieces** inputs, int inputNum
         sgcompute__sr__compute_responser__create_work((ProtobufCService*)s, &input, SGCompute__SR__ResultInfo_Closure_CreateWork, &magic);
         while (magic == 0)
         {
-            protobuf_c_rpc_dispatch_run (protobuf_c_rpc_dispatch_default ());
+//            SGServerBasicElement::getInstance()->waitForMessage();
         }
         maps.insert(std::make_pair(s, magic));
     }
@@ -118,7 +118,7 @@ bool SGResponserExecutor::vRun(GPPieces* output, GPPieces** inputs, int inputNum
         sgcompute__sr__compute_responser__release_work((ProtobufCService*)kv.first, &resultInput, SGCompute__SR__ResultInfo_Closure_CreateWork, &magic);
         while (magic == 0)
         {
-            protobuf_c_rpc_dispatch_run (protobuf_c_rpc_dispatch_default ());
+//            SGServerBasicElement::getInstance()->waitForMessage();
         }
     }
     return result;
@@ -208,7 +208,7 @@ bool MapHandler::vRun(GPPieces* output, GPPieces** inputs, int inputNumber, SGCo
         sgcompute__sr__compute_responser__run_work((ProtobufCService*)kv.first, &runInfo, Handler_SGCompute__SR__ResultInfo_Closure, &complete);
         while (!complete)
         {
-            protobuf_c_rpc_dispatch_run (protobuf_c_rpc_dispatch_default ());
+            //SGServerBasicElement::getInstance()->waitForMessage();
         }
         sta+=pieceNumber;
     }

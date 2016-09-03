@@ -21,9 +21,10 @@ extern "C" {
 #include "thread/MGPThreadPool.h"
 #include "core/GPProducer.h"
 #include "core/GPFactory.h"
+#include "SGBasicServer.h"
 
 
-class SGComputeResponser
+class SGComputeResponser:public SGBasicServer
 {
 public:
     static bool init(const char* port, const char* master_port);
@@ -31,8 +32,9 @@ public:
     //After init, can do this
     static SGComputeResponser* getInstance();
     
-    void runLoop();
     bool install(const char* meta);
+    
+    virtual bool onSetup() override;
 
     struct KeyCombine
     {
@@ -41,7 +43,6 @@ public:
         unsigned int* pOutputKeys;
         unsigned int nOutuptKeyNumber;
     };
-    
     class Work
     {
     public:
@@ -55,7 +56,6 @@ public:
         GPPieces* pOutput;
         IGPFunction* pWorkFunction;
     };
-    
     class MapWork:public Work
     {
     public:
@@ -64,7 +64,6 @@ public:
         
         virtual bool vRun(const std::vector<KeyCombine>& subWorks);
     };
-    
     class ReduceWork:public Work
     {
     public:
@@ -79,7 +78,6 @@ public:
     void reportStatus(uint64_t runMagic, bool status);
 
     bool releaseWork(uint64_t magic);
-    
 
 private:
 

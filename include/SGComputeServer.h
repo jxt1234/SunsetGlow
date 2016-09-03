@@ -23,9 +23,10 @@ extern "C" {
 #include <string>
 #include "core/GPProducer.h"
 #include "core/GPFactory.h"
+#include "SGBasicServer.h"
 
 
-class SGComputeServer :public GPRefCount
+class SGComputeServer :public SGBasicServer
 {
 public:
     class Reporter:public GPRefCount
@@ -40,12 +41,11 @@ public:
     };
 
     static SGComputeServer* getInstance();
-    void runLoop();
     
     //Pieces manager
     uint64_t createCache(unsigned int* keyDimesions, int keyNumber, const char* type);
     uint64_t createInput(const char* path, const char* type, unsigned int* keyDimesions, int keyNumber);
-    uint64_t createOutput(const char* path);
+    uint64_t createOutput(const char* path, const char* type, unsigned int* keyDimesions, int keyNumber);
     bool release(uint64_t number);
     GPPieces* find(uint64_t number);
     void addMetaFile(const char* metaFile);
@@ -56,6 +56,8 @@ public:
     std::vector<const IStatusType*> translateTypes(const std::string& typeInfos) const;
     
     Reporter* getReporter() const {return mReporter.get();}
+    
+    virtual bool onSetup();
 
 private:
     static SGComputeServer* gServer;

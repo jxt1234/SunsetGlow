@@ -10,6 +10,19 @@
 #include "backend/GPSingleParallelMachine.h"
 #include "thread/MGPThread.h"
 #include "SGResponserExecutor.h"
+static void _setPieceKey(GPPieces* pieces, unsigned int* keyDimesions, int keyNumber)
+{
+    pieces->nKeyNumber = keyNumber;
+    for (int i=0; i<keyNumber; ++i)
+    {
+        pieces->pKeySize[i] = keyDimesions[i];
+    }
+    if (0 == keyNumber)
+    {
+        pieces->nKeyNumber = 1;
+        pieces->pKeySize[0] = 1;
+    }
+}
 
 
 SGComputeServer* SGComputeServer::gServer = NULL;
@@ -70,25 +83,58 @@ static void SG_compute__copy (SGCompute__CS__ComputeServer_Service *service, con
 }
 
 
+class PieceExecuteWork : public SGBasicServer::Work
+{
+public:
+    PieceExecuteWork(const SGCompute__CS__ComputeInfo *input, SGCompute__CS__Result_Closure closure, void *closure_data)
+    {
+        auto server = SGComputeServer::getInstance();
+        mExecutor = server->findExecutor(input->executor);
+        mOutput = server->find(input->outputpiece);
+        mInputNumber = (int)input->n_inputpieces;
+        mInputs = new GPPieces*[mInputNumber];
+        for (int i=0; i<mInputNumber; ++i)
+        {
+            mInputs[i] = server->find(input->inputpieces[i]);
+        }
+        //TODO check inputs
+        
+        mClosure = closure;
+        mClosureData = closure_data;
+    }
+    virtual ~PieceExecuteWork()
+    {
+        delete [] mInputs;
+    }
+    
+    virtual STATUS vRun()
+    {
+        bool success = mExecutor->vRun(mOutput, mInputs, mInputNumber);
+        if (success)
+        {
+            SGCompute__CS__Result report = SGCOMPUTE__CS__RESULT__INIT;
+            report.magic = 0;
+            report.code = 0;
+            mClosure(&report, mClosureData);
+            return SUCCESS;
+        }
+        return WAIT;
+    }
+private:
+    GPPieces* mOutput;
+    GPPieces** mInputs;
+    SGCompute__CS__Result_Closure mClosure;
+    void* mClosureData;
+    int mInputNumber;
+    IParallelMachine::Executor* mExecutor;
+};
+
+
 static void SG_compute__execute (SGCompute__CS__ComputeServer_Service *service, const SGCompute__CS__ComputeInfo *input, SGCompute__CS__Result_Closure closure, void *closure_data)
 {
     auto server = SGComputeServer::getInstance();
-    auto executor = server->findExecutor(input->executor);
-    auto output = server->find(input->outputpiece);
-    int inputNumber = (int)input->n_inputpieces;
-    AUTOSTORAGE(inputs, GPPieces*, inputNumber);
-    for (int i=0; i<inputNumber; ++i)
-    {
-        inputs[i] = server->find(input->inputpieces[i]);
-    }
-    //TODO check inputs
-
-    bool result = executor->vRun(output, inputs, inputNumber);
-    FUNC_PRINT(result);
-    SGCompute__CS__Result report = SGCOMPUTE__CS__RESULT__INIT;
-    report.magic = 0;
-    report.code = 0;
-    closure(&report, closure_data);
+    SGBasicServer::Work* work = new PieceExecuteWork(input, closure, closure_data);
+    server->addWork(work);
 }
 
 static bool _checkInput(const SGCompute__CS__PieceInfo* input)
@@ -145,7 +191,7 @@ static void SG_compute__create (SGCompute__CS__ComputeServer_Service *service, c
         }
         case 2:
         {
-            auto number = SGComputeServer::getInstance()->createOutput(input->path);
+            auto number = SGComputeServer::getInstance()->createOutput(input->path, input->datatype, convertKeys, (int)input->n_keydimesion);
             result.magic = number;
             break;
         }
@@ -265,45 +311,18 @@ void SGComputeServer::addMetaFile(const char* metaFile)
     mProducer = GPFactory::createProducer(mDataBase.get(), GPFactory::STREAM);
 }
 
-void SGComputeServer::runLoop()
-{
-    for (auto c : mResponseClients)
-    {
-        protobuf_c_rpc_dispatch_run (protobuf_c_rpc_dispatch_default ());
-        while (!protobuf_c_rpc_client_is_connected (c))
-        {
-            FUNC_PRINT(1);
-            protobuf_c_rpc_dispatch_run (protobuf_c_rpc_dispatch_default());
-        }
-    }
-    for (;;)
-    {
-        //TODO Add mechanism to stop
-        protobuf_c_rpc_dispatch_run (protobuf_c_rpc_dispatch_default());
-    }
-}
-
 uint64_t SGComputeServer::createCache(unsigned int* keyDimesions, int keyNumber, const char* type)
 {
     SGASSERT(NULL!=keyDimesions);
     SGASSERT(keyNumber>0);
     uint64_t number = mCacheOrder + 1;
     mCacheOrder = mCacheOrder + 1;
-    std::vector<unsigned int> keyDV;
-    for (int i=0; i<keyNumber; ++i)
-    {
-        keyDV.push_back(keyDimesions[i]);
-    }
     std::ostringstream os;
     os << "cache/"<<number;
     GPPieces* pieces = GPPieceFactory::createLocalFilePiece(translateTypes(type), os.str().c_str(), 0, true);
     mCachePieces.insert(std::make_pair(number, pieces));
     FUNC_PRINT((int)mCachePieces.size());
-    pieces->nKeyNumber = keyNumber;
-    for (int i=0; i<keyNumber; ++i)
-    {
-        pieces->pKeySize[i] = keyDimesions[i];
-    }
+    _setPieceKey(pieces, keyDimesions, keyNumber);
     pieces->sInfo = os.str();
     return number;
 }
@@ -323,6 +342,7 @@ std::vector<const IStatusType*> SGComputeServer::translateTypes(const std::strin
 }
 
 
+
 uint64_t SGComputeServer::createInput(const char* path, const char* type, unsigned int* keyDimesions, int keyNumber)
 {
     SGASSERT(NULL!=path);
@@ -332,26 +352,27 @@ uint64_t SGComputeServer::createInput(const char* path, const char* type, unsign
     uint64_t number = mCacheOrder + 1;
     mCacheOrder = mCacheOrder + 1;
     GPPieces* pieces = GPPieceFactory::createLocalFilePiece(translateTypes(type), path, 0, false);
-    pieces->nKeyNumber = keyNumber;
-    for (int i=0; i<keyNumber; ++i)
-    {
-        pieces->pKeySize[i] = keyDimesions[i];
-    }
+    _setPieceKey(pieces, keyDimesions, keyNumber);
     mCachePieces.insert(std::make_pair(number, pieces));
     FUNC_PRINT((int)mCachePieces.size());
     pieces->sInfo = path;
     return number;
 }
-uint64_t SGComputeServer::createOutput(const char* path)
+uint64_t SGComputeServer::createOutput(const char* path, const char* type, unsigned int* keyDimesions, int keyNumber)
 {
     SGASSERT(NULL!=path);
+//    SGASSERT(NULL!=type);
+//    SGASSERT(NULL!=keyDimesions);
+//    SGASSERT(keyNumber>0);
     uint64_t number = mCacheOrder + 1;
     mCacheOrder = mCacheOrder + 1;
-    GPPieces* pieces = GPPieceFactory::createLocalFilePiece(std::vector<const IStatusType*>(), path, 0, true);
+    GPPieces* pieces = GPPieceFactory::createLocalFilePiece(translateTypes(type), path, 0, true);
+    _setPieceKey(pieces, keyDimesions, keyNumber);
     mCachePieces.insert(std::make_pair(number, pieces));
     FUNC_PRINT((int)mCachePieces.size());
     pieces->sInfo = path;
     return number;
+
 }
 
 bool SGComputeServer::release(uint64_t number)
@@ -396,10 +417,26 @@ IParallelMachine::Executor* SGComputeServer::findExecutor(uint64_t number)
     return iter->second;
 }
 
+bool SGComputeServer::onSetup()
+{
+    for (auto c : mResponseClients)
+    {
+        protobuf_c_rpc_dispatch_run (protobuf_c_rpc_dispatch_default ());
+        while (!protobuf_c_rpc_client_is_connected (c))
+        {
+            FUNC_PRINT(1);
+            protobuf_c_rpc_dispatch_run (protobuf_c_rpc_dispatch_default());
+        }
+    }
+    return true;
+}
+
+
 uint64_t SGComputeServer::createExecutor(GPParallelType* data, IParallelMachine::PARALLELTYPE type)
 {
     data->pContext = mProducer.get();
-    if (type == IParallelMachine::REDUCE)
+    //if (type == IParallelMachine::REDUCE)
+    if (true)
     {
         GPSingleParallelMachine machine;
         auto executor = machine.vPrepare(data, type);

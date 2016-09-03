@@ -92,16 +92,6 @@ SGComputeResponser::~SGComputeResponser()
 {
 }
 
-void SGComputeResponser::runLoop()
-{
-    mProducer = GPFactory::createProducer(mDataBase.get(), GPFactory::STREAM);
-    mPool = new MGPThreadPool(std::vector<void*>{NULL});
-    for (;;)
-    {
-        //TODO Add mechanism to stop
-        protobuf_c_rpc_dispatch_run (protobuf_c_rpc_dispatch_default());
-    }
-}
 bool SGComputeResponser::install(const char* meta)
 {
     auto stream_wrap = GPStreamFactory::NewStream(meta);
@@ -371,9 +361,15 @@ void SGComputeResponser::reportStatus(uint64_t runMagic, bool status)
     }
     bool ok = false;
     sgcompute__sr__compute_server_waiter__report_success((ProtobufCService*)mReportClient, &result, Responser_Report, &ok);
-    while (!ok)
-    {
-        protobuf_c_rpc_dispatch_run (protobuf_c_rpc_dispatch_default ());
-    }
+//    while (!ok)
+//    {
+//        SGServerBasicElement::getInstance()->waitForMessage();
+//    }
 }
 
+bool SGComputeResponser::onSetup()
+{
+    mProducer = GPFactory::createProducer(mDataBase.get(), GPFactory::STREAM);
+    mPool = new MGPThreadPool(std::vector<void*>{NULL});
+    return true;
+}
