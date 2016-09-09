@@ -25,5 +25,7 @@ public:
     void addWork(Work* w);
     
 private:
+    void _runRemainWork();
+    
     std::vector<Work*> mWorkQueue;
 };

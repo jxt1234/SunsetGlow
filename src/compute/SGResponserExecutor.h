@@ -33,7 +33,7 @@ public:
     public:
         Handler(){}
         virtual ~ Handler(){}
-        virtual bool vRun(GPPieces* output, GPPieces** inputs, int inputNumber, SGComputeServer::Reporter* report, const std::map<ProtobufC_RPC_Client*, uint64_t>& slaveMagicMap) const = 0;
+        virtual bool vRun(GPPieces* output, GPPieces** inputs, int inputNumber, const std::map<ProtobufC_RPC_Client*, uint64_t>& slaveMagicMap) const = 0;
     };
     
     
@@ -41,7 +41,32 @@ public:
     virtual ~SGResponserExecutor();
     
     virtual bool vRun(GPPieces* output, GPPieces** inputs, int inputNumber) const override;
+    
+    typedef enum {
+        WORK_START,
+        WORK_CREATING,
+        WORK_CREATED,
+        WORK_EXECUTING,
+        WORK_EXECUTED,
+        WORK_RELEASING,
+        WORK_RELEASED
+    } STATUS;
+    
 private:
+    void WORK_START_(GPPieces* output, GPPieces** inputs, int inputNumber) const;
+    void WORK_CREATING_(GPPieces* output, GPPieces** inputs, int inputNumber) const;
+    void WORK_CREATED_(GPPieces* output, GPPieces** inputs, int inputNumber) const;
+    void WORK_EXECUTING_(GPPieces* output, GPPieces** inputs, int inputNumber) const;
+    void WORK_EXECUTED_(GPPieces* output, GPPieces** inputs, int inputNumber) const;
+    void WORK_RELEASING_(GPPieces* output, GPPieces** inputs, int inputNumber) const;
+    void WORK_RELEASED_(GPPieces* output, GPPieces** inputs, int inputNumber) const;
+    
+
+    mutable STATUS mStaus = WORK_START;
+    mutable void* mWorkContent = NULL;
+    mutable void* mMessageRemain = NULL;
+    
+    
     SGComputeServer::Reporter* mReport;
     std::vector<ProtobufC_RPC_Client*> mTaskClients;
     GPPtr<Handler> mHandler;
@@ -53,8 +78,23 @@ class MapHandler:public SGResponserExecutor::Handler
 public:
     MapHandler(GPPtr<GPKeyIteratorFactory> factory);
     virtual ~ MapHandler();
-    virtual bool vRun(GPPieces* output, GPPieces** inputs, int inputNumber, SGComputeServer::Reporter* report, const std::map<ProtobufC_RPC_Client*, uint64_t>& slaveMagicMap) const override;
+    virtual bool vRun(GPPieces* output, GPPieces** inputs, int inputNumber, const std::map<ProtobufC_RPC_Client*, uint64_t>& slaveMagicMap) const override;
+    
+    typedef enum {
+        START,
+        RUNNING,
+        FINISH
+    } STATUS;
+
+    void START_(GPPieces* output, GPPieces** inputs, int inputNumber, const std::map<ProtobufC_RPC_Client*, uint64_t>& slaveMagicMap) const;
+    void RUNNING_(GPPieces* output, GPPieces** inputs, int inputNumber, const std::map<ProtobufC_RPC_Client*, uint64_t>& slaveMagicMap) const;
+    void FINISH_(GPPieces* output, GPPieces** inputs, int inputNumber, const std::map<ProtobufC_RPC_Client*, uint64_t>& slaveMagicMap) const;
 private:
+    mutable STATUS mStaus = START;
+    mutable void* mWorkContent = NULL;
+    mutable void* mMessage = NULL;
+
+    
     GPPtr<GPKeyIteratorFactory> mFactory;
 };
 #endif

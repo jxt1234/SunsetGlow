@@ -748,7 +748,7 @@ protobuf_c_rpc_dispatch_run (ProtobufCRPCDispatch *dispatch)
         }
     }
 
-  if (poll (fds, dispatch->n_notifies_desired, timeout) < 0)
+  if (poll (fds, dispatch->n_notifies_desired, 2000) < 0)
     {
       if (errno == EINTR)
         return;   /* probably a signal interrupted the poll-- let the user have control */

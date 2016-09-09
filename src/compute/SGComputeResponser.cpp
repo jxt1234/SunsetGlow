@@ -114,6 +114,7 @@ uint64_t SGComputeResponser::insertWork(const void* workInfo)
     }
     SGASSERT(NULL!=work);
     work->nInput = (int)info->n_inputs;
+    work->pInputs = new GPPieces*[info->n_inputs];
     for (int i=0; i<info->n_inputs; ++i)
     {
         auto pieceInfo = info->inputs[i];
@@ -126,6 +127,7 @@ uint64_t SGComputeResponser::insertWork(const void* workInfo)
         {
             piece->pKeySize[j] = pieceInfo->key_dimesion[j];
         }
+        work->pInputs[i] = piece;
     }
     {
         auto pieceInfo = info->output;
@@ -137,8 +139,12 @@ uint64_t SGComputeResponser::insertWork(const void* workInfo)
         {
             piece->pKeySize[j] = pieceInfo->key_dimesion[j];
         }
+        work->pOutput = piece;
     }
-    work->pWorkFunction = mProducer->createFunction(info->formula, mDataBase->queryType(info->inputtypes));
+    FUNC_PRINT_ALL(info->formula, s);
+    FUNC_PRINT_ALL(info->inputtypes, s);
+    //TODO
+    work->pWorkFunction = mProducer->createFunction(info->formula, std::vector<const IStatusType*>());
 
     mWorks.insert(std::make_pair(mWorkMagic, work));
     return mWorkMagic++;
@@ -174,6 +180,7 @@ SGComputeResponser::Work::~Work()
     {
         pInputs[i]->decRef();
     }
+    delete [] pInputs;
     pOutput->decRef();
     pWorkFunction->decRef();
 }
@@ -334,7 +341,8 @@ bool SGComputeResponser::runWork(const void* runInfo)
         }
         subWorks.push_back(keyCombine);
     }
-    mPool->pushTaskWithoutSema(new WorkRunnable(subWorksP, work, mRunMagic));
+    work->vRun(subWorks);
+    //mPool->pushTaskWithoutSema(new WorkRunnable(subWorksP, work, mRunMagic));
 
     return true;
 }

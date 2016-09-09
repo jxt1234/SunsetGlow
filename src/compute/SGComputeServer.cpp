@@ -435,8 +435,7 @@ bool SGComputeServer::onSetup()
 uint64_t SGComputeServer::createExecutor(GPParallelType* data, IParallelMachine::PARALLELTYPE type)
 {
     data->pContext = mProducer.get();
-    //if (type == IParallelMachine::REDUCE)
-    if (true)
+    if (type == IParallelMachine::REDUCE)
     {
         GPSingleParallelMachine machine;
         auto executor = machine.vPrepare(data, type);
