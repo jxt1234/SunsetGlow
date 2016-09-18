@@ -14,4 +14,5 @@ def main():
     outputPieces = sub_p_producer.createOutput('output/pythonTestParallel')
     sub_p_producer.copyPiece(tempPiece, outputPieces)
 
-main()
+if __name__ == '__main__':
+    main()

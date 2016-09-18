@@ -1,4 +1,4 @@
-INCLUDE:include ../Renascence/include/ third
+INCLUDE:include ../Renascence/include/ third /Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/include/darwin/ /Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/include/ third/libhdfs/
 **********
 
 TARGET:libSunsetGlow.so
@@ -38,3 +38,11 @@ DEPENDS:libSunsetGlow.so
 DIRS:test
 SRCS:
 LINKS: ./libSunsetGlow.so -lpthread -ldl
+
+##########
+
+TARGET:hdfs_test.out
+DEPENDS:./third/libhdfs/libhdfs.a_mac
+DIRS:
+SRCS:hdfs_test.cpp
+LINKS: ./third/libhdfs/libhdfs.a_mac /Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/jre/lib/server/libjvm.dylib
