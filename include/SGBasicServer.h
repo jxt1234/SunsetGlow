@@ -1,3 +1,5 @@
+#ifndef INCLUDE_SGBASICSERVER_H
+#define INCLUDE_SGBASICSERVER_H
 #include <vector>
 class SGBasicServer
 {
@@ -29,3 +31,4 @@ private:
     
     std::vector<Work*> mWorkQueue;
 };
+#endif

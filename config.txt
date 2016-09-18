@@ -3,9 +3,17 @@ INCLUDE:include ../Renascence/include/ third /Library/Java/JavaVirtualMachines/j
 
 TARGET:libSunsetGlow.so
 DEPENDS:
-DIRS:src third
+DIRS:src/compute/ third
 SRCS:
 LINKS:../Renascence/libGP.a
+
+##########
+
+TARGET:libhdfsStream.a
+DEPENDS:
+DIRS:src/fs
+SRCS:
+LINKS:./third/libhdfs/libhdfs.a_mac
 
 ##########
 

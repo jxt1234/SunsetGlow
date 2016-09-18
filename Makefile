@@ -1,26 +1,23 @@
-all:libSunsetGlow.so example.out compute-responser.out compute-server.out test.out hdfs_test.out 
+all:libSunsetGlow.so libhdfsStream.a example.out compute-responser.out compute-server.out test.out hdfs_test.out 
 
-ALL_INCLUESlibSunsetGlow.so= include//fs/SGFile.h include//SGBasicServer.h include//SGComputeClient.h include//SGComputeResponser.h include//SGComputeServer.h include//SGDebug.h include//SGMacro.h include//fs/SGFile.h include//SGBasicServer.h include//SGComputeClient.h include//SGComputeResponser.h include//SGComputeServer.h include//SGDebug.h include//SGMacro.h
+ALL_INCLUESlibSunsetGlow.so= include//fs/SGFile.h include//SGBasicServer.h include//SGComputeClient.h include//SGComputeResponser.h include//SGComputeServer.h include//SGDebug.h include//SGHdfsStreamFactory.h include//SGMacro.h include//fs/SGFile.h include//SGBasicServer.h include//SGComputeClient.h include//SGComputeResponser.h include//SGComputeServer.h include//SGDebug.h include//SGHdfsStreamFactory.h include//SGMacro.h
 
-libSunsetGlow.so:  build/src_compute_SGComputeClient_cpp.o build/src_compute_SGComputeResponser_cpp.o build/src_compute_SGComputeServer_cpp.o build/src_compute_SGResponserExecutor_cpp.o build/src_fs_SGFile_cpp.o build/src_SGBasicServer_cpp.o build/third_thread_MGPThread_cpp.o build/third_thread_MGPThread_Linux_cpp.o build/third_thread_MGPThreadPool_cpp.o build/src_compute_SGCompute_CS_pb-c_c.o build/src_compute_SGCompute_SR_pb-c_c.o build/third_protobuf-c_protobuf-c_c.o build/third_protobuf-c-rpc_protobuf-c-rpc-client_c.o build/third_protobuf-c-rpc_protobuf-c-rpc-data-buffer_c.o build/third_protobuf-c-rpc_protobuf-c-rpc-dispatch_c.o build/third_protobuf-c-rpc_protobuf-c-rpc-server_c.o 
-	g++ -std=c++11   build/src_compute_SGComputeClient_cpp.o build/src_compute_SGComputeResponser_cpp.o build/src_compute_SGComputeServer_cpp.o build/src_compute_SGResponserExecutor_cpp.o build/src_fs_SGFile_cpp.o build/src_SGBasicServer_cpp.o build/third_thread_MGPThread_cpp.o build/third_thread_MGPThread_Linux_cpp.o build/third_thread_MGPThreadPool_cpp.o build/src_compute_SGCompute_CS_pb-c_c.o build/src_compute_SGCompute_SR_pb-c_c.o build/third_protobuf-c_protobuf-c_c.o build/third_protobuf-c-rpc_protobuf-c-rpc-client_c.o build/third_protobuf-c-rpc_protobuf-c-rpc-data-buffer_c.o build/third_protobuf-c-rpc_protobuf-c-rpc-dispatch_c.o build/third_protobuf-c-rpc_protobuf-c-rpc-server_c.o -O3 -g -fPIC  --shared  ../Renascence/libGP.a -o libSunsetGlow.so ${SELF_VARIABLES}
-build/src_compute_SGComputeClient_cpp.o : src/compute/SGComputeClient.cpp   ${ALL_INCLUESlibSunsetGlow.so}
-	g++ -std=c++11 -O3 -g -fPIC -o build/src_compute_SGComputeClient_cpp.o -c src/compute/SGComputeClient.cpp -Iinclude -I../Renascence/include/ -Ithird -I/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/include/darwin/ -I/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/include/ -Ithird/libhdfs/
+libSunsetGlow.so:  build/src_compute__SGBasicServer_cpp.o build/src_compute__SGComputeClient_cpp.o build/src_compute__SGComputeResponser_cpp.o build/src_compute__SGComputeServer_cpp.o build/src_compute__SGResponserExecutor_cpp.o build/third_thread_MGPThread_cpp.o build/third_thread_MGPThread_Linux_cpp.o build/third_thread_MGPThreadPool_cpp.o build/src_compute__SGCompute_CS_pb-c_c.o build/src_compute__SGCompute_SR_pb-c_c.o build/third_protobuf-c_protobuf-c_c.o build/third_protobuf-c-rpc_protobuf-c-rpc-client_c.o build/third_protobuf-c-rpc_protobuf-c-rpc-data-buffer_c.o build/third_protobuf-c-rpc_protobuf-c-rpc-dispatch_c.o build/third_protobuf-c-rpc_protobuf-c-rpc-server_c.o 
+	g++ -std=c++11   build/src_compute__SGBasicServer_cpp.o build/src_compute__SGComputeClient_cpp.o build/src_compute__SGComputeResponser_cpp.o build/src_compute__SGComputeServer_cpp.o build/src_compute__SGResponserExecutor_cpp.o build/third_thread_MGPThread_cpp.o build/third_thread_MGPThread_Linux_cpp.o build/third_thread_MGPThreadPool_cpp.o build/src_compute__SGCompute_CS_pb-c_c.o build/src_compute__SGCompute_SR_pb-c_c.o build/third_protobuf-c_protobuf-c_c.o build/third_protobuf-c-rpc_protobuf-c-rpc-client_c.o build/third_protobuf-c-rpc_protobuf-c-rpc-data-buffer_c.o build/third_protobuf-c-rpc_protobuf-c-rpc-dispatch_c.o build/third_protobuf-c-rpc_protobuf-c-rpc-server_c.o -O3 -g -fPIC  --shared  ../Renascence/libGP.a -o libSunsetGlow.so ${SELF_VARIABLES}
+build/src_compute__SGBasicServer_cpp.o : src/compute//SGBasicServer.cpp   ${ALL_INCLUESlibSunsetGlow.so}
+	g++ -std=c++11 -O3 -g -fPIC -o build/src_compute__SGBasicServer_cpp.o -c src/compute//SGBasicServer.cpp -Iinclude -I../Renascence/include/ -Ithird -I/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/include/darwin/ -I/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/include/ -Ithird/libhdfs/
   
-build/src_compute_SGComputeResponser_cpp.o : src/compute/SGComputeResponser.cpp   ${ALL_INCLUESlibSunsetGlow.so}
-	g++ -std=c++11 -O3 -g -fPIC -o build/src_compute_SGComputeResponser_cpp.o -c src/compute/SGComputeResponser.cpp -Iinclude -I../Renascence/include/ -Ithird -I/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/include/darwin/ -I/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/include/ -Ithird/libhdfs/
+build/src_compute__SGComputeClient_cpp.o : src/compute//SGComputeClient.cpp   ${ALL_INCLUESlibSunsetGlow.so}
+	g++ -std=c++11 -O3 -g -fPIC -o build/src_compute__SGComputeClient_cpp.o -c src/compute//SGComputeClient.cpp -Iinclude -I../Renascence/include/ -Ithird -I/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/include/darwin/ -I/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/include/ -Ithird/libhdfs/
   
-build/src_compute_SGComputeServer_cpp.o : src/compute/SGComputeServer.cpp   ${ALL_INCLUESlibSunsetGlow.so}
-	g++ -std=c++11 -O3 -g -fPIC -o build/src_compute_SGComputeServer_cpp.o -c src/compute/SGComputeServer.cpp -Iinclude -I../Renascence/include/ -Ithird -I/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/include/darwin/ -I/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/include/ -Ithird/libhdfs/
+build/src_compute__SGComputeResponser_cpp.o : src/compute//SGComputeResponser.cpp   ${ALL_INCLUESlibSunsetGlow.so}
+	g++ -std=c++11 -O3 -g -fPIC -o build/src_compute__SGComputeResponser_cpp.o -c src/compute//SGComputeResponser.cpp -Iinclude -I../Renascence/include/ -Ithird -I/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/include/darwin/ -I/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/include/ -Ithird/libhdfs/
   
-build/src_compute_SGResponserExecutor_cpp.o : src/compute/SGResponserExecutor.cpp   ${ALL_INCLUESlibSunsetGlow.so}
-	g++ -std=c++11 -O3 -g -fPIC -o build/src_compute_SGResponserExecutor_cpp.o -c src/compute/SGResponserExecutor.cpp -Iinclude -I../Renascence/include/ -Ithird -I/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/include/darwin/ -I/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/include/ -Ithird/libhdfs/
+build/src_compute__SGComputeServer_cpp.o : src/compute//SGComputeServer.cpp   ${ALL_INCLUESlibSunsetGlow.so}
+	g++ -std=c++11 -O3 -g -fPIC -o build/src_compute__SGComputeServer_cpp.o -c src/compute//SGComputeServer.cpp -Iinclude -I../Renascence/include/ -Ithird -I/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/include/darwin/ -I/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/include/ -Ithird/libhdfs/
   
-build/src_fs_SGFile_cpp.o : src/fs/SGFile.cpp   ${ALL_INCLUESlibSunsetGlow.so}
-	g++ -std=c++11 -O3 -g -fPIC -o build/src_fs_SGFile_cpp.o -c src/fs/SGFile.cpp -Iinclude -I../Renascence/include/ -Ithird -I/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/include/darwin/ -I/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/include/ -Ithird/libhdfs/
-  
-build/src_SGBasicServer_cpp.o : src/SGBasicServer.cpp   ${ALL_INCLUESlibSunsetGlow.so}
-	g++ -std=c++11 -O3 -g -fPIC -o build/src_SGBasicServer_cpp.o -c src/SGBasicServer.cpp -Iinclude -I../Renascence/include/ -Ithird -I/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/include/darwin/ -I/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/include/ -Ithird/libhdfs/
+build/src_compute__SGResponserExecutor_cpp.o : src/compute//SGResponserExecutor.cpp   ${ALL_INCLUESlibSunsetGlow.so}
+	g++ -std=c++11 -O3 -g -fPIC -o build/src_compute__SGResponserExecutor_cpp.o -c src/compute//SGResponserExecutor.cpp -Iinclude -I../Renascence/include/ -Ithird -I/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/include/darwin/ -I/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/include/ -Ithird/libhdfs/
   
 build/third_thread_MGPThread_cpp.o : third/thread/MGPThread.cpp   ${ALL_INCLUESlibSunsetGlow.so}
 	g++ -std=c++11 -O3 -g -fPIC -o build/third_thread_MGPThread_cpp.o -c third/thread/MGPThread.cpp -Iinclude -I../Renascence/include/ -Ithird -I/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/include/darwin/ -I/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/include/ -Ithird/libhdfs/
@@ -31,11 +28,11 @@ build/third_thread_MGPThread_Linux_cpp.o : third/thread/MGPThread_Linux.cpp   ${
 build/third_thread_MGPThreadPool_cpp.o : third/thread/MGPThreadPool.cpp   ${ALL_INCLUESlibSunsetGlow.so}
 	g++ -std=c++11 -O3 -g -fPIC -o build/third_thread_MGPThreadPool_cpp.o -c third/thread/MGPThreadPool.cpp -Iinclude -I../Renascence/include/ -Ithird -I/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/include/darwin/ -I/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/include/ -Ithird/libhdfs/
   
-build/src_compute_SGCompute_CS_pb-c_c.o : src/compute/SGCompute.CS.pb-c.c   ${ALL_INCLUESlibSunsetGlow.so}
-	gcc -std=c11 -O3 -g -fPIC -o build/src_compute_SGCompute_CS_pb-c_c.o -c src/compute/SGCompute.CS.pb-c.c -Iinclude -I../Renascence/include/ -Ithird -I/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/include/darwin/ -I/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/include/ -Ithird/libhdfs/
+build/src_compute__SGCompute_CS_pb-c_c.o : src/compute//SGCompute.CS.pb-c.c   ${ALL_INCLUESlibSunsetGlow.so}
+	gcc -std=c11 -O3 -g -fPIC -o build/src_compute__SGCompute_CS_pb-c_c.o -c src/compute//SGCompute.CS.pb-c.c -Iinclude -I../Renascence/include/ -Ithird -I/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/include/darwin/ -I/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/include/ -Ithird/libhdfs/
   
-build/src_compute_SGCompute_SR_pb-c_c.o : src/compute/SGCompute.SR.pb-c.c   ${ALL_INCLUESlibSunsetGlow.so}
-	gcc -std=c11 -O3 -g -fPIC -o build/src_compute_SGCompute_SR_pb-c_c.o -c src/compute/SGCompute.SR.pb-c.c -Iinclude -I../Renascence/include/ -Ithird -I/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/include/darwin/ -I/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/include/ -Ithird/libhdfs/
+build/src_compute__SGCompute_SR_pb-c_c.o : src/compute//SGCompute.SR.pb-c.c   ${ALL_INCLUESlibSunsetGlow.so}
+	gcc -std=c11 -O3 -g -fPIC -o build/src_compute__SGCompute_SR_pb-c_c.o -c src/compute//SGCompute.SR.pb-c.c -Iinclude -I../Renascence/include/ -Ithird -I/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/include/darwin/ -I/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/include/ -Ithird/libhdfs/
   
 build/third_protobuf-c_protobuf-c_c.o : third/protobuf-c/protobuf-c.c   ${ALL_INCLUESlibSunsetGlow.so}
 	gcc -std=c11 -O3 -g -fPIC -o build/third_protobuf-c_protobuf-c_c.o -c third/protobuf-c/protobuf-c.c -Iinclude -I../Renascence/include/ -Ithird -I/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/include/darwin/ -I/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/include/ -Ithird/libhdfs/
@@ -51,6 +48,21 @@ build/third_protobuf-c-rpc_protobuf-c-rpc-dispatch_c.o : third/protobuf-c-rpc/pr
   
 build/third_protobuf-c-rpc_protobuf-c-rpc-server_c.o : third/protobuf-c-rpc/protobuf-c-rpc-server.c   ${ALL_INCLUESlibSunsetGlow.so}
 	gcc -std=c11 -O3 -g -fPIC -o build/third_protobuf-c-rpc_protobuf-c-rpc-server_c.o -c third/protobuf-c-rpc/protobuf-c-rpc-server.c -Iinclude -I../Renascence/include/ -Ithird -I/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/include/darwin/ -I/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/include/ -Ithird/libhdfs/
+  
+
+ALL_INCLUESlibhdfsStream.a= include//fs/SGFile.h include//SGBasicServer.h include//SGComputeClient.h include//SGComputeResponser.h include//SGComputeServer.h include//SGDebug.h include//SGHdfsStreamFactory.h include//SGMacro.h
+
+libhdfsStream.a:  build/src_fs_SGHdfsStream_cpp.o build/src_fs_SGHdfsStreamFactory_cpp.o build/src_fs_SGHdfsWStream_cpp.o 
+	rm -f libhdfsStream.a
+	ar rcs libhdfsStream.a  build/src_fs_SGHdfsStream_cpp.o build/src_fs_SGHdfsStreamFactory_cpp.o build/src_fs_SGHdfsWStream_cpp.o ${SELF_VARIABLES}
+build/src_fs_SGHdfsStream_cpp.o : src/fs/SGHdfsStream.cpp   ${ALL_INCLUESlibhdfsStream.a}
+	g++ -std=c++11 -O3 -g -fPIC -o build/src_fs_SGHdfsStream_cpp.o -c src/fs/SGHdfsStream.cpp -Iinclude -I../Renascence/include/ -Ithird -I/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/include/darwin/ -I/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/include/ -Ithird/libhdfs/
+  
+build/src_fs_SGHdfsStreamFactory_cpp.o : src/fs/SGHdfsStreamFactory.cpp   ${ALL_INCLUESlibhdfsStream.a}
+	g++ -std=c++11 -O3 -g -fPIC -o build/src_fs_SGHdfsStreamFactory_cpp.o -c src/fs/SGHdfsStreamFactory.cpp -Iinclude -I../Renascence/include/ -Ithird -I/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/include/darwin/ -I/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/include/ -Ithird/libhdfs/
+  
+build/src_fs_SGHdfsWStream_cpp.o : src/fs/SGHdfsWStream.cpp   ${ALL_INCLUESlibhdfsStream.a}
+	g++ -std=c++11 -O3 -g -fPIC -o build/src_fs_SGHdfsWStream_cpp.o -c src/fs/SGHdfsWStream.cpp -Iinclude -I../Renascence/include/ -Ithird -I/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/include/darwin/ -I/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/include/ -Ithird/libhdfs/
   
 
 ALL_INCLUESexample.out=
@@ -77,7 +89,7 @@ build/__compute-server_cpp.o : ./compute-server.cpp libSunsetGlow.so  ${ALL_INCL
 	g++ -std=c++11 -O3 -g -fPIC -o build/__compute-server_cpp.o -c ./compute-server.cpp -Iinclude -I../Renascence/include/ -Ithird -I/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/include/darwin/ -I/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/include/ -Ithird/libhdfs/
   
 
-ALL_INCLUEStest.out= include//fs/SGFile.h include//SGBasicServer.h include//SGComputeClient.h include//SGComputeResponser.h include//SGComputeServer.h include//SGDebug.h include//SGMacro.h
+ALL_INCLUEStest.out= include//fs/SGFile.h include//SGBasicServer.h include//SGComputeClient.h include//SGComputeResponser.h include//SGComputeServer.h include//SGDebug.h include//SGHdfsStreamFactory.h include//SGMacro.h
 
 test.out:  build/test_GPCreatorClientTest_cpp.o build/test_GPTest_cpp.o build/test_GPTestMain_cpp.o libSunsetGlow.so
 	g++ -std=c++11   build/test_GPCreatorClientTest_cpp.o build/test_GPTest_cpp.o build/test_GPTestMain_cpp.o -O3 -g -fPIC   ./libSunsetGlow.so -lpthread -ldl -o test.out ${SELF_VARIABLES}
@@ -102,6 +114,7 @@ build/hdfs_test_cpp.o : hdfs_test.cpp ./third/libhdfs/libhdfs.a_mac  ${ALL_INCLU
 clean:
 	rm build/*.o
 	rm libSunsetGlow.so
+	rm libhdfsStream.a
 	rm example.out
 	rm compute-responser.out
 	rm compute-server.out
