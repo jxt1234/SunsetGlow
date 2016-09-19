@@ -4,6 +4,7 @@ SGHdfsWStream::SGHdfsWStream(hdfsFS fs, const char* path)
 {
     SGASSERT(NULL!=fs);
     SGASSERT(NULL!=path);
+    //FUNC_PRINT_ALL(path, s);
     mFs = fs;
     mFile = hdfsOpenFile(fs, path, O_WRONLY|O_CREAT, 0, 0, 0);
     SGASSERT(NULL!=mFile);

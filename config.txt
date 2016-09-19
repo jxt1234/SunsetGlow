@@ -9,11 +9,11 @@ LINKS:../Renascence/libGP.a
 
 ##########
 
-TARGET:libhdfsStream.a
+TARGET:libhdfsStream.so
 DEPENDS:
 DIRS:src/fs
 SRCS:
-LINKS:./third/libhdfs/libhdfs.a_mac
+LINKS: ./third/libhdfs/libhdfs.a_mac /Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/jre/lib/server/libjvm.dylib
 
 ##########
 
@@ -49,8 +49,8 @@ LINKS: ./libSunsetGlow.so -lpthread -ldl
 
 ##########
 
-TARGET:hdfs_test.out
-DEPENDS:./third/libhdfs/libhdfs.a_mac
+TARGET:hdfs_tools.out
+DEPENDS:../Renascence/libGP.a libhdfsStream.so
 DIRS:
-SRCS:hdfs_test.cpp
-LINKS: ./third/libhdfs/libhdfs.a_mac /Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/jre/lib/server/libjvm.dylib
+SRCS:hdfs_tools.cpp
+LINKS:../Renascence/libGP.a libhdfsStream.so

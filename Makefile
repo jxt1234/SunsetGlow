@@ -1,4 +1,4 @@
-all:libSunsetGlow.so libhdfsStream.a example.out compute-responser.out compute-server.out test.out hdfs_test.out 
+all:libSunsetGlow.so libhdfsStream.so example.out compute-responser.out compute-server.out test.out hdfs_tools.out 
 
 ALL_INCLUESlibSunsetGlow.so= include//fs/SGFile.h include//SGBasicServer.h include//SGComputeClient.h include//SGComputeResponser.h include//SGComputeServer.h include//SGDebug.h include//SGHdfsStreamFactory.h include//SGMacro.h include//fs/SGFile.h include//SGBasicServer.h include//SGComputeClient.h include//SGComputeResponser.h include//SGComputeServer.h include//SGDebug.h include//SGHdfsStreamFactory.h include//SGMacro.h
 
@@ -50,18 +50,17 @@ build/third_protobuf-c-rpc_protobuf-c-rpc-server_c.o : third/protobuf-c-rpc/prot
 	gcc -std=c11 -O3 -g -fPIC -o build/third_protobuf-c-rpc_protobuf-c-rpc-server_c.o -c third/protobuf-c-rpc/protobuf-c-rpc-server.c -Iinclude -I../Renascence/include/ -Ithird -I/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/include/darwin/ -I/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/include/ -Ithird/libhdfs/
   
 
-ALL_INCLUESlibhdfsStream.a= include//fs/SGFile.h include//SGBasicServer.h include//SGComputeClient.h include//SGComputeResponser.h include//SGComputeServer.h include//SGDebug.h include//SGHdfsStreamFactory.h include//SGMacro.h
+ALL_INCLUESlibhdfsStream.so= include//fs/SGFile.h include//SGBasicServer.h include//SGComputeClient.h include//SGComputeResponser.h include//SGComputeServer.h include//SGDebug.h include//SGHdfsStreamFactory.h include//SGMacro.h
 
-libhdfsStream.a:  build/src_fs_SGHdfsStream_cpp.o build/src_fs_SGHdfsStreamFactory_cpp.o build/src_fs_SGHdfsWStream_cpp.o 
-	rm -f libhdfsStream.a
-	ar rcs libhdfsStream.a  build/src_fs_SGHdfsStream_cpp.o build/src_fs_SGHdfsStreamFactory_cpp.o build/src_fs_SGHdfsWStream_cpp.o ${SELF_VARIABLES}
-build/src_fs_SGHdfsStream_cpp.o : src/fs/SGHdfsStream.cpp   ${ALL_INCLUESlibhdfsStream.a}
+libhdfsStream.so:  build/src_fs_SGHdfsStream_cpp.o build/src_fs_SGHdfsStreamFactory_cpp.o build/src_fs_SGHdfsWStream_cpp.o 
+	g++ -std=c++11   build/src_fs_SGHdfsStream_cpp.o build/src_fs_SGHdfsStreamFactory_cpp.o build/src_fs_SGHdfsWStream_cpp.o -O3 -g -fPIC  --shared   ./third/libhdfs/libhdfs.a_mac /Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/jre/lib/server/libjvm.dylib -o libhdfsStream.so ${SELF_VARIABLES}
+build/src_fs_SGHdfsStream_cpp.o : src/fs/SGHdfsStream.cpp   ${ALL_INCLUESlibhdfsStream.so}
 	g++ -std=c++11 -O3 -g -fPIC -o build/src_fs_SGHdfsStream_cpp.o -c src/fs/SGHdfsStream.cpp -Iinclude -I../Renascence/include/ -Ithird -I/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/include/darwin/ -I/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/include/ -Ithird/libhdfs/
   
-build/src_fs_SGHdfsStreamFactory_cpp.o : src/fs/SGHdfsStreamFactory.cpp   ${ALL_INCLUESlibhdfsStream.a}
+build/src_fs_SGHdfsStreamFactory_cpp.o : src/fs/SGHdfsStreamFactory.cpp   ${ALL_INCLUESlibhdfsStream.so}
 	g++ -std=c++11 -O3 -g -fPIC -o build/src_fs_SGHdfsStreamFactory_cpp.o -c src/fs/SGHdfsStreamFactory.cpp -Iinclude -I../Renascence/include/ -Ithird -I/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/include/darwin/ -I/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/include/ -Ithird/libhdfs/
   
-build/src_fs_SGHdfsWStream_cpp.o : src/fs/SGHdfsWStream.cpp   ${ALL_INCLUESlibhdfsStream.a}
+build/src_fs_SGHdfsWStream_cpp.o : src/fs/SGHdfsWStream.cpp   ${ALL_INCLUESlibhdfsStream.so}
 	g++ -std=c++11 -O3 -g -fPIC -o build/src_fs_SGHdfsWStream_cpp.o -c src/fs/SGHdfsWStream.cpp -Iinclude -I../Renascence/include/ -Ithird -I/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/include/darwin/ -I/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/include/ -Ithird/libhdfs/
   
 
@@ -103,20 +102,20 @@ build/test_GPTestMain_cpp.o : test/GPTestMain.cpp libSunsetGlow.so  ${ALL_INCLUE
 	g++ -std=c++11 -O3 -g -fPIC -o build/test_GPTestMain_cpp.o -c test/GPTestMain.cpp -Iinclude -I../Renascence/include/ -Ithird -I/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/include/darwin/ -I/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/include/ -Ithird/libhdfs/
   
 
-ALL_INCLUEShdfs_test.out=
+ALL_INCLUEShdfs_tools.out=
 
-hdfs_test.out:  build/hdfs_test_cpp.o ./third/libhdfs/libhdfs.a_mac
-	g++ -std=c++11   build/hdfs_test_cpp.o -O3 -g -fPIC   ./third/libhdfs/libhdfs.a_mac /Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/jre/lib/server/libjvm.dylib -o hdfs_test.out ${SELF_VARIABLES}
-build/hdfs_test_cpp.o : hdfs_test.cpp ./third/libhdfs/libhdfs.a_mac  ${ALL_INCLUEShdfs_test.out}
-	g++ -std=c++11 -O3 -g -fPIC -o build/hdfs_test_cpp.o -c hdfs_test.cpp -Iinclude -I../Renascence/include/ -Ithird -I/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/include/darwin/ -I/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/include/ -Ithird/libhdfs/
+hdfs_tools.out:  build/hdfs_tools_cpp.o ../Renascence/libGP.a libhdfsStream.so
+	g++ -std=c++11   build/hdfs_tools_cpp.o -O3 -g -fPIC  ../Renascence/libGP.a libhdfsStream.so -o hdfs_tools.out ${SELF_VARIABLES}
+build/hdfs_tools_cpp.o : hdfs_tools.cpp ../Renascence/libGP.a libhdfsStream.so  ${ALL_INCLUEShdfs_tools.out}
+	g++ -std=c++11 -O3 -g -fPIC -o build/hdfs_tools_cpp.o -c hdfs_tools.cpp -Iinclude -I../Renascence/include/ -Ithird -I/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/include/darwin/ -I/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/include/ -Ithird/libhdfs/
   
 
 clean:
 	rm build/*.o
 	rm libSunsetGlow.so
-	rm libhdfsStream.a
+	rm libhdfsStream.so
 	rm example.out
 	rm compute-responser.out
 	rm compute-server.out
 	rm test.out
-	rm hdfs_test.out
+	rm hdfs_tools.out

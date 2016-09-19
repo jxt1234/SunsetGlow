@@ -22,6 +22,12 @@ SGComputeResponser* SGComputeResponser::getInstance()
 }
 
 
+void SGComputeResponser::setStreamCreator(const GPIStreamCreator* creator)
+{
+    mStreamCreator = creator;
+}
+
+
 void SG_Response__create_work (SGCompute__SR__ComputeResponser_Service *service,
                     const SGCompute__SR__WorkInfo *input,
                     SGCompute__SR__ResultInfo_Closure closure,
@@ -278,36 +284,6 @@ bool SGComputeResponser::ReduceWork::vRun(const std::vector<KeyCombine>& subWork
     return true;
 }
 
-class WorkRunnable : public MGPThreadPool::Runnable
-{
-public:
-    WorkRunnable(std::vector<SGComputeResponser::KeyCombine>* keys, SGComputeResponser::Work* work, uint64_t magic)
-    {
-        mWork = work;
-        mKeysP = keys;
-        mMagic = magic;
-    }
-    virtual ~WorkRunnable()
-    {
-        auto& subWorks = *mKeysP;
-        for (auto key : subWorks)
-        {
-            delete [] key.pInputKeys;
-            delete [] key.pOutputKeys;
-        }
-        delete mKeysP;
-    }
-    virtual void vRun(void*)
-    {
-        auto res = mWork->vRun(*mKeysP);
-        SGComputeResponser::getInstance()->reportStatus(mMagic, res);
-    }
-private:
-    std::vector<SGComputeResponser::KeyCombine>* mKeysP;
-    SGComputeResponser::Work* mWork;
-    uint64_t mMagic;
-};
-
 bool SGComputeResponser::runWork(const void* runInfo)
 {
     auto input = (const SGCompute__SR__RunInfo*)runInfo;
@@ -342,8 +318,6 @@ bool SGComputeResponser::runWork(const void* runInfo)
         subWorks.push_back(keyCombine);
     }
     work->vRun(subWorks);
-    //mPool->pushTaskWithoutSema(new WorkRunnable(subWorksP, work, mRunMagic));
-
     return true;
 }
 
@@ -352,27 +326,6 @@ static void Responser_Report(const SGCompute__SR__ResultInfo *message, void *clo
 {
     bool* c = (bool*)closure_data;
     *c = true;
-}
-
-
-void SGComputeResponser::reportStatus(uint64_t runMagic, bool status)
-{
-    SGCompute__SR__ResultInfo result = SGCOMPUTE__SR__RESULT_INFO__INIT;
-    result.magic = runMagic;
-    if (status)
-    {
-        result.status = SGCOMPUTE__SR__RESULT_INFO__STATUS__SUCCESS;
-    }
-    else
-    {
-        result.status = SGCOMPUTE__SR__RESULT_INFO__STATUS__FAILED;
-    }
-    bool ok = false;
-    sgcompute__sr__compute_server_waiter__report_success((ProtobufCService*)mReportClient, &result, Responser_Report, &ok);
-//    while (!ok)
-//    {
-//        SGServerBasicElement::getInstance()->waitForMessage();
-//    }
 }
 
 bool SGComputeResponser::onSetup()

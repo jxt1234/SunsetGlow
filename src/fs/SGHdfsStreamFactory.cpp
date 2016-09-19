@@ -17,17 +17,24 @@ void SGHdfsStreamFactory::init(const char* namenode, const char* user)
     gInstance = new SGHdfsStreamFactory(namenode, user);
 }
 
+void SGHdfsStreamFactory::destroy()
+{
+    SGASSERT(NULL!=gInstance);
+    delete gInstance;
+}
 
-SGHdfsStreamFactory* SGHdfsStreamFactory::getInstance()
+
+
+const SGHdfsStreamFactory* SGHdfsStreamFactory::getInstance()
 {
     return gInstance;
 }
 
-GPStream* SGHdfsStreamFactory::read(const char* fileName)
+GPStream* SGHdfsStreamFactory::vRead(const char* fileName) const
 {
     return new SGHdfsStream(mContext->pFs, fileName);
 }
-GPWStream* SGHdfsStreamFactory::write(const char* fileName)
+GPWStream* SGHdfsStreamFactory::vWrite(const char* fileName) const
 {
     return new SGHdfsWStream(mContext->pFs, fileName);
 }
@@ -41,6 +48,7 @@ SGHdfsStreamFactory::SGHdfsStreamFactory(const char* nameNode, const char* user)
     mContext = new Context;
     mContext->pFs = fs;
 }
+
 SGHdfsStreamFactory::~SGHdfsStreamFactory()
 {
     hdfsDisconnect(mContext->pFs);

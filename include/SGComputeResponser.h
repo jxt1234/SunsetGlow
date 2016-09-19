@@ -22,6 +22,7 @@ extern "C" {
 #include "core/GPProducer.h"
 #include "core/GPFactory.h"
 #include "SGBasicServer.h"
+#include "lowlevelAPI/GPIStreamCreator.h"
 
 
 class SGComputeResponser:public SGBasicServer
@@ -34,6 +35,8 @@ public:
     
     bool install(const char* meta);
     
+    void setStreamCreator(const GPIStreamCreator* creator);
+
     virtual bool onSetup() override;
 
     struct KeyCombine
@@ -75,12 +78,10 @@ public:
 
     uint64_t insertWork(const void* workInfo);
     bool runWork(const void* runInfo);
-    void reportStatus(uint64_t runMagic, bool status);
 
     bool releaseWork(uint64_t magic);
 
 private:
-
     static SGComputeResponser* gInstance;
 
     SGComputeResponser(const char* port, const char* master_port);
@@ -88,6 +89,8 @@ private:
 
     ProtobufC_RPC_Server* mComputeService;
     ProtobufC_RPC_Client* mReportClient;
+    
+    const GPIStreamCreator* mStreamCreator = NULL;
 
     GPPtr<MGPThreadPool> mPool;
     GPPtr<GPFunctionDataBase> mDataBase;
