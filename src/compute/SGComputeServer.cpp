@@ -443,6 +443,7 @@ uint64_t SGComputeServer::createExecutor(GPParallelType* data, IParallelMachine:
     }
     else
     {
+        //FUNC_PRINT(data->mOutputKey.size());
         GPPtr<GPKeyIteratorFactory> keyIteratorFactory = new GPKeyIteratorFactory(data);
         GPPtr<SGResponserExecutor::Handler> handler = new MapHandler(keyIteratorFactory);
         SGResponserExecutor* executor = new SGResponserExecutor(mResponseClients, mReporter.get(), handler, data);

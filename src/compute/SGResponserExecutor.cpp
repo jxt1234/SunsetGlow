@@ -236,6 +236,10 @@ void SGResponserExecutor::WORK_RELEASING_(GPPieces* output, GPPieces** inputs, i
         }
     }
     mStaus = WORK_RELEASED;
+    for (auto m : *r)
+    {
+        delete m;
+    }
     delete r;
     
     auto mv = (std::vector<SGCompute__SR__ResultInfo*>*)mMessageRemain;
@@ -372,9 +376,9 @@ void MapHandler::START_(GPPieces* output, GPPieces** inputs, int inputNumber, co
     for (auto kv : slaveMagicMap)
     {
         auto fin = sta + pieceNumber;
-        if (fin > slaveMagicMap.size())
+        if (fin > keys.size())
         {
-            fin = slaveMagicMap.size();
+            fin = keys.size();
         }
         if (sta >= fin)
         {
@@ -396,6 +400,7 @@ void MapHandler::START_(GPPieces* output, GPPieces** inputs, int inputNumber, co
             for (int p=0; p<keySize.second; ++p)
             {
                 runInfo->work_content[k]->outputkeys[p] = keyOutput[p];
+                //FUNC_PRINT(runInfo->work_content[k]->outputkeys[p]);
             }
         }
         bool* complete = new bool;

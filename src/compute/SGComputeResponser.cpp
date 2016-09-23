@@ -206,38 +206,37 @@ static GPContents* _getInputContent(GPPieces** pInputs, int nInput, unsigned int
     return totalInput;
 }
 
-bool SGComputeResponser::MapWork::vRun(const std::vector<KeyCombine>& subWorks)
+bool SGComputeResponser::MapWork::vRun(const std::vector<GPPtr<KeyCombine>>& subWorks)
 {
     /*TODO Filter subWorks, delete repeated outputkey*/
-
     for (auto key : subWorks)
     {
         //Construct input
-        GPContents* totalInput = _getInputContent(pInputs, nInput, key.pInputKeys, key.nInputKeyNumber);
+        GPContents* totalInput = _getInputContent(pInputs, nInput, key->pInputKeys, key->nInputKeyNumber);
         auto output = pWorkFunction->vRun(totalInput);
         totalInput->decRef();
-        pOutput->vSave(key.pOutputKeys, key.nOutuptKeyNumber, output);
+        pOutput->vSave(key->pOutputKeys, key->nOutuptKeyNumber, output);
         output->decRef();
     }
     return true;
 }
 
 
-bool SGComputeResponser::ReduceWork::vRun(const std::vector<KeyCombine>& subWorks)
+bool SGComputeResponser::ReduceWork::vRun(const std::vector<GPPtr<KeyCombine>>& subWorks)
 {
     /*Group Key by output*/
-    std::vector<std::vector<KeyCombine>> keygroups;
+    std::vector<std::vector<GPPtr<KeyCombine>>> keygroups;
     for (auto key : subWorks)
     {
-        auto outputKey = key.pOutputKeys;
-        auto outputKeyNumber = key.nOutuptKeyNumber;
+        auto outputKey = key->pOutputKeys;
+        auto outputKeyNumber = key->nOutuptKeyNumber;
         bool find = false;
         for (auto& findKeyGroup : keygroups)
         {
             SGASSERT(!findKeyGroup.empty());
             find = true;
-            SGASSERT(findKeyGroup[0].nOutuptKeyNumber == outputKeyNumber);
-            auto compareOutputKey = findKeyGroup[0].pOutputKeys;
+            SGASSERT(findKeyGroup[0]->nOutuptKeyNumber == outputKeyNumber);
+            auto compareOutputKey = findKeyGroup[0]->pOutputKeys;
             for (int i=0; i<outputKeyNumber; ++i)
             {
                 if (outputKey[i] != compareOutputKey[i])
@@ -254,7 +253,7 @@ bool SGComputeResponser::ReduceWork::vRun(const std::vector<KeyCombine>& subWork
         }
         if (!find)
         {
-            std::vector<KeyCombine> group;
+            std::vector<GPPtr<KeyCombine>> group;
             group.push_back(key);
             keygroups.push_back(group);
         }
@@ -264,19 +263,19 @@ bool SGComputeResponser::ReduceWork::vRun(const std::vector<KeyCombine>& subWork
     for (auto group : keygroups)
     {
         SGASSERT(!group.empty());
-        GPContents* output = _getInputContent(pInputs, nInput, group[0].pInputKeys, group[0].nInputKeyNumber);
+        GPContents* output = _getInputContent(pInputs, nInput, group[0]->pInputKeys, group[0]->nInputKeyNumber);
         
         for (int i=1; i<group.size(); ++i)
         {
-            GPContents* input = _getInputContent(pInputs, nInput, group[i].pInputKeys, group[i].nInputKeyNumber);
+            GPContents* input = _getInputContent(pInputs, nInput, group[i]->pInputKeys, group[i]->nInputKeyNumber);
             input->merge(*output);
             auto newOutput = pWorkFunction->vRun(input);
             input->decRef();
             output->decRef();
             output = newOutput;
         }
-        auto outputKey = group[0].pOutputKeys;
-        auto outputKeyNumber = group[0].nOutuptKeyNumber;
+        auto outputKey = group[0]->pOutputKeys;
+        auto outputKeyNumber = group[0]->nOutuptKeyNumber;
         
         pOutput->vSave(outputKey, outputKeyNumber, output);
         output->decRef();
@@ -287,6 +286,7 @@ bool SGComputeResponser::ReduceWork::vRun(const std::vector<KeyCombine>& subWork
 bool SGComputeResponser::runWork(const void* runInfo)
 {
     auto input = (const SGCompute__SR__RunInfo*)runInfo;
+    //FUNC_PRINT(input->n_work_content);
     auto iter = mWorks.find(input->work_magic);
     if (iter == mWorks.end())
     {
@@ -294,26 +294,19 @@ bool SGComputeResponser::runWork(const void* runInfo)
     }
     auto work = iter->second;
     SGASSERT(NULL!=work);
-    std::vector<SGComputeResponser::KeyCombine>* subWorksP = new std::vector<SGComputeResponser::KeyCombine>;
-    std::vector<SGComputeResponser::KeyCombine>& subWorks = *subWorksP;
+    std::vector<GPPtr<SGComputeResponser::KeyCombine>> subWorks;
     for (int i=0; i<input->n_work_content; ++i)
     {
         auto w = input->work_content[i];
-        SGComputeResponser::KeyCombine keyCombine;
-        keyCombine.pOutputKeys = new unsigned int[w->n_outputkeys];
-        keyCombine.pInputKeys = new unsigned int[w->n_inputkeys];
-        SGASSERT(NULL!=keyCombine.pInputKeys);
-        SGASSERT(NULL!=keyCombine.pOutputKeys);
-        keyCombine.nInputKeyNumber = (unsigned int)w->n_inputkeys;
-        keyCombine.nOutuptKeyNumber = (unsigned int)w->n_outputkeys;
+        GPPtr<SGComputeResponser::KeyCombine> keyCombine = new SGComputeResponser::KeyCombine((int)w->n_inputkeys, (int)w->n_outputkeys);
         
         for (int k=0; k<w->n_outputkeys; ++k)
         {
-            keyCombine.pOutputKeys[i] = w->outputkeys[k];
+            keyCombine->pOutputKeys[k] = w->outputkeys[k];
         }
         for (int k=0; k<w->n_inputkeys; ++k)
         {
-            keyCombine.pInputKeys[i] = w->inputkeys[k];
+            keyCombine->pInputKeys[k] = w->inputkeys[k];
         }
         subWorks.push_back(keyCombine);
     }

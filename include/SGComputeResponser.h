@@ -39,12 +39,26 @@ public:
 
     virtual bool onSetup() override;
 
-    struct KeyCombine
+    struct KeyCombine:public GPRefCount
     {
         unsigned int* pInputKeys;
         unsigned int nInputKeyNumber;
         unsigned int* pOutputKeys;
         unsigned int nOutuptKeyNumber;
+        
+        KeyCombine(int input, int output)
+        {
+            pInputKeys = new unsigned int[input];
+            pOutputKeys = new unsigned int[output];
+            nInputKeyNumber = input;
+            nOutuptKeyNumber = output;
+        }
+        
+        virtual ~ KeyCombine()
+        {
+            delete [] pInputKeys;
+            delete [] pOutputKeys;
+        }
     };
     class Work
     {
@@ -52,7 +66,7 @@ public:
         Work();
         virtual ~Work();
         
-        virtual bool vRun(const std::vector<KeyCombine>& subWorks) = 0;
+        virtual bool vRun(const std::vector<GPPtr<KeyCombine>>& subWorks) = 0;
 
         GPPieces** pInputs;
         int nInput;
@@ -65,7 +79,7 @@ public:
         MapWork() = default;
         ~ MapWork() = default;
         
-        virtual bool vRun(const std::vector<KeyCombine>& subWorks);
+        virtual bool vRun(const std::vector<GPPtr<KeyCombine>>& subWorks);
     };
     class ReduceWork:public Work
     {
@@ -73,7 +87,7 @@ public:
         ReduceWork() = default;
         ~ ReduceWork() = default;
 
-        virtual bool vRun(const std::vector<KeyCombine>& subWorks);
+        virtual bool vRun(const std::vector<GPPtr<KeyCombine>>& subWorks);
     };
 
     uint64_t insertWork(const void* workInfo);
