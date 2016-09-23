@@ -48,7 +48,7 @@ def replaceMacro(fileName, macro):
 	return
 
 if __name__=='__main__':
-	cmd = 'find include -name \"*.h\"'
+	cmd = 'find include src/fs -name \"*.h\"'
 	files = os.popen(cmd).read().split('\n')
 	for file in files:
 		if len(file) <=0:
