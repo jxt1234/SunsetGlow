@@ -37,7 +37,7 @@ public:
     };
     
     
-    SGResponserExecutor(const std::vector<ProtobufC_RPC_Client*>& responsers, SGComputeServer::Reporter* report, GPPtr<Handler> handler, const GPParallelType* data);
+    SGResponserExecutor(const std::vector<ProtobufC_RPC_Client*>& responsers, GPPtr<Handler> handler, const GPParallelType* data);
     virtual ~SGResponserExecutor();
     
     virtual bool vRun(GPPieces* output, GPPieces** inputs, int inputNumber) const override;
@@ -67,7 +67,6 @@ private:
     mutable void* mMessageRemain = NULL;
     
     
-    SGComputeServer::Reporter* mReport;
     std::vector<ProtobufC_RPC_Client*> mTaskClients;
     GPPtr<Handler> mHandler;
     std::string mFormula;

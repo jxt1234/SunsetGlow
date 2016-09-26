@@ -20,6 +20,7 @@ typedef struct _SGCompute__SR__WorkInfo__FileInfo SGCompute__SR__WorkInfo__FileI
 typedef struct _SGCompute__SR__RunInfo SGCompute__SR__RunInfo;
 typedef struct _SGCompute__SR__RunInfo__Unit SGCompute__SR__RunInfo__Unit;
 typedef struct _SGCompute__SR__ResultInfo SGCompute__SR__ResultInfo;
+typedef struct _SGCompute__SR__RegistorInfo SGCompute__SR__RegistorInfo;
 
 
 /* --- enums --- */
@@ -34,6 +35,11 @@ typedef enum _SGCompute__SR__ResultInfo__STATUS {
   SGCOMPUTE__SR__RESULT_INFO__STATUS__FAILED = 1
     PROTOBUF_C__FORCE_ENUM_TO_BE_INT_SIZE(SGCOMPUTE__SR__RESULT_INFO__STATUS)
 } SGCompute__SR__ResultInfo__STATUS;
+typedef enum _SGCompute__SR__RegistorInfo__TYPE {
+  SGCOMPUTE__SR__REGISTOR_INFO__TYPE__LOCAL = 0,
+  SGCOMPUTE__SR__REGISTOR_INFO__TYPE__TCP = 1
+    PROTOBUF_C__FORCE_ENUM_TO_BE_INT_SIZE(SGCOMPUTE__SR__REGISTOR_INFO__TYPE)
+} SGCompute__SR__RegistorInfo__TYPE;
 
 /* --- messages --- */
 
@@ -103,6 +109,17 @@ struct  _SGCompute__SR__ResultInfo
     , SGCOMPUTE__SR__RESULT_INFO__STATUS__SUCCESS, NULL, 0 }
 
 
+struct  _SGCompute__SR__RegistorInfo
+{
+  ProtobufCMessage base;
+  char *info;
+  SGCompute__SR__RegistorInfo__TYPE type;
+};
+#define SGCOMPUTE__SR__REGISTOR_INFO__INIT \
+ { PROTOBUF_C_MESSAGE_INIT (&sgcompute__sr__registor_info__descriptor) \
+    , NULL, SGCOMPUTE__SR__REGISTOR_INFO__TYPE__LOCAL }
+
+
 /* SGCompute__SR__WorkInfo__FileInfo methods */
 void   sgcompute__sr__work_info__file_info__init
                      (SGCompute__SR__WorkInfo__FileInfo         *message);
@@ -166,6 +183,25 @@ SGCompute__SR__ResultInfo *
 void   sgcompute__sr__result_info__free_unpacked
                      (SGCompute__SR__ResultInfo *message,
                       ProtobufCAllocator *allocator);
+/* SGCompute__SR__RegistorInfo methods */
+void   sgcompute__sr__registor_info__init
+                     (SGCompute__SR__RegistorInfo         *message);
+size_t sgcompute__sr__registor_info__get_packed_size
+                     (const SGCompute__SR__RegistorInfo   *message);
+size_t sgcompute__sr__registor_info__pack
+                     (const SGCompute__SR__RegistorInfo   *message,
+                      uint8_t             *out);
+size_t sgcompute__sr__registor_info__pack_to_buffer
+                     (const SGCompute__SR__RegistorInfo   *message,
+                      ProtobufCBuffer     *buffer);
+SGCompute__SR__RegistorInfo *
+       sgcompute__sr__registor_info__unpack
+                     (ProtobufCAllocator  *allocator,
+                      size_t               len,
+                      const uint8_t       *data);
+void   sgcompute__sr__registor_info__free_unpacked
+                     (SGCompute__SR__RegistorInfo *message,
+                      ProtobufCAllocator *allocator);
 /* --- per-message closures --- */
 
 typedef void (*SGCompute__SR__WorkInfo__FileInfo_Closure)
@@ -182,6 +218,9 @@ typedef void (*SGCompute__SR__RunInfo_Closure)
                   void *closure_data);
 typedef void (*SGCompute__SR__ResultInfo_Closure)
                  (const SGCompute__SR__ResultInfo *message,
+                  void *closure_data);
+typedef void (*SGCompute__SR__RegistorInfo_Closure)
+                 (const SGCompute__SR__RegistorInfo *message,
                   void *closure_data);
 
 /* --- services --- */
@@ -233,6 +272,10 @@ struct _SGCompute__SR__ComputeServerWaiter_Service
                          const SGCompute__SR__ResultInfo *input,
                          SGCompute__SR__ResultInfo_Closure closure,
                          void *closure_data);
+  void (*registor)(SGCompute__SR__ComputeServerWaiter_Service *service,
+                   const SGCompute__SR__RegistorInfo *input,
+                   SGCompute__SR__ResultInfo_Closure closure,
+                   void *closure_data);
 };
 typedef void (*SGCompute__SR__ComputeServerWaiter_ServiceDestroy)(SGCompute__SR__ComputeServerWaiter_Service *);
 void sgcompute__sr__compute_server_waiter__init (SGCompute__SR__ComputeServerWaiter_Service *service,
@@ -241,11 +284,16 @@ void sgcompute__sr__compute_server_waiter__init (SGCompute__SR__ComputeServerWai
     { &sgcompute__sr__compute_server_waiter__descriptor, protobuf_c_service_invoke_internal, NULL }
 #define SGCOMPUTE__SR__COMPUTE_SERVER_WAITER__INIT(function_prefix__) \
     { SGCOMPUTE__SR__COMPUTE_SERVER_WAITER__BASE_INIT,\
-      function_prefix__ ## report_success  }
+      function_prefix__ ## report_success,\
+      function_prefix__ ## registor  }
 void sgcompute__sr__compute_server_waiter__report_success(ProtobufCService *service,
                                                           const SGCompute__SR__ResultInfo *input,
                                                           SGCompute__SR__ResultInfo_Closure closure,
                                                           void *closure_data);
+void sgcompute__sr__compute_server_waiter__registor(ProtobufCService *service,
+                                                    const SGCompute__SR__RegistorInfo *input,
+                                                    SGCompute__SR__ResultInfo_Closure closure,
+                                                    void *closure_data);
 
 /* --- descriptors --- */
 
@@ -256,6 +304,8 @@ extern const ProtobufCMessageDescriptor sgcompute__sr__run_info__descriptor;
 extern const ProtobufCMessageDescriptor sgcompute__sr__run_info__unit__descriptor;
 extern const ProtobufCMessageDescriptor sgcompute__sr__result_info__descriptor;
 extern const ProtobufCEnumDescriptor    sgcompute__sr__result_info__status__descriptor;
+extern const ProtobufCMessageDescriptor sgcompute__sr__registor_info__descriptor;
+extern const ProtobufCEnumDescriptor    sgcompute__sr__registor_info__type__descriptor;
 extern const ProtobufCServiceDescriptor sgcompute__sr__compute_responser__descriptor;
 extern const ProtobufCServiceDescriptor sgcompute__sr__compute_server_waiter__descriptor;
 

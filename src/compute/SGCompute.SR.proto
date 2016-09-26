@@ -37,6 +37,15 @@ message ResultInfo {
     required uint64 magic = 3;
 }
 
+message RegistorInfo {
+    enum TYPE {
+        LOCAL = 0;
+        TCP = 1;
+    }
+    required string info = 1;
+    required TYPE type = 2 [default = LOCAL];
+}
+
 service ComputeResponser {
     rpc CreateWork (WorkInfo) returns (ResultInfo);
     rpc RunWork (RunInfo) returns (ResultInfo);
@@ -45,6 +54,7 @@ service ComputeResponser {
 
 service ComputeServerWaiter {
     rpc ReportSuccess(ResultInfo) returns (ResultInfo);
+    rpc Registor(RegistorInfo) returns (ResultInfo);
 }
 
 

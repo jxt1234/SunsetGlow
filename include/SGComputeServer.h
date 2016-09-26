@@ -29,17 +29,8 @@ extern "C" {
 class SGComputeServer :public SGBasicServer
 {
 public:
-    class Reporter:public GPRefCount
-    {
-    public:
-        virtual ~Reporter(){}
-        virtual void addListenContent(uint64_t magic, uint64_t index) = 0;
-        virtual bool waitForListener(uint64_t magic, uint64_t maxTimeInMs=0) = 0;
-        virtual bool postListener(uint64_t magic) = 0;
-    protected:
-        Reporter(){}
-    };
 
+    static void init(const char* configFile);
     static SGComputeServer* getInstance();
     
     //Pieces manager
@@ -55,7 +46,7 @@ public:
     
     std::vector<const IStatusType*> translateTypes(const std::string& typeInfos) const;
     
-    Reporter* getReporter() const {return mReporter.get();}
+    void addResponser(ProtobufC_RPC_Client* client);
     
     virtual bool onSetup();
 
@@ -74,7 +65,6 @@ private:
     
     GPPtr<GPFunctionDataBase> mDataBase;
     GPPtr<GPProducer> mProducer;
-    GPPtr<Reporter> mReporter;
     std::vector<ProtobufC_RPC_Client*> mResponseClients;
 };
 #endif

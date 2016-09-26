@@ -1,8 +1,15 @@
 #include "SGComputeResponser.h"
 #include "SGMacro.h"
-int main()
+int main(int argc, const char* argv[])
 {
-    SGComputeResponser::init(SGRESPONSE_PORT, SGREPORT_PORT);
+    if (argc < 1)
+    {
+        GPPRINT_FL("Usage: ./compute-responser port");
+        return 0;
+    }
+    auto responserPort = argv[1];
+    
+    SGComputeResponser::init(responserPort, SGREPORT_PORT);
     SGComputeResponser::getInstance()->install("func.xml");
     SGComputeResponser::getInstance()->runLoop();
     return 1;

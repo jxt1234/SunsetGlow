@@ -148,6 +148,49 @@ void   sgcompute__sr__result_info__free_unpacked
   assert(message->base.descriptor == &sgcompute__sr__result_info__descriptor);
   protobuf_c_message_free_unpacked ((ProtobufCMessage*)message, allocator);
 }
+void   sgcompute__sr__registor_info__init
+                     (SGCompute__SR__RegistorInfo         *message)
+{
+  static SGCompute__SR__RegistorInfo init_value = SGCOMPUTE__SR__REGISTOR_INFO__INIT;
+  *message = init_value;
+}
+size_t sgcompute__sr__registor_info__get_packed_size
+                     (const SGCompute__SR__RegistorInfo *message)
+{
+  assert(message->base.descriptor == &sgcompute__sr__registor_info__descriptor);
+  return protobuf_c_message_get_packed_size ((const ProtobufCMessage*)(message));
+}
+size_t sgcompute__sr__registor_info__pack
+                     (const SGCompute__SR__RegistorInfo *message,
+                      uint8_t       *out)
+{
+  assert(message->base.descriptor == &sgcompute__sr__registor_info__descriptor);
+  return protobuf_c_message_pack ((const ProtobufCMessage*)message, out);
+}
+size_t sgcompute__sr__registor_info__pack_to_buffer
+                     (const SGCompute__SR__RegistorInfo *message,
+                      ProtobufCBuffer *buffer)
+{
+  assert(message->base.descriptor == &sgcompute__sr__registor_info__descriptor);
+  return protobuf_c_message_pack_to_buffer ((const ProtobufCMessage*)message, buffer);
+}
+SGCompute__SR__RegistorInfo *
+       sgcompute__sr__registor_info__unpack
+                     (ProtobufCAllocator  *allocator,
+                      size_t               len,
+                      const uint8_t       *data)
+{
+  return (SGCompute__SR__RegistorInfo *)
+     protobuf_c_message_unpack (&sgcompute__sr__registor_info__descriptor,
+                                allocator, len, data);
+}
+void   sgcompute__sr__registor_info__free_unpacked
+                     (SGCompute__SR__RegistorInfo *message,
+                      ProtobufCAllocator *allocator)
+{
+  assert(message->base.descriptor == &sgcompute__sr__registor_info__descriptor);
+  protobuf_c_message_free_unpacked ((ProtobufCMessage*)message, allocator);
+}
 static const ProtobufCFieldDescriptor sgcompute__sr__work_info__file_info__field_descriptors[3] =
 {
   {
@@ -539,6 +582,86 @@ const ProtobufCMessageDescriptor sgcompute__sr__result_info__descriptor =
   (ProtobufCMessageInit) sgcompute__sr__result_info__init,
   NULL,NULL,NULL    /* reserved[123] */
 };
+static const ProtobufCEnumValue sgcompute__sr__registor_info__type__enum_values_by_number[2] =
+{
+  { "LOCAL", "SGCOMPUTE__SR__REGISTOR_INFO__TYPE__LOCAL", 0 },
+  { "TCP", "SGCOMPUTE__SR__REGISTOR_INFO__TYPE__TCP", 1 },
+};
+static const ProtobufCIntRange sgcompute__sr__registor_info__type__value_ranges[] = {
+{0, 0},{0, 2}
+};
+static const ProtobufCEnumValueIndex sgcompute__sr__registor_info__type__enum_values_by_name[2] =
+{
+  { "LOCAL", 0 },
+  { "TCP", 1 },
+};
+const ProtobufCEnumDescriptor sgcompute__sr__registor_info__type__descriptor =
+{
+  PROTOBUF_C__ENUM_DESCRIPTOR_MAGIC,
+  "SGCompute.SR.RegistorInfo.TYPE",
+  "TYPE",
+  "SGCompute__SR__RegistorInfo__TYPE",
+  "SGCompute.SR",
+  2,
+  sgcompute__sr__registor_info__type__enum_values_by_number,
+  2,
+  sgcompute__sr__registor_info__type__enum_values_by_name,
+  1,
+  sgcompute__sr__registor_info__type__value_ranges,
+  NULL,NULL,NULL,NULL   /* reserved[1234] */
+};
+static const SGCompute__SR__RegistorInfo__TYPE sgcompute__sr__registor_info__type__default_value = SGCOMPUTE__SR__REGISTOR_INFO__TYPE__LOCAL;
+static const ProtobufCFieldDescriptor sgcompute__sr__registor_info__field_descriptors[2] =
+{
+  {
+    "info",
+    1,
+    PROTOBUF_C_LABEL_REQUIRED,
+    PROTOBUF_C_TYPE_STRING,
+    0,   /* quantifier_offset */
+    offsetof(SGCompute__SR__RegistorInfo, info),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+  {
+    "type",
+    2,
+    PROTOBUF_C_LABEL_REQUIRED,
+    PROTOBUF_C_TYPE_ENUM,
+    0,   /* quantifier_offset */
+    offsetof(SGCompute__SR__RegistorInfo, type),
+    &sgcompute__sr__registor_info__type__descriptor,
+    &sgcompute__sr__registor_info__type__default_value,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+};
+static const unsigned sgcompute__sr__registor_info__field_indices_by_name[] = {
+  0,   /* field[0] = info */
+  1,   /* field[1] = type */
+};
+static const ProtobufCIntRange sgcompute__sr__registor_info__number_ranges[1 + 1] =
+{
+  { 1, 0 },
+  { 0, 2 }
+};
+const ProtobufCMessageDescriptor sgcompute__sr__registor_info__descriptor =
+{
+  PROTOBUF_C__MESSAGE_DESCRIPTOR_MAGIC,
+  "SGCompute.SR.RegistorInfo",
+  "RegistorInfo",
+  "SGCompute__SR__RegistorInfo",
+  "SGCompute.SR",
+  sizeof(SGCompute__SR__RegistorInfo),
+  2,
+  sgcompute__sr__registor_info__field_descriptors,
+  sgcompute__sr__registor_info__field_indices_by_name,
+  1,  sgcompute__sr__registor_info__number_ranges,
+  (ProtobufCMessageInit) sgcompute__sr__registor_info__init,
+  NULL,NULL,NULL    /* reserved[123] */
+};
 static const ProtobufCMethodDescriptor sgcompute__sr__compute_responser__method_descriptors[3] =
 {
   { "CreateWork", &sgcompute__sr__work_info__descriptor, &sgcompute__sr__result_info__descriptor },
@@ -592,11 +715,13 @@ void sgcompute__sr__compute_responser__init (SGCompute__SR__ComputeResponser_Ser
                                      &sgcompute__sr__compute_responser__descriptor,
                                      (ProtobufCServiceDestroy) destroy);
 }
-static const ProtobufCMethodDescriptor sgcompute__sr__compute_server_waiter__method_descriptors[1] =
+static const ProtobufCMethodDescriptor sgcompute__sr__compute_server_waiter__method_descriptors[2] =
 {
   { "ReportSuccess", &sgcompute__sr__result_info__descriptor, &sgcompute__sr__result_info__descriptor },
+  { "Registor", &sgcompute__sr__registor_info__descriptor, &sgcompute__sr__result_info__descriptor },
 };
 const unsigned sgcompute__sr__compute_server_waiter__method_indices_by_name[] = {
+  1,        /* Registor */
   0         /* ReportSuccess */
 };
 const ProtobufCServiceDescriptor sgcompute__sr__compute_server_waiter__descriptor =
@@ -606,7 +731,7 @@ const ProtobufCServiceDescriptor sgcompute__sr__compute_server_waiter__descripto
   "ComputeServerWaiter",
   "SGCompute__SR__ComputeServerWaiter",
   "SGCompute.SR",
-  1,
+  2,
   sgcompute__sr__compute_server_waiter__method_descriptors,
   sgcompute__sr__compute_server_waiter__method_indices_by_name
 };
@@ -617,6 +742,14 @@ void sgcompute__sr__compute_server_waiter__report_success(ProtobufCService *serv
 {
   assert(service->descriptor == &sgcompute__sr__compute_server_waiter__descriptor);
   service->invoke(service, 0, (const ProtobufCMessage *) input, (ProtobufCClosure) closure, closure_data);
+}
+void sgcompute__sr__compute_server_waiter__registor(ProtobufCService *service,
+                                                    const SGCompute__SR__RegistorInfo *input,
+                                                    SGCompute__SR__ResultInfo_Closure closure,
+                                                    void *closure_data)
+{
+  assert(service->descriptor == &sgcompute__sr__compute_server_waiter__descriptor);
+  service->invoke(service, 1, (const ProtobufCMessage *) input, (ProtobufCClosure) closure, closure_data);
 }
 void sgcompute__sr__compute_server_waiter__init (SGCompute__SR__ComputeServerWaiter_Service *service,
                                                  SGCompute__SR__ComputeServerWaiter_ServiceDestroy destroy)

@@ -113,5 +113,8 @@ private:
     std::map<uint64_t, Work*> mWorks;
     uint64_t mWorkMagic;
     uint64_t mRunMagic;
+    
+    ProtobufC_RPC_AddressType mType;
+    std::string mPort;
 };
 #endif

@@ -92,6 +92,8 @@ SGComputeResponser::SGComputeResponser(const char* port, const char* master_port
     mDataBase = new GPFunctionDataBase;
     mWorkMagic = 1;
     mRunMagic = 1;
+    mType = PROTOBUF_C_RPC_ADDRESS_LOCAL;//TODO
+    mPort = port;
 }
 
 SGComputeResponser::~SGComputeResponser()
@@ -325,5 +327,27 @@ bool SGComputeResponser::onSetup()
 {
     mProducer = GPFactory::createProducer(mDataBase.get(), GPFactory::STREAM);
     mPool = new MGPThreadPool(std::vector<void*>{NULL});
+    while (!protobuf_c_rpc_client_is_connected(mReportClient))
+    {
+        protobuf_c_rpc_dispatch_run (protobuf_c_rpc_dispatch_default());
+    }
+    
+    SGCompute__SR__RegistorInfo info = SGCOMPUTE__SR__REGISTOR_INFO__INIT;
+    info.info = (char*)mPort.c_str();
+    switch (mType) {
+        case PROTOBUF_C_RPC_ADDRESS_TCP:
+            info.type = SGCOMPUTE__SR__REGISTOR_INFO__TYPE__TCP;
+            break;
+        case PROTOBUF_C_RPC_ADDRESS_LOCAL:
+            info.type = SGCOMPUTE__SR__REGISTOR_INFO__TYPE__LOCAL;
+        default:
+            break;
+    }
+    bool c = false;
+    sgcompute__sr__compute_server_waiter__registor((ProtobufCService*)mReportClient, &info, Responser_Report, &c);
+    while (!c)
+    {
+        protobuf_c_rpc_dispatch_run (protobuf_c_rpc_dispatch_default());
+    }
     return true;
 }

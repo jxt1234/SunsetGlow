@@ -6,10 +6,9 @@
 #include <sstream>
 #include "SGMacro.h"
 
-SGResponserExecutor::SGResponserExecutor(const std::vector<ProtobufC_RPC_Client*>& responsers, SGComputeServer::Reporter* report, GPPtr<Handler> handler, const GPParallelType* data)
+SGResponserExecutor::SGResponserExecutor(const std::vector<ProtobufC_RPC_Client*>& responsers, GPPtr<Handler> handler, const GPParallelType* data)
 {
     mTaskClients = responsers;
-    mReport = report;
     mHandler = handler;
     mFormula = data->sFuncInfo.formula;
     std::ostringstream os;
