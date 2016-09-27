@@ -72,28 +72,4 @@ private:
     std::string mFormula;
     std::string mInputTypes;
 };
-class MapHandler:public SGResponserExecutor::Handler
-{
-public:
-    MapHandler(GPPtr<GPKeyIteratorFactory> factory);
-    virtual ~ MapHandler();
-    virtual bool vRun(GPPieces* output, GPPieces** inputs, int inputNumber, const std::map<ProtobufC_RPC_Client*, uint64_t>& slaveMagicMap) const override;
-    
-    typedef enum {
-        START,
-        RUNNING,
-        FINISH
-    } STATUS;
-
-    void START_(GPPieces* output, GPPieces** inputs, int inputNumber, const std::map<ProtobufC_RPC_Client*, uint64_t>& slaveMagicMap) const;
-    void RUNNING_(GPPieces* output, GPPieces** inputs, int inputNumber, const std::map<ProtobufC_RPC_Client*, uint64_t>& slaveMagicMap) const;
-    void FINISH_(GPPieces* output, GPPieces** inputs, int inputNumber, const std::map<ProtobufC_RPC_Client*, uint64_t>& slaveMagicMap) const;
-private:
-    mutable STATUS mStaus = START;
-    mutable void* mWorkContent = NULL;
-    mutable void* mMessage = NULL;
-
-    
-    GPPtr<GPKeyIteratorFactory> mFactory;
-};
 #endif

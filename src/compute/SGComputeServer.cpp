@@ -10,6 +10,7 @@
 #include "backend/GPSingleParallelMachine.h"
 #include "thread/MGPThread.h"
 #include "SGResponserExecutor.h"
+#include "SGHandler.h"
 static void _setPieceKey(GPPieces* pieces, unsigned int* keyDimesions, int keyNumber)
 {
     pieces->nKeyNumber = keyNumber;
@@ -454,7 +455,7 @@ uint64_t SGComputeServer::createExecutor(GPParallelType* data, IParallelMachine:
     {
         //FUNC_PRINT(data->mOutputKey.size());
         GPPtr<GPKeyIteratorFactory> keyIteratorFactory = new GPKeyIteratorFactory(data);
-        GPPtr<SGResponserExecutor::Handler> handler = new MapHandler(keyIteratorFactory);
+        GPPtr<SGResponserExecutor::Handler> handler = new SGMapHandler(keyIteratorFactory);
         SGResponserExecutor* executor = new SGResponserExecutor(mResponseClients, handler, data);
         mExecutors.insert(std::make_pair(mExecutorOrder, executor));
     }
