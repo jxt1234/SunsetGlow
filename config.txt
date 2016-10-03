@@ -1,4 +1,4 @@
-INCLUDE:include ../Renascence/include/ third /Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/include/darwin/ /Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/include/ third/libhdfs/
+INCLUDE:include deps/Renacence/include/ third /Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/include/darwin/ /Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/include/ third/libhdfs/
 **********
 
 TARGET:libSunsetGlow.so
