@@ -245,13 +245,16 @@ static void SG_compute_wait_registor(SGCompute__SR__ComputeServerWaiter_Service 
                                            void *closure_data)
 {
     SGCompute__SR__ResultInfo outputResult = SGCOMPUTE__SR__RESULT_INFO__INIT;
-    auto type = PROTOBUF_C_RPC_ADDRESS_LOCAL;
+    auto type = PROTOBUF_C_RPC_ADDRESS_TCP;
     const char* port = input->info;
+    FUNC_PRINT_ALL(port, s);
     if (input->type == SGCOMPUTE__SR__REGISTOR_INFO__TYPE__TCP)
     {
         type = PROTOBUF_C_RPC_ADDRESS_TCP;
     }
-    auto responseClient = protobuf_c_rpc_client_new(type, port, &sgcompute__sr__compute_responser__descriptor, NULL);
+    std::ostringstream os;
+    os << "127.0.0.1:"<<port;
+    auto responseClient = protobuf_c_rpc_client_new(type, os.str().c_str(), &sgcompute__sr__compute_responser__descriptor, NULL);
     SGComputeServer::getInstance()->addWork(new AddResponserWork((ProtobufC_RPC_Client*)responseClient, port));
     outputResult.magic = -1;
     outputResult.status = SGCOMPUTE__SR__RESULT_INFO__STATUS__SUCCESS;
@@ -270,8 +273,8 @@ static SGCompute__SR__ComputeServerWaiter_Service wait_service = SGCOMPUTE__SR__
 SGComputeServer::SGComputeServer()
 {
     //TODO
-    mServer = protobuf_c_rpc_server_new(PROTOBUF_C_RPC_ADDRESS_LOCAL, SGSERVER_PORT, (ProtobufCService *) &create_service, NULL);
-    mReportServer = protobuf_c_rpc_server_new(PROTOBUF_C_RPC_ADDRESS_LOCAL, SGREPORT_PORT, (ProtobufCService *) &wait_service, NULL);
+    mServer = protobuf_c_rpc_server_new(PROTOBUF_C_RPC_ADDRESS_TCP, SGSERVER_PORT, (ProtobufCService *) &create_service, NULL);
+    mReportServer = protobuf_c_rpc_server_new(PROTOBUF_C_RPC_ADDRESS_TCP, SGREPORT_PORT, (ProtobufCService *) &wait_service, NULL);
     mDataBase = new GPFunctionDataBase;
     mProducer = NULL;
     mCacheOrder = 0;

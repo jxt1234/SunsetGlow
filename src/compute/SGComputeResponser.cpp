@@ -85,14 +85,14 @@ SGComputeResponser::SGComputeResponser(const char* port, const char* master_port
     SGASSERT(NULL!=port);
     SGASSERT(NULL!=master_port);
     //TODO
-    mComputeService = protobuf_c_rpc_server_new(PROTOBUF_C_RPC_ADDRESS_LOCAL, port, (ProtobufCService *) &gResponser, NULL);
-    auto service = protobuf_c_rpc_client_new(PROTOBUF_C_RPC_ADDRESS_LOCAL, master_port, &sgcompute__sr__compute_server_waiter__descriptor, NULL);
+    mComputeService = protobuf_c_rpc_server_new(PROTOBUF_C_RPC_ADDRESS_TCP, port, (ProtobufCService *) &gResponser, NULL);
+    auto service = protobuf_c_rpc_client_new(PROTOBUF_C_RPC_ADDRESS_TCP, master_port, &sgcompute__sr__compute_server_waiter__descriptor, NULL);
     SGASSERT(NULL!=service);
     mReportClient = (ProtobufC_RPC_Client*)service;
     mDataBase = new GPFunctionDataBase;
     mWorkMagic = 1;
     mRunMagic = 1;
-    mType = PROTOBUF_C_RPC_ADDRESS_LOCAL;//TODO
+    mType = PROTOBUF_C_RPC_ADDRESS_TCP;//TODO
     mPort = port;
 }
 
@@ -334,15 +334,7 @@ bool SGComputeResponser::onSetup()
     
     SGCompute__SR__RegistorInfo info = SGCOMPUTE__SR__REGISTOR_INFO__INIT;
     info.info = (char*)mPort.c_str();
-    switch (mType) {
-        case PROTOBUF_C_RPC_ADDRESS_TCP:
-            info.type = SGCOMPUTE__SR__REGISTOR_INFO__TYPE__TCP;
-            break;
-        case PROTOBUF_C_RPC_ADDRESS_LOCAL:
-            info.type = SGCOMPUTE__SR__REGISTOR_INFO__TYPE__LOCAL;
-        default:
-            break;
-    }
+    info.type = SGCOMPUTE__SR__REGISTOR_INFO__TYPE__TCP;
     bool c = false;
     sgcompute__sr__compute_server_waiter__registor((ProtobufCService*)mReportClient, &info, Responser_Report, &c);
     while (!c)

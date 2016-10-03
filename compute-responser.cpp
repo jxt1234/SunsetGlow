@@ -9,7 +9,7 @@ int main(int argc, const char* argv[])
     }
     auto responserPort = argv[1];
     
-    SGComputeResponser::init(responserPort, SGREPORT_PORT);
+    SGComputeResponser::init(responserPort, "127.0.0.1:3307");
     SGComputeResponser::getInstance()->install("func.xml");
     SGComputeResponser::getInstance()->runLoop();
     return 1;
