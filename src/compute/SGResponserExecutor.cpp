@@ -5,6 +5,7 @@
 #include "utils/AutoStorage.h"
 #include <sstream>
 #include "SGMacro.h"
+#include <string.h>
 
 SGResponserExecutor::SGResponserExecutor(const std::vector<ProtobufC_RPC_Client*>& responsers, GPPtr<Handler> handler, const GPParallelType* data)
 {
