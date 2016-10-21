@@ -8,7 +8,6 @@ include_directories(include deps/Renacence/include third third/libhdfs/)
 file(GLOB SRC_LIBS "src/compute/*.cpp" "src/compute/*.c" "third/protobuf-c/protobuf-c.c" "third/thread/*.cpp" "third/protobuf-c-rpc/*.c")
 
 add_library(SunsetGlow SHARED ${SRC_LIBS})
-add_compile_options(-fPIC)
 
 find_package (Threads)
 target_link_libraries(SunsetGlow ${CMAKE_THREAD_LIBS_INIT} GP)
@@ -36,3 +35,6 @@ endif()
 
 add_executable(hdfs_tools.out hdfs_tools.cpp)
 target_link_libraries(hdfs_tools.out hdfsStream GP)
+
+add_executable(example.out ./parallel_example.cpp)
+target_link_libraries(example.out GP)

@@ -21,3 +21,14 @@ client发起计算请求，server响应请求并将任务分解传给responser�
 
 ###HDFS
 Version: 2.5.2
+1、下载HDFS 2.5.2源码及安装包。
+2、在源码包中编译hdfs的jni库，将其放入/usr/lib。
+3、在.bashrc中指定 CLASSPATH，加载hdfs相应的类。
+4、建立自己的hdfs配置文件，格式为四行文本：
+
+ip（访问HDFS集群的ip地址）
+username:password（用户名：密码）
+hdfsBaseDir（HDFS根目录）
+localBaseDir（本地根目录，目录结构与 hdfsBaseDir 一一对应）
+
+5、修改 conf/hdfs.conf，将路径改为自己的hdf配置文件路径

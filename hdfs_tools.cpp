@@ -95,7 +95,10 @@ int main(int argc, char **argv)
     std::string user;
     std::string hdfsBasicPath;
     {
-        std::ifstream input("/Users/jiangxiaotang/InWork/secret/hdfs.txt");
+        std::ifstream fileNameInput("hdfs.conf");
+        std::string confFileName;
+        getline(fileNameInput, confFileName);
+        std::ifstream input(confFileName);
         getline(input, ipAddress);
         getline(input, user);
         getline(input, gHdfsBasicPath);
