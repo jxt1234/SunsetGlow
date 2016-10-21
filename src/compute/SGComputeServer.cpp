@@ -341,7 +341,7 @@ uint64_t SGComputeServer::createCache(unsigned int* keyDimesions, int keyNumber,
     mCacheOrder = mCacheOrder + 1;
     std::ostringstream os;
     os << "cache/"<<number;
-    GPPieces* pieces = GPPieceFactory::createLocalFilePiece(translateTypes(type), os.str().c_str(), 0, true);
+    GPPieces* pieces = GPPieceFactory::createLocalFilePiece(translateTypes(type), os.str().c_str(), 0);
     mCachePieces.insert(std::make_pair(number, pieces));
     FUNC_PRINT((int)mCachePieces.size());
     _setPieceKey(pieces, keyDimesions, keyNumber);
@@ -373,7 +373,7 @@ uint64_t SGComputeServer::createInput(const char* path, const char* type, unsign
     SGASSERT(keyNumber>0);
     uint64_t number = mCacheOrder + 1;
     mCacheOrder = mCacheOrder + 1;
-    GPPieces* pieces = GPPieceFactory::createLocalFilePiece(translateTypes(type), path, 0, false);
+    GPPieces* pieces = GPPieceFactory::createLocalFilePiece(translateTypes(type), path, 0);
     _setPieceKey(pieces, keyDimesions, keyNumber);
     mCachePieces.insert(std::make_pair(number, pieces));
     FUNC_PRINT((int)mCachePieces.size());
@@ -388,7 +388,7 @@ uint64_t SGComputeServer::createOutput(const char* path, const char* type, unsig
 //    SGASSERT(keyNumber>0);
     uint64_t number = mCacheOrder + 1;
     mCacheOrder = mCacheOrder + 1;
-    GPPieces* pieces = GPPieceFactory::createLocalFilePiece(translateTypes(type), path, 0, true);
+    GPPieces* pieces = GPPieceFactory::createLocalFilePiece(translateTypes(type), path, 0);
     _setPieceKey(pieces, keyDimesions, keyNumber);
     mCachePieces.insert(std::make_pair(number, pieces));
     FUNC_PRINT((int)mCachePieces.size());

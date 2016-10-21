@@ -15,9 +15,9 @@ static void __run()
 
     auto pieceFunction = GP_PiecesFunction_Create(pieceProducer, "C(S(x0))","TrBmp", "server");
     unsigned int keys = 5;
-    auto input = GP_Pieces_Create(pieceProducer, "server", "TrBmp", "deps/Renacence/res/pictures/", &keys, 1, GP_PIECES_INPUT);
+    auto input = GP_Pieces_Create(pieceProducer, "server", "TrBmp", "./pieces/example/", &keys, 1, GP_PIECES_INPUT);
     unsigned int outputKeys = 1;
-    auto output = GP_Pieces_Create(pieceProducer, "server", "TrBmp", "output/pythonTestParallel/", &outputKeys, 1, GP_PIECES_OUTPUT);
+    auto output = GP_Pieces_Create(pieceProducer, "server", "TrBmp", "output/parallel/", &outputKeys, 1, GP_PIECES_OUTPUT);
     auto cache = GP_PiecesFunction_Run(pieceFunction, &input, 1);
     GP_Pieces_Copy(pieceProducer, "server", cache, output);
 

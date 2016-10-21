@@ -29,6 +29,5 @@ Version: 2.5.2
 ip（访问HDFS集群的ip地址）
 username:password（用户名：密码）
 hdfsBaseDir（HDFS根目录）
-localBaseDir（本地根目录，目录结构与 hdfsBaseDir 一一对应）
 
 5、修改 conf/hdfs.conf，将路径改为自己的hdf配置文件路径

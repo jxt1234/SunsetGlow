@@ -36,5 +36,8 @@ endif()
 add_executable(hdfs_tools.out hdfs_tools.cpp)
 target_link_libraries(hdfs_tools.out hdfsStream GP)
 
-add_executable(example.out ./parallel_example.cpp)
+add_executable(example.out ./example.cpp)
 target_link_libraries(example.out GP)
+
+target_link_libraries(compute-responser.out hdfsStream)
+target_link_libraries(compute-server.out hdfsStream)

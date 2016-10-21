@@ -129,7 +129,7 @@ uint64_t SGComputeResponser::insertWork(const void* workInfo)
         char* path = pieceInfo->path;
         char* type = pieceInfo->type;
         GPPieces* piece = GPPieceFactory::createLocalFilePiece(mDataBase->queryType(type)
-, path, 0, false);
+, path, 0);
         piece->nKeyNumber = (unsigned int)pieceInfo->n_key_dimesion;
         for (int j=0; j<pieceInfo->n_key_dimesion; ++j)
         {
@@ -141,7 +141,7 @@ uint64_t SGComputeResponser::insertWork(const void* workInfo)
         auto pieceInfo = info->output;
         char* path = pieceInfo->path;
         char* type = pieceInfo->type;
-        GPPieces* piece = GPPieceFactory::createLocalFilePiece(mDataBase->queryType(type), path, 0, true);
+        GPPieces* piece = GPPieceFactory::createLocalFilePiece(mDataBase->queryType(type), path, 0);
         piece->nKeyNumber = (unsigned int)pieceInfo->n_key_dimesion;
         for (int j=0; j<pieceInfo->n_key_dimesion; ++j)
         {
@@ -326,7 +326,6 @@ static void Responser_Report(const SGCompute__SR__ResultInfo *message, void *clo
 bool SGComputeResponser::onSetup()
 {
     mProducer = GPFactory::createProducer(mDataBase.get(), GPFactory::STREAM);
-    mPool = new MGPThreadPool(std::vector<void*>{NULL});
     while (!protobuf_c_rpc_client_is_connected(mReportClient))
     {
         protobuf_c_rpc_dispatch_run (protobuf_c_rpc_dispatch_default());

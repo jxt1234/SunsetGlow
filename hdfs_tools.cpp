@@ -20,9 +20,6 @@ public:
     }
 };
 
-static std::string gHdfsBasicPath;
-static std::string gLocalBasicPath;
-
 
 static void download(const char* path, long pieceNumber)
 {
@@ -34,11 +31,9 @@ static void download(const char* path, long pieceNumber)
         ospath << path << "_"<<i;
         auto mergePath = ospath.str();
         GPStreamFactory::setStreamCreator(SGHdfsStreamFactory::getInstance());
-        GPStreamFactory::setParentPath(gHdfsBasicPath.c_str());
         GPPtr<GPStream> readStream = GPStreamFactory::NewStream(mergePath.c_str());
 
         GPStreamFactory::setStreamCreator(NULL);
-        GPStreamFactory::setParentPath(gLocalBasicPath.c_str());
         GPPtr<GPWStream> writeStream = GPStreamFactory::NewWStream(mergePath.c_str());
         while (0 < readStream->vRead(buffer, size))
         {
@@ -60,10 +55,8 @@ static void upload(const char* path, long pieceNumber)
         ospath << path << "_"<<i;
         auto mergePath = ospath.str();
         GPStreamFactory::setStreamCreator(NULL);
-        GPStreamFactory::setParentPath(gLocalBasicPath.c_str());
         GPPtr<GPStream> readStream = GPStreamFactory::NewStream(mergePath.c_str());
         GPStreamFactory::setStreamCreator(SGHdfsStreamFactory::getInstance());
-        GPStreamFactory::setParentPath(gHdfsBasicPath.c_str());
         GPPtr<GPWStream> writeStream = GPStreamFactory::NewWStream(mergePath.c_str());
         while (0 < readStream->vRead(buffer, size))
         {
@@ -91,21 +84,13 @@ int main(int argc, char **argv)
     {
         return 0;
     }
-    std::string ipAddress;
-    std::string user;
-    std::string hdfsBasicPath;
     {
-        std::ifstream fileNameInput("hdfs.conf");
+        std::ifstream fileNameInput("conf/hdfs.conf");
         std::string confFileName;
         getline(fileNameInput, confFileName);
-        std::ifstream input(confFileName);
-        getline(input, ipAddress);
-        getline(input, user);
-        getline(input, gHdfsBasicPath);
-        getline(input, gLocalBasicPath);
+        SGHdfsStreamFactory::initWithConf(confFileName.c_str());
     }
     
-    SGHdfsStreamFactory::init(ipAddress.c_str(), user.c_str());
     AutoRecycle __r;
     if (strcmp("upload", argv[1]) == 0)
     {
