@@ -3,6 +3,7 @@ project (SunsetGlow)
 MESSAGE(STATUS "operation system is ${CMAKE_SYSTEM}")
 
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Wall -std=c++11")
+SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -Wall")
 
 include_directories(include deps/Renacence/include third third/libhdfs/)
 file(GLOB SRC_LIBS "src/compute/*.cpp" "src/compute/*.c" "third/protobuf-c/protobuf-c.c" "third/thread/*.cpp" "third/protobuf-c-rpc/*.c")
@@ -10,7 +11,7 @@ file(GLOB SRC_LIBS "src/compute/*.cpp" "src/compute/*.c" "third/protobuf-c/proto
 add_library(SunsetGlow SHARED ${SRC_LIBS})
 
 find_package (Threads)
-target_link_libraries(SunsetGlow ${CMAKE_THREAD_LIBS_INIT} GP)
+target_link_libraries(SunsetGlow ${CMAKE_THREAD_LIBS_INIT} Renascence)
 
 
 add_executable(compute-responser.out ./compute-responser.cpp)
@@ -34,10 +35,10 @@ if (CMAKE_SYSTEM_NAME MATCHES "Linux")
 endif()
 
 add_executable(hdfs_tools.out hdfs_tools.cpp)
-target_link_libraries(hdfs_tools.out hdfsStream GP)
+target_link_libraries(hdfs_tools.out hdfsStream Renascence)
 
 add_executable(example.out ./example.cpp)
-target_link_libraries(example.out GP)
+target_link_libraries(example.out Renascence)
 
 target_link_libraries(compute-responser.out hdfsStream)
 target_link_libraries(compute-server.out hdfsStream)
