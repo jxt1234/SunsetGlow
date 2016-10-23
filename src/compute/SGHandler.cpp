@@ -68,7 +68,7 @@ void SGMapHandler::START_(GPPieces* output, GPPieces** inputs, int inputNumber, 
     auto keySize = iterator->vGetSize();
     std::vector<SGResponserExecutor::WorkKey*> keys;
     SGResponserExecutor::WorkKey::generate(iterator.get(), keys);
-    size_t pieceNumber = keys.size() / slaveMagicMap.size();
+    size_t pieceNumber = (keys.size()+slaveMagicMap.size()-1) / slaveMagicMap.size();
     if (pieceNumber <= 0)
     {
         pieceNumber = 1;

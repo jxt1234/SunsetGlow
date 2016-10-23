@@ -3,6 +3,9 @@
 #include "SGHdfsStreamFactory.h"
 #include "core/GPStreamFactory.h"
 #include <fstream>
+#include <unistd.h>
+#include <stdlib.h>
+#include <string.h>
 int main(int argc, const char* argv[])
 {
     if (argc < 2)
@@ -15,13 +18,24 @@ int main(int argc, const char* argv[])
     {
         number = atoi(argv[2]);
     }
-    auto responserPort = argv[1];
+    auto responserPort = atoi(argv[1]);
     std::string mastPort;
     {
         std::ifstream input("conf/responser.conf");
         getline(input, mastPort);
     }
-    SGComputeResponser::init(responserPort, mastPort.c_str());
+    for (int i=1; i<number; ++i)
+    {
+        if (0 == fork())
+        {
+            break;
+        }
+        responserPort++;
+    }
+    char portName[100];
+    sprintf(portName, "%d", responserPort);
+    printf("In %0x, portName is %s\n", getpid(), portName);
+    SGComputeResponser::init(portName, mastPort.c_str());
     SGComputeResponser::getInstance()->install("func.xml");
     SGHdfsStreamFactory::initWithConf("/home/jxt/InWork/secret/hdfs.txt");
     GPStreamFactory::setStreamCreator(SGHdfsStreamFactory::getInstance());
