@@ -26,6 +26,11 @@ SGResponserExecutor::~SGResponserExecutor()
 
 static void SGCompute__SR__ResultInfo_Closure_CreateWork(const SGCompute__SR__ResultInfo *message, void *closure_data)
 {
+    if (NULL == message)
+    {
+        FUNC_PRINT(1);
+        return;
+    }
     uint64_t* magicP = (uint64_t*)closure_data;
     *magicP = message->magic;
 }

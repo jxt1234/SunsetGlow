@@ -5,6 +5,11 @@
 
 static void Handler_SGCompute__SR__ResultInfo_Closure(const SGCompute__SR__ResultInfo *message, void *closure_data)
 {
+    if (NULL == message)
+    {
+        FUNC_PRINT(1);
+        return;
+    }
     bool* result = (bool*)closure_data;
     if (SGCOMPUTE__SR__RESULT_INFO__STATUS__SUCCESS == message->status)
     {
