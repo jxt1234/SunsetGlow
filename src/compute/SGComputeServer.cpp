@@ -252,9 +252,7 @@ static void SG_compute_wait_registor(SGCompute__SR__ComputeServerWaiter_Service 
     {
         type = PROTOBUF_C_RPC_ADDRESS_TCP;
     }
-    std::ostringstream os;
-    os << "127.0.0.1:"<<port;
-    auto responseClient = protobuf_c_rpc_client_new(type, os.str().c_str(), &sgcompute__sr__compute_responser__descriptor, NULL);
+    auto responseClient = protobuf_c_rpc_client_new(type, port, &sgcompute__sr__compute_responser__descriptor, NULL);
     SGComputeServer::getInstance()->addWork(new AddResponserWork((ProtobufC_RPC_Client*)responseClient, port));
     outputResult.magic = -1;
     outputResult.status = SGCOMPUTE__SR__RESULT_INFO__STATUS__SUCCESS;

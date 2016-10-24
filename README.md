@@ -11,6 +11,7 @@ SunsetGlow是Renascense的并行计算插件，支持单机和分布式的计算
 
 client发起计算请求，server响应请求并将任务分解传给responser，等待responser完成后返回。
 
+conf/ip.conf 为 起responser的机器ip地址。
 
 ###二期：加入计算函数库的编写与安装机制
 支持函数库编写后推送到目标机器上编译，动态加载
@@ -31,3 +32,4 @@ username:password（用户名：密码）
 hdfsBaseDir（HDFS根目录）
 
 5、修改 conf/hdfs.conf，将路径改为自己的hdf配置文件路径
+

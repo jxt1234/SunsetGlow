@@ -3,6 +3,8 @@
 #include "SGCompute.SR.pb-c.h"
 #include "core/GPStreamFactory.h"
 #include "core/GPPieceFactory.h"
+#include <fstream>
+#include <sstream>
 
 
 SGComputeResponser* SGComputeResponser::gInstance = NULL;
@@ -332,7 +334,13 @@ bool SGComputeResponser::onSetup()
     }
     
     SGCompute__SR__RegistorInfo info = SGCOMPUTE__SR__REGISTOR_INFO__INIT;
-    info.info = (char*)mPort.c_str();
+    std::ostringstream os;
+    std::fstream inputIp("conf/ip.conf");
+    std::string ipline;
+    getline(inputIp, ipline);
+    os << ipline << ":"<<mPort;
+    auto ipinfo = os.str();
+    info.info = (char*)ipinfo.c_str();
     info.type = SGCOMPUTE__SR__REGISTOR_INFO__TYPE__TCP;
     bool c = false;
     sgcompute__sr__compute_server_waiter__registor((ProtobufCService*)mReportClient, &info, Responser_Report, &c);
