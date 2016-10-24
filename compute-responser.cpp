@@ -37,7 +37,12 @@ int main(int argc, const char* argv[])
     printf("In %0x, portName is %s\n", getpid(), portName);
     SGComputeResponser::init(portName, mastPort.c_str());
     SGComputeResponser::getInstance()->install("func.xml");
-    SGHdfsStreamFactory::initWithConf("/home/jxt/InWork/secret/hdfs.txt");
+    {
+        std::ifstream input("./conf/hdfs.conf");
+        std::string hdfsConf;
+        getline(input, hdfsConf);
+        SGHdfsStreamFactory::initWithConf(hdfsConf.c_str());
+    }
     GPStreamFactory::setStreamCreator(SGHdfsStreamFactory::getInstance());
     SGComputeResponser::getInstance()->runLoop();
     return 1;
