@@ -36,7 +36,7 @@ int main(int argc, const char* argv[])
     sprintf(portName, "%d", responserPort);
     printf("In %0x, portName is %s\n", getpid(), portName);
     SGComputeResponser::init(portName, mastPort.c_str());
-    SGComputeResponser::getInstance()->install("func.xml");
+    SGComputeResponser::getInstance()->install("conf/func.xml");
     {
         std::ifstream input("./conf/hdfs.conf");
         std::string hdfsConf;

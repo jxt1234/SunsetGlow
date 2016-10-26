@@ -276,7 +276,6 @@ SGComputeServer::SGComputeServer()
     mDataBase = new GPFunctionDataBase;
     mProducer = NULL;
     mCacheOrder = 0;
-    mExecutorOrder = 0;
     
 }
 
@@ -402,7 +401,7 @@ bool SGComputeServer::release(uint64_t number)
     {
         iter->second->decRef();
         mCachePieces.erase(iter);
-        FUNC_PRINT((int)mCachePieces.size());
+        GPPRINT_FL("released %d, current size=%d", (int)number, (int)mCachePieces.size());
         return true;
     }
     auto iter2 = mExecutors.find(number);
@@ -420,7 +419,7 @@ GPPieces* SGComputeServer::find(uint64_t number)
     auto iter = mCachePieces.find(number);
     if (iter == mCachePieces.end())
     {
-        FUNC_PRINT(1);
+        FUNC_PRINT(number);
         return NULL;
     }
     return iter->second;
@@ -446,11 +445,12 @@ bool SGComputeServer::onSetup()
 uint64_t SGComputeServer::createExecutor(GPParallelType* data, IParallelMachine::PARALLELTYPE type)
 {
     data->pContext = mProducer.get();
+    mCacheOrder+=1;
     if (type == IParallelMachine::REDUCE || mResponseClients.empty())
     {
         GPSingleParallelMachine machine;
         auto executor = machine.vPrepare(data, type);
-        mExecutors.insert(std::make_pair(mExecutorOrder, executor));
+        mExecutors.insert(std::make_pair(mCacheOrder, executor));
     }
     else
     {
@@ -458,7 +458,7 @@ uint64_t SGComputeServer::createExecutor(GPParallelType* data, IParallelMachine:
         GPPtr<GPKeyIteratorFactory> keyIteratorFactory = new GPKeyIteratorFactory(data);
         GPPtr<SGResponserExecutor::Handler> handler = new SGMapHandler(keyIteratorFactory);
         SGResponserExecutor* executor = new SGResponserExecutor(mResponseClients, handler, data);
-        mExecutors.insert(std::make_pair(mExecutorOrder, executor));
+        mExecutors.insert(std::make_pair(mCacheOrder, executor));
     }
-    return mExecutorOrder++;
+    return mCacheOrder;
 }

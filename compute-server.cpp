@@ -5,7 +5,7 @@ int main()
 {
     SGComputeServer::init("");
     SGComputeServer* server = SGComputeServer::getInstance();
-    server->addMetaFile("func.xml");
+    server->addMetaFile("conf/func.xml");
     SGHdfsStreamFactory::initWithConf("/home/jxt/InWork/secret/hdfs.txt");
     GPStreamFactory::setStreamCreator(SGHdfsStreamFactory::getInstance());
     server->runLoop();

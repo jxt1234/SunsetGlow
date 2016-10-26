@@ -61,7 +61,6 @@ private:
     uint64_t mCacheOrder;
 
     std::map<uint64_t, IParallelMachine::Executor*> mExecutors;
-    uint64_t mExecutorOrder;
     
     GPPtr<GPFunctionDataBase> mDataBase;
     GPPtr<GPProducer> mProducer;

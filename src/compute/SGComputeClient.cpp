@@ -52,6 +52,7 @@ public:
         SGCompute__CS__Result pieceInfo = SGCOMPUTE__CS__RESULT__INIT;
         pieceInfo.magic = mMagic;
         protobuf_c_boolean ClosureDataGPPieces = 0;
+        SGPRINT_FL("release pieces: %ld", mMagic);
         sgcompute__cs__compute_server__release(mServer, &pieceInfo, Magic_Handle_Release, &ClosureDataGPPieces);
         while (0 == ClosureDataGPPieces)
         {
