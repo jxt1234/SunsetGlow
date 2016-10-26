@@ -188,6 +188,7 @@ static void SG_compute__create (SGCompute__CS__ComputeServer_Service *service, c
             SGASSERT(false);
             break;
     }
+    SGPRINT_FL("Create pieces: %d keys, key[0]=%d, magic = %ld", input->n_keydimesion, convertKeys[0], result.magic);
     closure(&result, closure_data);
 }
 
@@ -340,7 +341,6 @@ uint64_t SGComputeServer::createCache(unsigned int* keyDimesions, int keyNumber,
     os << "cache/"<<number;
     GPPieces* pieces = GPPieceFactory::createLocalFilePiece(translateTypes(type), os.str().c_str(), 0);
     mCachePieces.insert(std::make_pair(number, pieces));
-    FUNC_PRINT((int)mCachePieces.size());
     _setPieceKey(pieces, keyDimesions, keyNumber);
     pieces->sInfo = os.str();
     return number;
@@ -373,7 +373,6 @@ uint64_t SGComputeServer::createInput(const char* path, const char* type, unsign
     GPPieces* pieces = GPPieceFactory::createLocalFilePiece(translateTypes(type), path, 0);
     _setPieceKey(pieces, keyDimesions, keyNumber);
     mCachePieces.insert(std::make_pair(number, pieces));
-    FUNC_PRINT((int)mCachePieces.size());
     pieces->sInfo = path;
     return number;
 }
@@ -388,7 +387,6 @@ uint64_t SGComputeServer::createOutput(const char* path, const char* type, unsig
     GPPieces* pieces = GPPieceFactory::createLocalFilePiece(translateTypes(type), path, 0);
     _setPieceKey(pieces, keyDimesions, keyNumber);
     mCachePieces.insert(std::make_pair(number, pieces));
-    FUNC_PRINT((int)mCachePieces.size());
     pieces->sInfo = path;
     return number;
 
@@ -401,7 +399,7 @@ bool SGComputeServer::release(uint64_t number)
     {
         iter->second->decRef();
         mCachePieces.erase(iter);
-        GPPRINT_FL("released %d, current size=%d", (int)number, (int)mCachePieces.size());
+        GPPRINT_FL("released %d cache, current size=%d", (int)number, (int)mCachePieces.size());
         return true;
     }
     auto iter2 = mExecutors.find(number);
@@ -409,7 +407,6 @@ bool SGComputeServer::release(uint64_t number)
     {
         iter2->second->decRef();
         mExecutors.erase(iter2);
-        FUNC_PRINT((int)mExecutors.size());
         return true;
     }
     return false;
@@ -430,7 +427,7 @@ IParallelMachine::Executor* SGComputeServer::findExecutor(uint64_t number)
     auto iter = mExecutors.find(number);
     if (iter == mExecutors.end())
     {
-        FUNC_PRINT(1);
+        FUNC_PRINT(number);
         return NULL;
     }
     return iter->second;

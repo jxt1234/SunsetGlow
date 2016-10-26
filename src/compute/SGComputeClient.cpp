@@ -128,7 +128,7 @@ static void handle_create_response_cache(const SGCompute__CS__Result *result,
 {
     if (NULL == result)
     {
-        FUNC_PRINT(1);
+        SGASSERT(false);
         return;
     }
     /*TODO check result*/
@@ -150,7 +150,7 @@ static void handle_create_response_execute(const SGCompute__CS__Result *result,
 {
     if (NULL == result)
     {
-        FUNC_PRINT(1);
+        SGASSERT(false);
         return;
     }
     /*TODO check result*/
@@ -174,6 +174,7 @@ static void run_main_loop_without_blocking (ProtobufCRPCDispatch *dispatch)
 IParallelMachine::Executor* SGComputeClient::vPrepare(const GPParallelType* data, PARALLELTYPE type) const
 {
     SGASSERT(NULL!=data);
+    FUNC_PRINT_ALL(data->sFuncInfo.formula.c_str(), s);
     SGCompute__CS__ExecuteInfo executoInfo = SGCOMPUTE__CS__EXECUTE_INFO__INIT;
     
     executoInfo.n_outputkey = data->mOutputKey.size();
@@ -258,8 +259,6 @@ GPPieces* SGComputeClient::vCreatePieces(const char* description, std::vector<co
     }
     dataTypeString = os.str();
     pieceInfo.datatype = (char*)dataTypeString.c_str();
-    FUNC_PRINT_ALL(dataTypeString.c_str(), s);
-    FUNC_PRINT(usage);
     switch (usage)
     {
         case IParallelMachine::INPUT:

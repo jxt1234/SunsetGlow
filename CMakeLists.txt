@@ -2,8 +2,8 @@ cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
 project (SunsetGlow)
 MESSAGE(STATUS "operation system is ${CMAKE_SYSTEM}")
 
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Wall -std=c++11")
-SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -Wall")
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -std=c++11")
+SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 ")
 
 include_directories(include deps/Renacence/include third third/libhdfs/)
 file(GLOB SRC_LIBS "src/compute/*.cpp" "src/compute/*.c" "third/protobuf-c/protobuf-c.c" "third/thread/*.cpp" "third/protobuf-c-rpc/*.c")
