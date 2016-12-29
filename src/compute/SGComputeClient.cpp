@@ -3,6 +3,8 @@
 #include "SGComputeClient.h"
 #include "SGDebug.h"
 #include "utils/AutoStorage.h"
+#include "core/GPPieceFactory.h"
+#include "ALDynamicBuffer.h"
 #include <sstream>
 #include <fstream>
 #include "SGMacro.h"
@@ -33,6 +35,8 @@ SGComputeClient::~SGComputeClient()
 struct ClosureDataGPPieces
 {
     GPPieces* pResult;
+    const IStatusType* pType = NULL;
+    const char* pPath = NULL;
     ProtobufCService* pServer;
 };
 
@@ -42,11 +46,100 @@ static void Magic_Handle_Release(const SGCompute__CS__Result *message, void *clo
     *closure = 1;
 }
 
+struct FileClosureData
+{
+    GPContents** contents;
+    const IStatusType* type;
+};
+
+class MemoryStream:public GPStream
+{
+public:
+    MemoryStream(uint8_t* buffer, size_t len):mBuffer(buffer), mLength(len){}
+    virtual ~ MemoryStream(){}
+    virtual size_t vRead(void* buffer, size_t size)
+    {
+        if (size > mLength - mCur)
+        {
+            size = mLength-mCur;
+        }
+        if (size == 0)
+        {
+            return 0;
+        }
+        ::memcpy(buffer, mBuffer+mCur, size);
+        
+        mCur+=size;
+        return size;
+    }
+    virtual bool vIsEnd() const
+    {
+        return mCur>=mLength;
+    }
+    virtual bool vRewind()
+    {
+        mCur = 0;
+        return true;
+    }
+private:
+    size_t mCur = 0;
+    uint8_t* mBuffer;
+    size_t mLength;
+};
+
+class MemoryWStream:public GPWStream
+{
+public:
+    MemoryWStream(ALDynamicBuffer* buffer):mBuffer(buffer){}
+    virtual ~MemoryWStream() {}
+    virtual size_t vWrite(const void* buffer, size_t size)
+    {
+        mBuffer->load((char*)buffer, size);
+        return size;
+    }
+    virtual bool vFlush()
+    {
+        return true;
+    }
+private:
+    ALDynamicBuffer* mBuffer;
+};
+
+
+static void __Load__FileContent_Closure(const SGCompute__CS__FileContent *message, void *closure_data)
+{
+    SGASSERT(NULL!=message);
+    SGASSERT(message->has_contents);
+    auto fileClosureData = (FileClosureData*)closure_data;
+    SGASSERT(NULL!=fileClosureData->contents);
+    SGASSERT(NULL!=fileClosureData->type);
+    MemoryStream memoryStream(message->contents.data, message->contents.len);
+    auto result = new GPContents;
+    result->push(fileClosureData->type->vLoad(&memoryStream), fileClosureData->type);
+    *fileClosureData->contents = result;
+}
+
+static void __Write__FileContent_Closure(const SGCompute__CS__FileContent *message, void *closure_data)
+{
+    SGASSERT(NULL!=message);
+    //SGASSERT(message->has_contents);
+    auto fileClosureData = (FileClosureData*)closure_data;
+    
+    //Mark it as NULL
+    fileClosureData->type = NULL;
+    fileClosureData->contents = NULL;
+}
+
+
 
 class GPPiecesClient:public GPPieces
 {
 public:
-    GPPiecesClient(uint64_t magic, ProtobufCService* server):mMagic(magic), mServer(server){}
+    GPPiecesClient(const char* path, const IStatusType* type, uint64_t magic, ProtobufCService* server):mMagic(magic), mServer(server)
+    {
+        mPath = path;
+        mType = type;
+    }
     virtual ~ GPPiecesClient()
     {
         SGCompute__CS__Result pieceInfo = SGCOMPUTE__CS__RESULT__INIT;
@@ -63,19 +156,53 @@ public:
     
     virtual GPContents* vLoad(unsigned int* pKey, unsigned int keynum)
     {
-        SGASSERT(false);//TODO
-        return NULL;
+        auto filePath = GPPieceFactory::getFilePath(pKey, keynum, mType->name(), mPath);
+        SGCompute__CS__FileContent input;
+        sgcompute__cs__file_content__init(&input);
+        input.file_name = (char*)filePath.c_str();
+        FileClosureData data;
+        GPContents* c = NULL;
+        data.contents = &c;
+        data.type = mType;
+        sgcompute__cs__compute_server__download(mServer, &input, __Load__FileContent_Closure, &data);
+        while (NULL == *data.contents)
+        {
+            protobuf_c_rpc_dispatch_run (protobuf_c_rpc_dispatch_default ());
+        }
+        return c;
     }
     
     virtual long vPreMeasure(unsigned int* pKey, unsigned int keynum) const {return -1;}
     
     virtual void vSave(unsigned int* pKey, unsigned int keynum, GPContents* c)
     {
-        SGASSERT(false);//TODO
+        SGASSERT(NULL!=c);
+        ALDynamicBuffer buffer(4096);
+        MemoryWStream output(&buffer);
+        c->getContent(0)->type()->vSave(c->get(0), &output);
+
+        auto filePath = GPPieceFactory::getFilePath(pKey, keynum, mType->name(), mPath);
+        SGCompute__CS__FileContent input;
+        sgcompute__cs__file_content__init(&input);
+        input.file_name = (char*)filePath.c_str();
+        input.contents.data = (uint8_t*)buffer.content();
+        input.contents.len = buffer.size();
+        FileClosureData data;
+        data.contents = NULL;
+        data.type = mType;
+        sgcompute__cs__compute_server__upload(mServer, &input, __Write__FileContent_Closure, &data);
+
+        while (data.type == NULL)
+        {
+            protobuf_c_rpc_dispatch_run (protobuf_c_rpc_dispatch_default ());
+        }
+        
     }
 private:
     uint64_t mMagic;
     ProtobufCService* mServer;
+    const IStatusType* mType;
+    std::string mPath;
 
 };
 
@@ -135,7 +262,7 @@ static void handle_create_response_cache(const SGCompute__CS__Result *result,
     ClosureDataGPPieces* _r = (ClosureDataGPPieces*)closure_data;
     FUNC_PRINT((int)result->magic);
     
-    GPPieces* piece_result = new GPPiecesClient(result->magic, _r->pServer);
+    GPPieces* piece_result = new GPPiecesClient(_r->pPath, _r->pType, result->magic, _r->pServer);
     _r->pResult = piece_result;
 }
 
@@ -243,6 +370,7 @@ IParallelMachine::Executor* SGComputeClient::vPrepare(const GPParallelType* data
 
 GPPieces* SGComputeClient::vCreatePieces(const char* description, std::vector<const IStatusType*> types, unsigned int* keys, int keyNum, USAGE usage) const
 {
+    SGASSERT(1 == types.size());
     ProtobufCService* server = (ProtobufCService*)mClient;
     SGCompute__CS__PieceInfo pieceInfo = SGCOMPUTE__CS__PIECE_INFO__INIT;
     
@@ -277,20 +405,22 @@ GPPieces* SGComputeClient::vCreatePieces(const char* description, std::vector<co
             SGASSERT(false);
             break;
     }
-    ClosureDataGPPieces ClosureDataGPPieces;
-    ClosureDataGPPieces.pResult = NULL;
-    ClosureDataGPPieces.pServer = server;
-    sgcompute__cs__compute_server__create(server, &pieceInfo, handle_create_response_cache, &ClosureDataGPPieces);
-    while (NULL == ClosureDataGPPieces.pResult)
+    ClosureDataGPPieces closureDataGPPieces;
+    closureDataGPPieces.pResult = NULL;
+    closureDataGPPieces.pServer = server;
+    closureDataGPPieces.pType = types[0];
+    closureDataGPPieces.pPath = pieceInfo.path;
+    sgcompute__cs__compute_server__create(server, &pieceInfo, handle_create_response_cache, &closureDataGPPieces);
+    while (NULL == closureDataGPPieces.pResult)
     {
         protobuf_c_rpc_dispatch_run (protobuf_c_rpc_dispatch_default ());
     }
-    ClosureDataGPPieces.pResult->nKeyNumber = keyNum;
+    closureDataGPPieces.pResult->nKeyNumber = keyNum;
     for (int i=0; i<keyNum; ++i)
     {
-        ClosureDataGPPieces.pResult->pKeySize[i] = keys[i];
+        closureDataGPPieces.pResult->pKeySize[i] = keys[i];
     }
-    return ClosureDataGPPieces.pResult;
+    return closureDataGPPieces.pResult;
 }
 
 bool SGComputeClient::vCopyPieces(GPPieces* readPieces, GPPieces* writePieces) const

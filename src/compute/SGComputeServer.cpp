@@ -11,6 +11,7 @@
 #include "thread/MGPThread.h"
 #include "SGResponserExecutor.h"
 #include "SGHandler.h"
+#include "ALDynamicBuffer.h"
 static void _setPieceKey(GPPieces* pieces, unsigned int* keyDimesions, int keyNumber)
 {
     pieces->nKeyNumber = keyNumber;
@@ -260,6 +261,50 @@ static void SG_compute_wait_registor(SGCompute__SR__ComputeServerWaiter_Service 
     closure(&outputResult, closure_data);
 }
 
+static void SG_compute__download(SGCompute__CS__ComputeServer_Service *service,
+                 const SGCompute__CS__FileContent *input,
+                 SGCompute__CS__FileContent_Closure closure,
+                 void *closure_data)
+{
+    SGASSERT(NULL!=input);
+    SGASSERT(NULL!=input->file_name);
+    SGCompute__CS__FileContent output;
+    sgcompute__cs__file_content__init(&output);
+    output.file_name = strdup(input->file_name);
+    output.has_contents = true;
+    GPPtr<GPStream> inputStream = GPStreamFactory::NewStream(output.file_name);
+    const int CAPABILITY = 4096;
+    ALDynamicBuffer dynamicBuffer(CAPABILITY);
+    char buffer[CAPABILITY];
+    auto size = inputStream->vRead(buffer, CAPABILITY);
+    while (size > 0)
+    {
+        dynamicBuffer.load(buffer, CAPABILITY);
+    }
+    output.contents.data = (uint8_t*)dynamicBuffer.content();
+    output.contents.len = dynamicBuffer.size();
+    closure(&output, closure_data);
+    
+    ::free(output.file_name);
+}
+static void SG_compute__upload(SGCompute__CS__ComputeServer_Service *service,
+               const SGCompute__CS__FileContent *input,
+               SGCompute__CS__FileContent_Closure closure,
+               void *closure_data)
+{
+    SGASSERT(NULL!=input);
+    SGASSERT(NULL!=input->file_name);
+    SGASSERT(input->has_contents);
+    {
+        GPPtr<GPWStream> outputStream = GPStreamFactory::NewWStream(input->file_name);
+        outputStream->vWrite(input->contents.data, input->contents.len);
+    }
+    SGCompute__CS__FileContent output;
+    sgcompute__cs__file_content__init(&output);
+    output.file_name = strdup(input->file_name);
+    closure(&output, closure_data);
+    ::free(output.file_name);
+}
 
 
 static SGCompute__CS__ComputeServer_Service create_service = SGCOMPUTE__CS__COMPUTE_SERVER__INIT(SG_compute__);
@@ -269,7 +314,7 @@ static SGCompute__SR__ComputeServerWaiter_Service wait_service = SGCOMPUTE__SR__
 
 
 
-SGComputeServer::SGComputeServer()
+SGComputeServer::SGComputeServer(const char* configFile)
 {
     //TODO
     mServer = protobuf_c_rpc_server_new(PROTOBUF_C_RPC_ADDRESS_TCP, SGSERVER_PORT, (ProtobufCService *) &create_service, NULL);
@@ -309,17 +354,13 @@ void SGComputeServer::addResponser(ProtobufC_RPC_Client* client)
 void SGComputeServer::init(const char* configFile)
 {
     SGASSERT(NULL==gServer);
-    gServer = new SGComputeServer;
+    gServer = new SGComputeServer(configFile);
     //GPPtr<GPStream> readStream = GPStreamFactory::NewStream(configFile);
 }
 
 SGComputeServer* SGComputeServer::getInstance()
 {
     SGASSERT(NULL!=gServer);
-    if (NULL == gServer)
-    {
-        gServer = new SGComputeServer;
-    }
     return gServer;
 }
 

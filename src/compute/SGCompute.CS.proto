@@ -33,6 +33,11 @@ message ExecuteInfo {
     required uint32 type = 4;
 }
 
+message FileContent {
+    optional bytes contents = 1;
+    required string file_name = 2;
+}
+
 
 message Result {
     required uint32 code = 1;//0: success, 1:fail
@@ -50,4 +55,6 @@ service ComputeServer {
     rpc Create (PieceInfo) returns (Result);
     rpc Release (Result) returns (Result);
     rpc Copy (CopyInfo) returns (Result);
+    rpc Download (FileContent) returns (FileContent);
+    rpc Upload (FileContent) returns (FileContent);
 }

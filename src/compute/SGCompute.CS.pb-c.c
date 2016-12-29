@@ -154,6 +154,49 @@ void   sgcompute__cs__execute_info__free_unpacked
   assert(message->base.descriptor == &sgcompute__cs__execute_info__descriptor);
   protobuf_c_message_free_unpacked ((ProtobufCMessage*)message, allocator);
 }
+void   sgcompute__cs__file_content__init
+                     (SGCompute__CS__FileContent         *message)
+{
+  static SGCompute__CS__FileContent init_value = SGCOMPUTE__CS__FILE_CONTENT__INIT;
+  *message = init_value;
+}
+size_t sgcompute__cs__file_content__get_packed_size
+                     (const SGCompute__CS__FileContent *message)
+{
+  assert(message->base.descriptor == &sgcompute__cs__file_content__descriptor);
+  return protobuf_c_message_get_packed_size ((const ProtobufCMessage*)(message));
+}
+size_t sgcompute__cs__file_content__pack
+                     (const SGCompute__CS__FileContent *message,
+                      uint8_t       *out)
+{
+  assert(message->base.descriptor == &sgcompute__cs__file_content__descriptor);
+  return protobuf_c_message_pack ((const ProtobufCMessage*)message, out);
+}
+size_t sgcompute__cs__file_content__pack_to_buffer
+                     (const SGCompute__CS__FileContent *message,
+                      ProtobufCBuffer *buffer)
+{
+  assert(message->base.descriptor == &sgcompute__cs__file_content__descriptor);
+  return protobuf_c_message_pack_to_buffer ((const ProtobufCMessage*)message, buffer);
+}
+SGCompute__CS__FileContent *
+       sgcompute__cs__file_content__unpack
+                     (ProtobufCAllocator  *allocator,
+                      size_t               len,
+                      const uint8_t       *data)
+{
+  return (SGCompute__CS__FileContent *)
+     protobuf_c_message_unpack (&sgcompute__cs__file_content__descriptor,
+                                allocator, len, data);
+}
+void   sgcompute__cs__file_content__free_unpacked
+                     (SGCompute__CS__FileContent *message,
+                      ProtobufCAllocator *allocator)
+{
+  assert(message->base.descriptor == &sgcompute__cs__file_content__descriptor);
+  protobuf_c_message_free_unpacked ((ProtobufCMessage*)message, allocator);
+}
 void   sgcompute__cs__result__init
                      (SGCompute__CS__Result         *message)
 {
@@ -637,6 +680,57 @@ const ProtobufCMessageDescriptor sgcompute__cs__execute_info__descriptor =
   (ProtobufCMessageInit) sgcompute__cs__execute_info__init,
   NULL,NULL,NULL    /* reserved[123] */
 };
+static const ProtobufCFieldDescriptor sgcompute__cs__file_content__field_descriptors[2] =
+{
+  {
+    "contents",
+    1,
+    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_TYPE_BYTES,
+    offsetof(SGCompute__CS__FileContent, has_contents),
+    offsetof(SGCompute__CS__FileContent, contents),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+  {
+    "file_name",
+    2,
+    PROTOBUF_C_LABEL_REQUIRED,
+    PROTOBUF_C_TYPE_STRING,
+    0,   /* quantifier_offset */
+    offsetof(SGCompute__CS__FileContent, file_name),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+};
+static const unsigned sgcompute__cs__file_content__field_indices_by_name[] = {
+  0,   /* field[0] = contents */
+  1,   /* field[1] = file_name */
+};
+static const ProtobufCIntRange sgcompute__cs__file_content__number_ranges[1 + 1] =
+{
+  { 1, 0 },
+  { 0, 2 }
+};
+const ProtobufCMessageDescriptor sgcompute__cs__file_content__descriptor =
+{
+  PROTOBUF_C__MESSAGE_DESCRIPTOR_MAGIC,
+  "SGCompute.CS.FileContent",
+  "FileContent",
+  "SGCompute__CS__FileContent",
+  "SGCompute.CS",
+  sizeof(SGCompute__CS__FileContent),
+  2,
+  sgcompute__cs__file_content__field_descriptors,
+  sgcompute__cs__file_content__field_indices_by_name,
+  1,  sgcompute__cs__file_content__number_ranges,
+  (ProtobufCMessageInit) sgcompute__cs__file_content__init,
+  NULL,NULL,NULL    /* reserved[123] */
+};
 static const ProtobufCFieldDescriptor sgcompute__cs__result__field_descriptors[2] =
 {
   {
@@ -739,20 +833,24 @@ const ProtobufCMessageDescriptor sgcompute__cs__copy_info__descriptor =
   (ProtobufCMessageInit) sgcompute__cs__copy_info__init,
   NULL,NULL,NULL    /* reserved[123] */
 };
-static const ProtobufCMethodDescriptor sgcompute__cs__compute_server__method_descriptors[5] =
+static const ProtobufCMethodDescriptor sgcompute__cs__compute_server__method_descriptors[7] =
 {
   { "CreateExecutor", &sgcompute__cs__execute_info__descriptor, &sgcompute__cs__result__descriptor },
   { "Execute", &sgcompute__cs__compute_info__descriptor, &sgcompute__cs__result__descriptor },
   { "Create", &sgcompute__cs__piece_info__descriptor, &sgcompute__cs__result__descriptor },
   { "Release", &sgcompute__cs__result__descriptor, &sgcompute__cs__result__descriptor },
   { "Copy", &sgcompute__cs__copy_info__descriptor, &sgcompute__cs__result__descriptor },
+  { "Download", &sgcompute__cs__file_content__descriptor, &sgcompute__cs__file_content__descriptor },
+  { "Upload", &sgcompute__cs__file_content__descriptor, &sgcompute__cs__file_content__descriptor },
 };
 const unsigned sgcompute__cs__compute_server__method_indices_by_name[] = {
   4,        /* Copy */
   2,        /* Create */
   0,        /* CreateExecutor */
+  5,        /* Download */
   1,        /* Execute */
-  3         /* Release */
+  3,        /* Release */
+  6         /* Upload */
 };
 const ProtobufCServiceDescriptor sgcompute__cs__compute_server__descriptor =
 {
@@ -761,7 +859,7 @@ const ProtobufCServiceDescriptor sgcompute__cs__compute_server__descriptor =
   "ComputeServer",
   "SGCompute__CS__ComputeServer",
   "SGCompute.CS",
-  5,
+  7,
   sgcompute__cs__compute_server__method_descriptors,
   sgcompute__cs__compute_server__method_indices_by_name
 };
@@ -804,6 +902,22 @@ void sgcompute__cs__compute_server__copy(ProtobufCService *service,
 {
   assert(service->descriptor == &sgcompute__cs__compute_server__descriptor);
   service->invoke(service, 4, (const ProtobufCMessage *) input, (ProtobufCClosure) closure, closure_data);
+}
+void sgcompute__cs__compute_server__download(ProtobufCService *service,
+                                             const SGCompute__CS__FileContent *input,
+                                             SGCompute__CS__FileContent_Closure closure,
+                                             void *closure_data)
+{
+  assert(service->descriptor == &sgcompute__cs__compute_server__descriptor);
+  service->invoke(service, 5, (const ProtobufCMessage *) input, (ProtobufCClosure) closure, closure_data);
+}
+void sgcompute__cs__compute_server__upload(ProtobufCService *service,
+                                           const SGCompute__CS__FileContent *input,
+                                           SGCompute__CS__FileContent_Closure closure,
+                                           void *closure_data)
+{
+  assert(service->descriptor == &sgcompute__cs__compute_server__descriptor);
+  service->invoke(service, 6, (const ProtobufCMessage *) input, (ProtobufCClosure) closure, closure_data);
 }
 void sgcompute__cs__compute_server__init (SGCompute__CS__ComputeServer_Service *service,
                                           SGCompute__CS__ComputeServer_ServiceDestroy destroy)

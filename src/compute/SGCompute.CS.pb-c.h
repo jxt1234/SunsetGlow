@@ -21,6 +21,7 @@ typedef struct _SGCompute__CS__ExecuteInfo SGCompute__CS__ExecuteInfo;
 typedef struct _SGCompute__CS__ExecuteInfo__Key SGCompute__CS__ExecuteInfo__Key;
 typedef struct _SGCompute__CS__ExecuteInfo__FuncInfo SGCompute__CS__ExecuteInfo__FuncInfo;
 typedef struct _SGCompute__CS__ExecuteInfo__FormulaInfo SGCompute__CS__ExecuteInfo__FormulaInfo;
+typedef struct _SGCompute__CS__FileContent SGCompute__CS__FileContent;
 typedef struct _SGCompute__CS__Result SGCompute__CS__Result;
 typedef struct _SGCompute__CS__CopyInfo SGCompute__CS__CopyInfo;
 
@@ -108,6 +109,18 @@ struct  _SGCompute__CS__ExecuteInfo
 #define SGCOMPUTE__CS__EXECUTE_INFO__INIT \
  { PROTOBUF_C_MESSAGE_INIT (&sgcompute__cs__execute_info__descriptor) \
     , NULL, NULL, 0,NULL, 0 }
+
+
+struct  _SGCompute__CS__FileContent
+{
+  ProtobufCMessage base;
+  protobuf_c_boolean has_contents;
+  ProtobufCBinaryData contents;
+  char *file_name;
+};
+#define SGCOMPUTE__CS__FILE_CONTENT__INIT \
+ { PROTOBUF_C_MESSAGE_INIT (&sgcompute__cs__file_content__descriptor) \
+    , 0,{0,NULL}, NULL }
 
 
 struct  _SGCompute__CS__Result
@@ -201,6 +214,25 @@ SGCompute__CS__ExecuteInfo *
 void   sgcompute__cs__execute_info__free_unpacked
                      (SGCompute__CS__ExecuteInfo *message,
                       ProtobufCAllocator *allocator);
+/* SGCompute__CS__FileContent methods */
+void   sgcompute__cs__file_content__init
+                     (SGCompute__CS__FileContent         *message);
+size_t sgcompute__cs__file_content__get_packed_size
+                     (const SGCompute__CS__FileContent   *message);
+size_t sgcompute__cs__file_content__pack
+                     (const SGCompute__CS__FileContent   *message,
+                      uint8_t             *out);
+size_t sgcompute__cs__file_content__pack_to_buffer
+                     (const SGCompute__CS__FileContent   *message,
+                      ProtobufCBuffer     *buffer);
+SGCompute__CS__FileContent *
+       sgcompute__cs__file_content__unpack
+                     (ProtobufCAllocator  *allocator,
+                      size_t               len,
+                      const uint8_t       *data);
+void   sgcompute__cs__file_content__free_unpacked
+                     (SGCompute__CS__FileContent *message,
+                      ProtobufCAllocator *allocator);
 /* SGCompute__CS__Result methods */
 void   sgcompute__cs__result__init
                      (SGCompute__CS__Result         *message);
@@ -259,6 +291,9 @@ typedef void (*SGCompute__CS__ExecuteInfo__FormulaInfo_Closure)
 typedef void (*SGCompute__CS__ExecuteInfo_Closure)
                  (const SGCompute__CS__ExecuteInfo *message,
                   void *closure_data);
+typedef void (*SGCompute__CS__FileContent_Closure)
+                 (const SGCompute__CS__FileContent *message,
+                  void *closure_data);
 typedef void (*SGCompute__CS__Result_Closure)
                  (const SGCompute__CS__Result *message,
                   void *closure_data);
@@ -292,6 +327,14 @@ struct _SGCompute__CS__ComputeServer_Service
                const SGCompute__CS__CopyInfo *input,
                SGCompute__CS__Result_Closure closure,
                void *closure_data);
+  void (*download)(SGCompute__CS__ComputeServer_Service *service,
+                   const SGCompute__CS__FileContent *input,
+                   SGCompute__CS__FileContent_Closure closure,
+                   void *closure_data);
+  void (*upload)(SGCompute__CS__ComputeServer_Service *service,
+                 const SGCompute__CS__FileContent *input,
+                 SGCompute__CS__FileContent_Closure closure,
+                 void *closure_data);
 };
 typedef void (*SGCompute__CS__ComputeServer_ServiceDestroy)(SGCompute__CS__ComputeServer_Service *);
 void sgcompute__cs__compute_server__init (SGCompute__CS__ComputeServer_Service *service,
@@ -304,7 +347,9 @@ void sgcompute__cs__compute_server__init (SGCompute__CS__ComputeServer_Service *
       function_prefix__ ## execute,\
       function_prefix__ ## create,\
       function_prefix__ ## release,\
-      function_prefix__ ## copy  }
+      function_prefix__ ## copy,\
+      function_prefix__ ## download,\
+      function_prefix__ ## upload  }
 void sgcompute__cs__compute_server__create_executor(ProtobufCService *service,
                                                     const SGCompute__CS__ExecuteInfo *input,
                                                     SGCompute__CS__Result_Closure closure,
@@ -325,6 +370,14 @@ void sgcompute__cs__compute_server__copy(ProtobufCService *service,
                                          const SGCompute__CS__CopyInfo *input,
                                          SGCompute__CS__Result_Closure closure,
                                          void *closure_data);
+void sgcompute__cs__compute_server__download(ProtobufCService *service,
+                                             const SGCompute__CS__FileContent *input,
+                                             SGCompute__CS__FileContent_Closure closure,
+                                             void *closure_data);
+void sgcompute__cs__compute_server__upload(ProtobufCService *service,
+                                           const SGCompute__CS__FileContent *input,
+                                           SGCompute__CS__FileContent_Closure closure,
+                                           void *closure_data);
 
 /* --- descriptors --- */
 
@@ -334,6 +387,7 @@ extern const ProtobufCMessageDescriptor sgcompute__cs__execute_info__descriptor;
 extern const ProtobufCMessageDescriptor sgcompute__cs__execute_info__key__descriptor;
 extern const ProtobufCMessageDescriptor sgcompute__cs__execute_info__func_info__descriptor;
 extern const ProtobufCMessageDescriptor sgcompute__cs__execute_info__formula_info__descriptor;
+extern const ProtobufCMessageDescriptor sgcompute__cs__file_content__descriptor;
 extern const ProtobufCMessageDescriptor sgcompute__cs__result__descriptor;
 extern const ProtobufCMessageDescriptor sgcompute__cs__copy_info__descriptor;
 extern const ProtobufCServiceDescriptor sgcompute__cs__compute_server__descriptor;

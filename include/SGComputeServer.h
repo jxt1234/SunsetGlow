@@ -49,10 +49,11 @@ public:
     void addResponser(ProtobufC_RPC_Client* client);
     
     virtual bool onSetup();
+    
 
 private:
     static SGComputeServer* gServer;
-    SGComputeServer();
+    SGComputeServer(const char*);
     virtual ~SGComputeServer();
     
     ProtobufC_RPC_Server* mServer;
